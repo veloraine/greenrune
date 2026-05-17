@@ -1,0 +1,36 @@
+# Godot 4+ specific ignores
+.godot/
+/android/
+*.translation
+
+# Imported translations (automatically generated from CSV files)
+export.cfg
+export_presets.cfg
+
+# Mono-specific ignores
+.mono/
+data_*/
+mono_crash.*.json
+
+# System/Tool-specific ignores
+.DS_Store
+.idea/
+.vscode/*
+!.vscode/launch.json
+*.swp
+*.swo
+Thumbs.db
+
+# Build outputs
+build/
+exports/
+*.app/
+*.exe
+*.x86_64
+*.x86
+*.dmg
+*.pck
+*.zip
+
+# Cursor / AI tooling caches (keep .cursorrules tracked)
+.cursor/
