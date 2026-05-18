@@ -105,6 +105,36 @@ The fix: a strong `.cursorrules` file + always cross-checking unfamiliar APIs ag
 
 Budget ~1 weekend in Phase 0 to get a toon shader you're happy with running on a test sphere + character.
 
+### Hybrid 2D/3D — Sprite3D for crops, props, and effects
+
+**Look closely at RF4 and you'll notice many "3D" elements are actually 2D sprites billboarded in 3D space.** Crop growth stages, pickup pop-ups ("+1 Turnip"), sparkle particles, distant grass, some held tools at rest — all flat 2D sprites that always face the camera. This is a deliberate hybrid technique, not a limitation.
+
+**Godot supports this natively with `Sprite3D`:**
+
+- Loads a 2D image (PNG/JPG)
+- Lives in 3D space, depth-sorted against 3D objects correctly
+- Set `Billboard` property to `Enabled` and it always faces the camera
+- ~100x cheaper than even a low-poly 3D mesh
+- Reuses the same image asset for both the world view and the inventory icon
+
+**When to use `Sprite3D` over a 3D model:**
+
+| Use case | Sprite3D | 3D model |
+|---|---|---|
+| Inventory icons | Always (it's UI anyway) | — |
+| Pickup pop-up effects ("+1") | Yes | Overkill |
+| Crop growth stages | **Yes — recommended** | Optional |
+| Small ground plants, flowers, mushrooms | Yes | Overkill |
+| Particles (dust, sparkles, leaves) | Yes (or `GPUParticles3D` with sprite texture) | — |
+| Trees | No | Yes (trees benefit from depth) |
+| Buildings, fences, terrain props | No | Yes |
+| Player + NPCs | No | Yes (animation matters) |
+| Held tools (in active use) | Maybe | Maybe — both work |
+
+**Why this matters for your timeline:** the original Phase 1 plan said "3 growth-stage 3D models per crop." Using `Sprite3D` for crops saves you significant Blender time and reduces the asset cohesion risk (your crops won't accidentally drift in style from the rest of the world if they're flat painted sprites).
+
+**Style cohesion warning:** if you go hybrid, pick a consistent pixel-art or painted-sprite style and stick to it. Mixing photoreal sprite textures with toon-shaded 3D will look bad. Sprout Lands-style chunky pixel art reads well next to KayKit chibi 3D — they share visual "weight."
+
 ## Phased roadmap
 
 Timelines below assume ~8 hrs/week **and** the asset-packs-only commitment from the Visual target section. Custom Blender modeling would add 30–50% to these numbers; the plan is designed to avoid that.
@@ -194,7 +224,7 @@ Smallest possible playable loop. **One 3D farm scene, no town yet.**
 - **Camera:** fixed semi-top-down (~45° angle, follows player), similar to RF4. Implement as a `Camera3D` attached to a `SpringArm3D`.
 - **Farm scene:** terrain (small flat MeshInstance or HeightMap), Quaternius/KayKit barn + fences + trees as props.
 - **Tools:** hoe (till — modifies a tile state), watering can, seeds, harvest. Tile state is a 2D grid managed in code, but visuals are 3D.
-- **Crops:** 2 types (e.g. turnip fast, potato slow), each with 3 growth-stage 3D models (small bush → medium → harvestable). Use Quaternius vegetation or model these yourself in Blender as a Phase 1 milestone — they're the simplest 3D modeling you'll do.
+- **Crops:** 2 types (e.g. turnip fast, potato slow), each with 3 growth stages. **Recommended: use `Sprite3D` billboards with painted/pixel-art textures** — see "Hybrid 2D/3D" above. This is much faster than modeling 3D crops and visually matches RF's actual approach. Alternative: Quaternius vegetation 3D meshes if you want pure 3D.
 - **Inventory + hotbar:** 2D UI (`Control` nodes) overlaid on the 3D world. Start with 8 slots.
 - **Day cycle:** sleep-to-next-day. Use a `DirectionalLight3D` rotating around to fake sun position. Skybox can be a simple gradient.
 - **Save/load:** implement in week 2–3, NOT later. Refactoring saves into a finished project is hell. Save tile states, inventory, time, gold.
