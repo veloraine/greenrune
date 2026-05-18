@@ -144,6 +144,48 @@ Do tutorials end-to-end without skipping. Do NOT start the real project yet.
 - Bonus: outline shader (inverted hull method is easiest).
 - **Exit criterion:** A KayKit chibi character standing on a Quaternius grass patch, both rendered with your toon shader, with a basic outline. Save this scene; it becomes your visual baseline.
 
+### Phase 1 prerequisites — Godot MCP setup (do at the START of Phase 1)
+
+Before writing real game code in Phase 1, set up Godot's MCP server so Cursor's AI can directly read your scene tree, validate GDScript against your actual project, and run/inspect the game. **This was deliberately deferred from Phase 0** — during tutorials you want to learn manually; during real development you want AI to see your codebase.
+
+**Recommended servers (pick one):**
+
+- **[Coding-Solo/godot-mcp](https://github.com/coding-solo/godot-mcp)** — most popular (2,785+ stars), MIT, easiest setup. **Start here.**
+- **[tugcantopaloglu/godot-mcp](https://github.com/tugcantopaloglu/godot-mcp)** — 149 tools, most feature-rich. Switch to this if you outgrow the first.
+- **[lifeiscontent/godot-mcp](https://github.com/lifeiscontent/godot-mcp)** — native GDScript addon, no Node.js dependency. Good if you don't want extra runtimes.
+
+**Setup for Coding-Solo's server (the simple path):**
+
+Add to your Cursor MCP config (`~/.cursor/mcp.json` or via Cursor Settings → MCP):
+
+```json
+{
+  "mcpServers": {
+    "godot": {
+      "command": "npx",
+      "args": ["-y", "godot-mcp-server"]
+    }
+  }
+}
+```
+
+Restart Cursor. The Godot MCP tools should appear in your available tools.
+
+**What this gives you:**
+
+- AI can read your scene tree and node properties
+- AI can inspect/edit GDScript files with awareness of your project structure
+- AI can trigger play/stop and read runtime errors
+- AI can validate GDScript syntax against your project before save
+- AI can query project settings, input maps, collision layers
+
+**When NOT to use MCP:**
+
+- During the Godot Docs and GDQuest tutorials — you want manual practice.
+- For trivial single-script changes — Cursor Tab + the `godot-tools` LSP is enough.
+
+**Risk to watch:** with MCP, AI can do too much for you. If you find yourself asking AI to "build the inventory scene for me" instead of "explain how I should structure the inventory scene," step back. MCP makes the lazy path easier — discipline yourself to use it for *augmentation*, not replacement.
+
 ### Phase 1 — Farming prototype, 3D (3–4 months)
 
 Smallest possible playable loop. **One 3D farm scene, no town yet.**

@@ -46,6 +46,11 @@ Combat, dungeons, monsters, marriage, magic, fishing, mining, cooking, and tamin
 - Prefer the Antz Mixamo→Godot guide and KayKit conventions for character/animation work.
 - For shaders, prefer dropping in the Godot Shaders community cel shader over writing custom.
 
+# Godot MCP server (opt-in, Phase 1+)
+- A Godot MCP server (e.g. coding-solo/godot-mcp) can be configured to give Cursor direct access to scene tree, scripts, project settings, and runtime.
+- Recommended to add at the START of Phase 1 — see docs/plan.md "Phase 1 prerequisites — Godot MCP setup".
+- Not used during Phase 0 (tutorials phase) on purpose; manual practice is the point.
+
 # AI assistant behavior in this repo
 - Don't generate animated sprite frames or 3D models — placeholder text or asset-pack references only.
 - Don't suggest combat, monster, or dungeon code until the user explicitly enters Phase 4.
