@@ -4,8 +4,8 @@ extends Node3D
 @export_range(0.0, 0.2) var hit_stop_seconds: float = 0.05
 
 @export_group("Camera shake")
-@export_range(0.0, 1.0) var shake_strength: float = 0.15
-@export_range(0.0, 1.0) var shake_seconds: float = 0.2
+@export_range(0.0, 1.0) var shake_strength: float = 0.05
+@export_range(0.0, 1.0) var shake_seconds: float = 0.1
 
 @onready var _player: Player = $Player
 @onready var _grid: FarmGrid = $FarmGrid
