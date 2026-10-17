@@ -7,9 +7,10 @@ No custom humanoid or building modeling until at least Phase 4.
 Repo folder is still named `runefactory-clone` as a placeholder; may be renamed to `greenrune` later. This does not affect any code paths.
 
 # Phase status
-Currently in Phase 0 (learning Godot 3D, Blender basics, toon shader setup).
-Phase 1 starts only after Phase 0 exit criteria are met (see SCOPE.md and PHASE_0_CHECKLIST.md).
+Currently in Phase 0 (learning Godot 3D and the toon-shader pipeline). See PHASE_0_CHECKLIST.md.
+Phase 1 starts only after Phase 0 exit criteria are met (see SCOPE.md and docs/phases/phase-01-farm-loop.md).
 Combat, dungeons, monsters, marriage, magic, fishing, mining, crafting/forging, and taming are OUT OF SCOPE until Phase 4+. Cooking arrives in Phase 3. RP and use-based skills are farming systems and start in Phase 1. See NOT_IN_SCOPE.md.
+Every checklist item must meet the definition of done in docs/endgame.md.
 
 # Engine and language
 - Engine: Godot 4 stable (4.5+). NEVER use Godot 3 syntax or APIs.
@@ -56,8 +57,8 @@ Combat, dungeons, monsters, marriage, magic, fishing, mining, crafting/forging, 
 - For shaders, prefer dropping in the Godot Shaders community cel shader over writing custom.
 
 # Godot MCP server (opt-in, Phase 1+)
-- A Godot MCP server (e.g. coding-solo/godot-mcp) can be configured to give Cursor direct access to scene tree, scripts, project settings, and runtime.
-- Recommended to add at the START of Phase 1 — see docs/plan.md "Phase 1 prerequisites — Godot MCP setup".
+- Coding-Solo/godot-mcp gives Claude Code access to launching the editor, running the project, reading debug output, and creating scenes and nodes.
+- Add it at the START of Phase 1 — see docs/plan.md "Phase 1 prerequisites — Godot MCP setup".
 - Not used during Phase 0 (tutorials phase) on purpose; manual practice is the point.
 
 # AI assistant behavior in this repo
@@ -65,4 +66,4 @@ Combat, dungeons, monsters, marriage, magic, fishing, mining, crafting/forging, 
 - Don't suggest combat, monster, or dungeon code until the user explicitly enters Phase 4.
 - If asked to "add fishing/mining/etc.", remind the user it's in NOT_IN_SCOPE.md and offer to add it to a future-features list instead.
 - When explaining concepts, assume the user is a first-time gamedev with prior coding experience.
-- Always consult docs/plan.md for the full roadmap before making architectural suggestions.
+- Always consult docs/plan.md, docs/endgame.md and the current phase file in docs/phases/ before making architectural suggestions.

@@ -32,5 +32,3 @@ exports/
 *.pck
 *.zip
 
-# Cursor / AI tooling caches (keep .cursorrules tracked)
-.cursor/

@@ -8,18 +8,17 @@ When you have a "wouldn't it be cool if..." idea, write it in [NOT_IN_SCOPE.md](
 
 Goal: gain the technical skills to build Phase 1. No game development in this phase.
 
-- [ ] Install Godot 4 stable + Blender LTS
-- [ ] Configure Cursor + Godot integration (`godot-tools`, external editor, `.cursorrules`)
-- [ ] Complete Godot Docs "Your First 3D Game"
+- [ ] Install Godot 4 stable
+- [ ] Set up Claude Code + Godot (script auto-reload, `CLAUDE.md`)
+- [x] Complete Godot Docs "Your First 3D Game"
 - [ ] Complete GDQuest "Survivor Arena FPS"
-- [ ] Start Blender Guru's Donut Tutorial
 - [ ] Complete Coding Quests "3D Action RPG Remastered" (8 hours, spread across weeks)
-- [ ] Master Blender → Godot GLTF export pipeline
 - [ ] Apply community cel shader to a test scene
 - [ ] Import a KayKit character + Mixamo animation
 - [ ] Build `baseline_scene.tscn` as visual proof
+- [ ] Feel test: a throwaway hoe swing that feels good
 
-**Exit criterion:** a KayKit chibi character with Mixamo idle animation, toon-shaded, standing on a Quaternius grass patch, viewed from an RF4-style camera angle. Saved as `baseline_scene.tscn`. Screenshot taken.
+**Exit criterion:** a KayKit chibi character with Mixamo idle animation, toon-shaded, standing on a Quaternius grass patch, viewed from an RF4-style camera angle. Saved as `baseline_scene.tscn`. Screenshot taken. Feel test done, with notes.
 
 See [PHASE_0_CHECKLIST.md](PHASE_0_CHECKLIST.md) for the weekly breakdown.
 

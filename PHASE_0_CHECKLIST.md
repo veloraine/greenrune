@@ -4,46 +4,39 @@ Target: ~8 hrs/week. Adjust pace to your reality; don't crunch.
 
 ## Week 1 — Setup + first 3D taste
 
-- [ ] Install Godot 4 stable
-- [ ] Install Blender LTS (won't use yet)
-- [ ] Install `godot-tools` extension in Cursor
-- [ ] Configure Godot to use Cursor as external editor (Editor Settings → Text Editor → External)
-- [ ] Verify `.cursorrules` is in repo root
+- [ ] Install Godot 4 stable (`brew install --cask godot`)
+- [ ] Enable Editor Settings → Text Editor → Behavior → Files → **Auto Reload Scripts on External Change**
+- [ ] Open Claude Code in the project folder; check it picks up `CLAUDE.md`
 - [ ] Set up Git LFS: `git lfs install` then verify `.gitattributes` rules are tracking
-- [ ] Complete [Godot Docs: Your First 3D Game](https://docs.godotengine.org/en/stable/getting_started/first_3d_game/index.html) (~3 hours)
+- [x] Complete [Godot Docs: Your First 3D Game](https://docs.godotengine.org/en/stable/getting_started/first_3d_game/index.html) (~3 hours)
 - [ ] Spend 1 hour in a fresh project: add a cube, make it move with WASD
 
 **Exit criterion:** you have a working "Squash the Creeps" project and a separate sandbox project with a moving cube.
 
-## Weeks 2–3 — Second 3D project + Blender begins
+## Week 2 — Second 3D project
 
 - [ ] Complete [GDQuest: Survivor Arena FPS](https://www.youtube.com/watch?v=NJJNWGD25rg) (~5–7 hours)
-- [ ] Start [Blender Guru's Donut Tutorial](https://www.youtube.com/playlist?list=PLjEaoINr3zgEPv5y--4MKpciLaoQYZB1Z) — finish parts 1–4
 - [ ] Read [Godot Docs: Introduction to 3D](https://docs.godotengine.org/en/stable/tutorials/3d/introduction_to_3d.html)
 - [ ] Read [Godot Docs: Using 3D Transforms](https://docs.godotengine.org/en/stable/tutorials/3d/using_transforms.html)
 
-**Exit criterion:** comfortable navigating both editors. Can move things in 3D space without thinking.
+**Exit criterion:** comfortable in the Godot editor. Can move things in 3D space without thinking.
 
-## Weeks 3–6 — The big one (3D RPG fundamentals)
+## Weeks 3–5 — The big one (3D RPG fundamentals)
 
 - [ ] Complete [Coding Quests 3D Action RPG Remastered](https://www.youtube.com/watch?v=1m6UXCtw2Pg) (~8 hours of video, 25–40 hours real time)
-- [ ] Finish Blender Guru's Donut Tutorial
-- [ ] Optional: [Grant Abbitt – Low Poly Animal](https://www.youtube.com/watch?v=F_JK9eaYYTQ)
 
 **Exit criterion:** you understand state machines, AnimationTree, GridMap, and basic AI patterns. You could explain them to a friend.
 
-## Weeks 6–7 — Pipeline + assets + first character
+## Week 6 — Pipeline + assets + first character
 
 - [ ] Download [KayKit Adventurers](https://kaylousberg.com/game-assets) → `assets/characters/`
 - [ ] Download [KayKit Dungeon Pack](https://kaylousberg.com/game-assets) → `assets/environment/`
 - [ ] Download [Quaternius Ultimate Nature](https://quaternius.com/) → `assets/environment/`
-- [ ] Watch [Exporting 3D Models to Godot 4 — GLTF settings](https://www.youtube.com/watch?v=_eIAl_HZWXM)
-- [ ] Watch [Blender low poly to Godot 4 export workflow](https://www.youtube.com/watch?v=4blCo5BpgWM)
 - [ ] Complete [Antz: From Mixamo to Godot](https://antzgames.github.io/godot/demo/tutorial/Mixamo/) — get a Mixamo animation playing on a KayKit character
 
 **Exit criterion:** a KayKit chibi character is animated with a Mixamo walk/idle in a Godot scene.
 
-## Weeks 7–8 — Toon shader + baseline scene
+## Week 7 — Toon shader + baseline scene
 
 - [ ] Download [Complete Cel Shader for Godot 4](https://godotshaders.com/shader/complete-cel-shader-for-godot-4/) → `assets/shaders/`
 - [ ] Read [Supermatrix Studio: Godot 4 Anime Shader Guide](https://supermatrix.studio/blog/creating-a-stylized-3D-cel-shader-in-godot-4-from-scratch) (optional)
@@ -57,7 +50,28 @@ Target: ~8 hrs/week. Adjust pace to your reality; don't crunch.
   - DirectionalLight3D for sun
 - [ ] Take screenshot, commit to repo as `docs/baseline_screenshot.png`
 
-**Phase 0 exit criterion (the only one that matters):** `baseline_scene.tscn` exists, looks RF4-ish, and you understand every node in it.
+**Exit criterion:** `baseline_scene.tscn` exists, looks RF4-ish, and you understand every node in it.
+
+## Week 8 — Feel test (throwaway)
+
+- [ ] New throwaway scene: the baseline character with a hoe and a 5×5 tile grid
+- [ ] Swing: animation → hitbox → the hit tile changes colour
+- [ ] Add "pop": sound, dust particle, tiny camera shake, ~50 ms hit-stop
+- [ ] Tweak until 10 swings in a row feel satisfying, then write down what made the difference
+
+**Exit criterion:** swinging the hoe feels good, and you have notes on what made it feel good for Phase 1's tool pipeline.
+
+**Phase 0 exit criterion (the only one that matters):** `baseline_scene.tscn` exists, looks RF4-ish, you understand every node in it, and the feel test is done.
+
+## Later — Blender (when you first need a custom prop, Phase 4+)
+
+Not part of Phase 0: the plan uses asset packs only until Phase 4. See [plan.md › Blender for game devs](docs/plan.md#blender-for-game-devs-when-you-first-need-a-custom-prop).
+
+- [ ] Install Blender LTS
+- [ ] [Blender Guru's Donut Tutorial](https://www.youtube.com/playlist?list=PLjEaoINr3zgEPv5y--4MKpciLaoQYZB1Z)
+- [ ] Watch [Exporting 3D Models to Godot 4 — GLTF settings](https://www.youtube.com/watch?v=_eIAl_HZWXM)
+- [ ] Watch [Blender low poly to Godot 4 export workflow](https://www.youtube.com/watch?v=4blCo5BpgWM)
+- [ ] Export one prop as `.glb` and import it into Godot
 
 ## Notes / journal
 

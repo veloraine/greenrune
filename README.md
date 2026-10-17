@@ -6,7 +6,7 @@ Working title; may change before release.
 
 ## Status
 
-Phase 0 — learning Godot 3D, Blender basics, and the toon-shader pipeline.
+Phase 0 — learning Godot 3D and the toon-shader pipeline.
 
 ## Visual target
 
@@ -15,8 +15,8 @@ Chibi 3D characters with toon shading on a tile-designed 3D world. Asset-packs-o
 ## Tech
 
 - Godot 4 stable + GDScript
-- Blender (minimal use)
-- Cursor with `godot-tools` extension for scripts
+- Blender (from Phase 4+, only if a custom prop is needed)
+- Claude Code for scripts (project rules in [CLAUDE.md](CLAUDE.md))
 - Git + Git LFS for binary assets
 
 ## Roadmap
@@ -25,7 +25,7 @@ See [docs/plan.md](docs/plan.md) for the full roadmap (~12–15 months to playab
 
 Phase summary:
 
-- Phase 0 — Learn Godot 3D, Blender, toon shader (~6–8 weeks)
+- Phase 0 — Learn Godot 3D, asset pipeline, toon shader, feel test (~6–8 weeks)
 - Phase 1 — 3D farming prototype (~2–3 months)
 - Phase 2 — 3D town + NPCs + dialogue (~3–4 months)
 - Phase 3 — Seasons + festivals + weather + cooking + town orders (~2–3 months)
@@ -51,7 +51,7 @@ cd runefactory-clone
 git lfs pull
 ```
 
-Open the project in Godot 4 stable and Cursor side-by-side. See the "Cursor + Godot workflow" section in [docs/plan.md](docs/plan.md) for editor integration.
+Open the project in Godot 4 stable and run Claude Code in the same folder. See the "Claude Code + Godot workflow" section in [docs/plan.md](docs/plan.md) for setup.
 
 ## License
 

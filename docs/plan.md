@@ -36,66 +36,42 @@ What makes RF4 work, per [rf4-research.md](rf4-research.md). Check every feature
 - **Auto-rigging/animation: [Mixamo](https://www.mixamo.com)** — free from Adobe. Upload a model, get walk/idle/attack/sit animations. Eliminates ~80% of beginner animation pain.
 - **Language: GDScript** (not C#). Lower friction for a first game, more tutorials, AI handles it well. (You can switch to C# in Godot later if AI assistance on GDScript ever frustrates you — C# has more training data.)
 - **Version control: Git from day one** with [Git LFS](https://git-lfs.com/) for `.blend`, `.glb`, and texture files (binary assets bloat normal Git fast).
-- **Code editor: Cursor** (with `godot-tools` extension) writing all scripts, while Godot's built-in editor handles scenes, running, and debugging. See the [Cursor + Godot workflow](#cursor--godot-workflow) section below.
+- **AI assistant: Claude Code**, run in the project folder. Project rules live in [CLAUDE.md](../CLAUDE.md) and [.claude/rules/](../.claude/rules/). Godot's built-in editor handles scenes, scripts, running, and debugging. See the [Claude Code + Godot workflow](#claude-code--godot-workflow) section below.
 
-## Cursor + Godot workflow
+## Claude Code + Godot workflow
 
-You'll run **two apps side-by-side**: Godot for scenes/levels/running the game, Cursor for all GDScript with AI assistance. They share the same project folder and auto-sync via file watching.
+You'll run **Godot and Claude Code side-by-side** on the same project folder. Godot is for scenes, levels, running and debugging. Claude Code is for writing and explaining GDScript, reviewing code, and design questions.
 
-### One-time setup (do this in Phase 0, week 1)
+### One-time setup (Phase 0, week 1)
 
-1. **In Cursor**: install the **`godot-tools`** extension from the marketplace. It provides:
-   - GDScript syntax highlighting + autocomplete via Godot's built-in LSP
-   - Go-to-definition, hover docs, find-references
-   - Breakpoint debugging that connects to a running Godot game
-
-2. **In Godot**: `Editor → Editor Settings → Text Editor → External`:
-   - Check **Use External Editor**
-   - **Exec Path** (macOS): `/Applications/Cursor.app/Contents/MacOS/Cursor`
-   - **Exec Flags**: `{project} --goto {file}:{line}:{col}`
-   - Now double-clicking any `.gd` in Godot opens Cursor at the right line.
-
-3. **In Godot**: `Editor Settings → Network → Language Server`:
-   - Confirm it's running on default port (6005). The `godot-tools` extension auto-connects.
-
-4. **In the project root**: the `.cursorrules` file is already set up (see repo root). This is the single most important AI-quality investment you'll make.
-
-5. **Open the project folder in Cursor** at the same time as Godot. Both watch the same files.
+1. **In Godot**: `Editor → Editor Settings → Text Editor → Behavior → Files` → enable **Auto Reload Scripts on External Change**, so scripts Claude edits reload without a prompt.
+2. **In the project root**: [CLAUDE.md](../CLAUDE.md) holds the project rules (Godot 4 APIs, code style, the 2D/3D convention, scope). [.claude/rules/godot-performance.md](../.claude/rules/godot-performance.md) loads whenever Claude touches a `.gd` file. Keep both up to date as conventions settle; this is the single most important AI-quality investment you'll make.
+3. **Open Claude Code in the project folder** (terminal or desktop app) while Godot is open.
 
 ### Daily workflow
 
 ```mermaid
 flowchart LR
-    A[Godot: build scene] --> B[Double-click script]
-    B --> C[Cursor: write with AI Tab]
-    C --> D[Save file]
-    D --> E[Godot: auto-reload]
-    E --> F[Godot: F5 to run]
-    F --> G[Debug in Godot or Cursor]
-    G --> A
+    A[Godot: build scene] --> B[Claude Code: write or explain script]
+    B --> C[Godot: auto-reload]
+    C --> D[Godot: F5 to run]
+    D --> E[Debug in Godot, paste errors to Claude]
+    E --> A
 ```
 
-- **Use Cursor for**: writing/editing all `.gd` scripts, ask-AI debugging, multi-file refactors with Agent mode, generating shaders, design discussions.
+- **Use Claude Code for**: writing and editing `.gd` scripts, explaining Godot concepts, debugging from error output, multi-file refactors, shaders, design discussions.
 - **Use Godot for**: scene tree, inspector tweaks, F5/F6 to run, visual debugger, profiler, animation editor, particle editor, GLTF import config.
-- When Godot detects a script changed in Cursor, it auto-reloads. Occasionally you may need to click the Godot window to force a refresh.
-
-### Cursor features worth knowing
-
-- **Tab completion**: huge productivity win on GDScript boilerplate (state machines, signal connections, save/load serialization).
-- **Chat with `@file` / `@folder`**: when asking Cursor to extend or refactor scripts, attach existing files so it has context. Critical past ~10 scripts.
-- **Agent mode**: for cross-file refactors ("rename `PlayerHealth` to `CharacterStats` everywhere").
-- **Inline edits (Cmd+K)**: fastest path for changing a single function.
-- **`.cursorrules`**: keep updating it as the project grows — add notes about your code conventions, asset locations, and any patterns you've established.
+- **Scene files:** build and edit `.tscn` scenes in Godot. If Claude needs to change a scene file, save and close that scene in Godot first, or Godot may overwrite the change.
 
 ### Known AI hallucination patterns in Godot (watch for these)
 
-- AI writing **Godot 3 syntax** (older API) — always say "Godot 4.x" in prompts; the `.cursorrules` file helps.
+- AI writing **Godot 3 syntax** (older API) — CLAUDE.md pins Godot 4, but still check.
 - Inventing methods that sound plausible but don't exist (e.g. `get_node_or_null` is real, `get_child_by_name` is not).
 - Confusing `_process` and `_physics_process` semantics — `_physics_process` for physics/movement, `_process` for everything else.
 - Suggesting `KinematicBody` (Godot 3) instead of `CharacterBody2D/3D` (Godot 4).
 - Wrong signal connection syntax (Godot 4 uses `signal_name.connect(callable)`, not the old `connect("signal_name", target, "method")`).
 
-The fix: a strong `.cursorrules` file + always cross-checking unfamiliar APIs against [docs.godotengine.org](https://docs.godotengine.org/en/stable/). AI is a co-pilot, not autopilot, especially for newer engines like Godot 4.
+The fix: a strong CLAUDE.md + always cross-checking unfamiliar APIs against [docs.godotengine.org](https://docs.godotengine.org/en/stable/). AI is a co-pilot, not autopilot, especially for newer engines like Godot 4.
 
 ## Art strategy — free pre-rigged 3D asset packs
 
@@ -168,7 +144,7 @@ Timelines below assume ~8 hrs/week **and** the asset-packs-only commitment from 
 
 ```mermaid
 flowchart TD
-    P0[Phase 0: Learn Godot + Blender basics - 6 to 8 weeks] --> P1[Phase 1: Farming prototype 3D - 2 to 3 months]
+    P0[Phase 0: Learn Godot 3D + toon pipeline - 6 to 8 weeks] --> P1[Phase 1: Farming prototype 3D - 2 to 3 months]
     P1 --> P2[Phase 2: Town and NPCs - 3 to 4 months]
     P2 --> P3[Phase 3: Calendar, seasons, cooking, orders - 2 to 3 months]
     P3 --> Decide{Re-evaluate}
@@ -180,22 +156,17 @@ For everything after the slice (Phases 4–10, milestones, scope targets for 1.0
 
 **Total to playable vertical slice: ~12–15 months** (asset-packs-only). If you start custom-modeling humanoids or buildings, expect 16–20+ months instead.
 
-### Phase 0 — Learn Godot + Blender + Shaders (6–10 weeks, ~8 hrs/week)
+### Phase 0 — Learn Godot 3D + toon pipeline (6–8 weeks, ~8 hrs/week)
 
-Do tutorials end-to-end without skipping. Do NOT start the real project yet.
+Do tutorials end-to-end without skipping. Do NOT start the real project yet. The week-by-week list is [PHASE_0_CHECKLIST.md](../PHASE_0_CHECKLIST.md).
 
-**Godot 3D fundamentals (~3–4 weeks):**
+**Godot 3D fundamentals (~4–5 weeks):**
 
 - Official Godot "Your First 3D Game" tutorial (~3 hours).
 - A 3D action RPG tutorial series — see [Tutorials & resources](#tutorials--resources) section for current recommendations.
 - **Exit criterion:** you can explain `Node3D`, `CharacterBody3D`, `MeshInstance3D`, GLTF import, raycasts, and the basics of a `NavigationAgent3D`.
 
-**Blender basics (~2–3 weeks):**
-
-- Blender Guru's "Donut Tutorial" (the universally recommended starter, ~4 hours of video).
-- Then: "How to model a low-poly chair" or similar small prop.
-- Export your prop as `.glb` and import it into Godot. **This export/import roundtrip is the most important thing to master in Phase 0.**
-- **You do NOT need to learn rigging, weight painting, or character modeling yet.** Mixamo + KayKit cover that.
+**Asset pipeline (~1 week):** import KayKit GLB characters and Mixamo animations with the Antz workflow. No Blender needed.
 
 **Toon shader (~1 weekend):**
 
@@ -203,9 +174,13 @@ Do tutorials end-to-end without skipping. Do NOT start the real project yet.
 - Bonus: outline shader (inverted hull method is easiest).
 - **Exit criterion:** A KayKit chibi character standing on a Quaternius grass patch, both rendered with your toon shader, with a basic outline. Save this scene; it becomes your visual baseline.
 
+**Feel test (~1 weekend):** a throwaway scene where one hoe swing hits a tile with sound, particles and a tiny camera shake. It checks the riskiest assumption in the plan (that tool use can feel good in Godot 3D) before Phase 1 builds on it.
+
+**Blender is not in Phase 0.** The asset-packs-only commitment means you won't model anything until Phase 4+. Learn the Blender → Godot export roundtrip the first time you actually need a custom prop (see [Blender for game devs](#blender-for-game-devs-when-you-first-need-a-custom-prop)).
+
 ### Phase 1 prerequisites — Godot MCP setup (do at the START of Phase 1)
 
-Before writing real game code in Phase 1, set up Godot's MCP server so Cursor's AI can directly read your scene tree, validate GDScript against your actual project, and run/inspect the game. **This was deliberately deferred from Phase 0** — during tutorials you want to learn manually; during real development you want AI to see your codebase.
+Before writing real game code in Phase 1, set up Godot's MCP server so Claude Code can launch the editor, run the project, read debug output, and create scenes and nodes in your actual project. **This was deliberately deferred from Phase 0** — during tutorials you want to learn manually; during real development you want AI to see your codebase.
 
 **Recommended servers (pick one):**
 
@@ -215,33 +190,25 @@ Before writing real game code in Phase 1, set up Godot's MCP server so Cursor's 
 
 **Setup for Coding-Solo's server (the simple path):**
 
-Add to your Cursor MCP config (`~/.cursor/mcp.json` or via Cursor Settings → MCP):
+Needs Node.js 18+. From the project folder:
 
-```json
-{
-  "mcpServers": {
-    "godot": {
-      "command": "npx",
-      "args": ["-y", "godot-mcp-server"]
-    }
-  }
-}
+```bash
+claude mcp add godot -e GODOT_PATH=/Applications/Godot.app/Contents/MacOS/Godot -- npx @coding-solo/godot-mcp
 ```
 
-Restart Cursor. The Godot MCP tools should appear in your available tools.
+Restart Claude Code. The Godot MCP tools should appear in your available tools. (`GODOT_PATH` is optional if the server finds Godot on its own.)
 
-**What this gives you:**
+**What this gives you** ([tool list](https://github.com/Coding-Solo/godot-mcp)):
 
-- AI can read your scene tree and node properties
-- AI can inspect/edit GDScript files with awareness of your project structure
-- AI can trigger play/stop and read runtime errors
-- AI can validate GDScript syntax against your project before save
-- AI can query project settings, input maps, collision layers
+- AI can launch the editor, run and stop the project
+- AI can read debug output and runtime errors
+- AI can create scenes, add nodes and save scenes
+- AI can read project info and the Godot version
 
 **When NOT to use MCP:**
 
 - During the Godot Docs and GDQuest tutorials — you want manual practice.
-- For trivial single-script changes — Cursor Tab + the `godot-tools` LSP is enough.
+- For trivial single-script changes — editing the script directly is enough.
 
 **Risk to watch:** with MCP, AI can do too much for you. If you find yourself asking AI to "build the inventory scene for me" instead of "explain how I should structure the inventory scene," step back. MCP makes the lazy path easier — discipline yourself to use it for *augmentation*, not replacement.
 
@@ -337,7 +304,7 @@ A curated, prioritized stack. Don't go searching for "Godot tutorial" yourself �
 3. **[Coding Quests – "3D Action RPG Remastered in Godot 4.2"](https://www.youtube.com/watch?v=1m6UXCtw2Pg)** — free, **8 hours**. The most important tutorial for your project. Covers state machines, AnimationTree, monster AI, GridMap, damage systems, GUI. Spread across 3–4 weeks.
 4. **Optional paid:** [GDQuest "Learn 3D Gamedev from Zero with Godot 4"](https://school.gdquest.com/products/learn_3d_gamedev_godot_4) — $84, 14 modules, structured curriculum.
 
-### Blender for game devs (Phase 0)
+### Blender for game devs (when you first need a custom prop)
 
 1. **[Blender Guru – Beginner Donut Tutorial](https://www.youtube.com/playlist?list=PLjEaoINr3zgEPv5y--4MKpciLaoQYZB1Z)** — free, ~5 hours. Universal starter. Interface, modeling, shading, lighting basics.
 2. **[Grant Abbitt – "Blender 5 for Beginners: Model Any LOW POLY ANIMAL"](https://www.youtube.com/watch?v=F_JK9eaYYTQ)** — free, 2025. Game-asset-focused low-poly modeling.
@@ -407,38 +374,31 @@ gantt
     title Phase 0 schedule
     dateFormat X
     axisFormat W%w
+    section Setup
+    Claude Code + Godot setup :d1, 0, 1w
     section Godot
     Your First 3D Game        :a1, 0, 1w
     Survivor Arena FPS        :a2, after a1, 1w
-    Coding Quests Action RPG  :a3, after a2, 4w
-    section Blender
-    Donut Tutorial            :b1, after a1, 2w
-    Low Poly Animal           :b2, after b1, 1w
-    Blender to Godot pipeline :b3, after b2, 1w
-    section Shader
-    Toon baseline scene       :c1, after b3, 1w
-    section Setup
-    Cursor + Godot integration :d1, 0, 1w
-    .cursorrules + Git LFS     :d2, 0, 1w
+    Coding Quests Action RPG  :a3, after a2, 3w
+    section Pipeline
+    KayKit + Mixamo import    :b1, after a3, 1w
+    Toon baseline scene       :c1, after b1, 1w
+    Feel test                 :c2, after c1, 1w
 ```
 
 Don't try to finish in 4 weeks. The slow pace is what makes it stick.
 
 ## First week — concrete starting steps
 
-1. Install **Godot 4 stable** and **Blender LTS**.
-2. Set up the local repo — `.gitignore`, `.gitattributes` with **Git LFS** tracking, `.cursorrules`. (Already done in this repo's initial commit.)
-3. **Cursor + Godot integration:**
-   - Install **`godot-tools`** extension in Cursor.
-   - In Godot, set Cursor as the external script editor (see [Cursor + Godot workflow](#cursor--godot-workflow)).
-   - The `.cursorrules` file is already in place.
+1. Install **Godot 4 stable** (`brew install --cask godot`). Skip Blender for now.
+2. Set up the local repo — `.gitignore`, `.gitattributes` with **Git LFS** tracking (`git lfs install` once per machine). (Already done in this repo.)
+3. **Claude Code + Godot setup:** enable script auto-reload in Godot and open Claude Code in the project folder (see [Claude Code + Godot workflow](#claude-code--godot-workflow)). [CLAUDE.md](../CLAUDE.md) is already in place.
 4. Download:
    - **KayKit Adventurers** pack (chibi rigged characters)
    - **KayKit Dungeon** pack (modular building props)
    - **Quaternius Ultimate Nature** pack (trees, grass, rocks)
    - Bookmark **Mixamo** — don't download yet, you'll grab animations as needed.
-5. Do the official Godot **"Your First 3D Game"** tutorial end-to-end (~3 hours). Use the Cursor + Godot setup during this so the workflow becomes muscle memory.
-6. Start **Blender Guru's "Donut Tutorial"** for Blender fundamentals.
-7. Tick items off [PHASE_0_CHECKLIST.md](../PHASE_0_CHECKLIST.md) as you go.
+5. Do the official Godot **"Your First 3D Game"** tutorial end-to-end (~3 hours).
+6. Tick items off [PHASE_0_CHECKLIST.md](../PHASE_0_CHECKLIST.md) as you go.
 
-That's it. No game code yet. No custom character models. No combat design. Just those seven things.
+That's it. No game code yet. No custom character models. No combat design. Just those six things.

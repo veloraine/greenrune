@@ -68,18 +68,18 @@ flowchart LR
 
 | Phase | Estimate | Running total |
 |---|---|---|
-| [0 Learn](../PHASE_0_CHECKLIST.md) | 1.5–2.5 months | 1.5–2.5 months |
-| [1 Farm loop](phases/phase-01-farm-loop.md) | 3–4 months | 4.5–6.5 months |
-| [2 Town & NPCs](phases/phase-02-town-npcs.md) | 4–5 months | 8.5–11.5 months |
-| [3 Seasons, cooking, orders](phases/phase-03-seasons-cooking-orders.md) | 2–3 months | 10.5–14.5 months |
-| [M1 Cozy slice](phases/m1-cozy-slice.md) | 1–2 months | **~1–1.4 years** |
-| [4 Combat core](phases/phase-04-combat-core.md) | 6–8 months | 17.5–24.5 months |
-| [5 Taming & barn](phases/phase-05-taming.md) | 3–5 months | 20.5–29.5 months |
-| [6 Forge & craft](phases/phase-06-forge-craft.md) | 3–5 months | 23.5–34.5 months |
-| [7 Dungeons & bosses](phases/phase-07-dungeons.md) | 6–9 months | 29.5–43.5 months |
+| [0 Learn](../PHASE_0_CHECKLIST.md) | 1.5–2 months | 1.5–2 months |
+| [1 Farm loop](phases/phase-01-farm-loop.md) | 3–4 months | 4.5–6 months |
+| [2 Town & NPCs](phases/phase-02-town-npcs.md) | 4–5 months | 8.5–11 months |
+| [3 Seasons, cooking, orders](phases/phase-03-seasons-cooking-orders.md) | 2–3 months | 10.5–14 months |
+| [M1 Cozy slice](phases/m1-cozy-slice.md) | 1–2 months | **~1–1.3 years** |
+| [4 Combat core](phases/phase-04-combat-core.md) | 6–8 months | 17.5–24 months |
+| [5 Taming & barn](phases/phase-05-taming.md) | 3–5 months | 20.5–29 months |
+| [6 Forge & craft](phases/phase-06-forge-craft.md) | 3–5 months | 23.5–34 months |
+| [7 Dungeons & bosses](phases/phase-07-dungeons.md) | 6–9 months | 29.5–43 months |
 | [M2 RF-like demo](phases/m2-rf-like-demo.md) | ~1 month | **~2.5–3.7 years** |
-| [8 Town life depth](phases/phase-08-town-life.md) | 4–6 months | 34.5–50.5 months |
-| [9 Story & late game](phases/phase-09-story-late-game.md) | 4–6 months | 38.5–56.5 months |
+| [8 Town life depth](phases/phase-08-town-life.md) | 4–6 months | 34.5–50 months |
+| [9 Story & late game](phases/phase-09-story-late-game.md) | 4–6 months | 38.5–56 months |
 | [10 Polish & launch (M3)](phases/phase-10-polish-launch.md) | 3–4 months | **~3.5–5 years** |
 
 **Reality check:** 3.5–5 years at 8 hrs/week is about 1,450–2,100 hours. Stardew Valley's 4.5 years at reported 10–12-hour days is roughly 11,700–16,400 hours. Greenrune 1.0 is a sixth of that effort or less, which is why the scope table is small. Phases 4–7 are where RF clones die, and the estimates there are optimistic: even a funded studio got RF5's 3D combat feel and performance wrong.
@@ -114,7 +114,7 @@ Each file has the phase's goal, steps with a checklist and a **Done when** test,
 
 | Plan | Goal | Done when (short) |
 |---|---|---|
-| [Phase 0 — Learn](../PHASE_0_CHECKLIST.md) | Skills for Phase 1 | `baseline_scene.tscn` looks RF4-ish and you understand every node |
+| [Phase 0 — Learn](../PHASE_0_CHECKLIST.md) | Skills for Phase 1 | `baseline_scene.tscn` looks RF4-ish, you understand every node, the feel test is done |
 | [Phase 1 — Farm loop](phases/phase-01-farm-loop.md) | Smallest RF-style day | 5 days played across a save/reload; RP runs out; a skill and a seed level up |
 | [Phase 2 — Town & NPCs](phases/phase-02-town-npcs.md) | Named town with routines | Max friendship with one NPC in ~14 days; lines change with time of day |
 | [Phase 3 — Seasons, cooking, orders](phases/phase-03-seasons-cooking-orders.md) | A full year | A full year played; cooking and festival make crop levels matter |
