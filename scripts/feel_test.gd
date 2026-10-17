@@ -11,6 +11,7 @@ extends Node3D
 @onready var _grid: FarmGrid = $FarmGrid
 @onready var _camera: Camera3D = $CameraRig/SpringArm3D/Camera3D
 @onready var _dust: GPUParticles3D = $Dust
+@onready var _thud: AudioStreamPlayer3D = $Thud
 
 var _shake_left: float = 0.0
 
@@ -31,6 +32,8 @@ func _process(delta: float) -> void:
 func _on_tool_impact(target: Vector3) -> void:
 	_grid.till(_grid.world_to_cell(target))
 	_dust.global_position = target
+	_thud.global_position = target
+	_thud.play()
 	_shake_left = shake_seconds
 	_hit_stop()
 

@@ -56,7 +56,7 @@ Target: ~8 hrs/week. Adjust pace to your reality; don't crunch.
 
 - [x] New throwaway scene: the baseline character with a hoe and a 5×5 tile grid (`scenes/feel_test.tscn`; the hoe is KayKit's 2H axe as a stand-in)
 - [x] Swing: animation → hitbox → the hit tile changes colour (the "hitbox" is the grid cell one tile ahead)
-- [ ] Add "pop": sound, dust particle, tiny camera shake, ~50 ms hit-stop (all done except sound, which needs a CC0 sound pack)
+- [x] Add "pop": sound, dust particle, tiny camera shake, ~50 ms hit-stop (sound: Kenney CC0 `impactSoft_heavy`)
 - [ ] Tweak until 10 swings in a row feel satisfying, then write down what made the difference
 
 **Exit criterion:** swinging the hoe feels good, and you have notes on what made it feel good for Phase 1's tool pipeline.

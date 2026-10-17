@@ -9,7 +9,7 @@ assets/
 ├── characters/         KayKit Adventurers, Mixamo retargeted animations
 ├── environment/        KayKit Dungeon, Quaternius nature/buildings
 ├── shaders/            Toon/cel shader files
-└── audio/              CC0 audio (Phase 1+ only)
+└── audio/              CC0 audio
 ```
 
 ## Character packs
@@ -58,7 +58,14 @@ assets/
 
 ## Audio
 
-Empty until Phase 1+. Use CC0 packs like [Kenney audio](https://kenney.nl/assets?q=audio) or [freesound.org](https://freesound.org/).
+### Kenney Impact Sounds
+
+- Source: <https://kenney.nl/assets/impact-sounds>
+- License: CC0, see `audio/kenney-impact/License.txt`
+- Location: `audio/kenney-impact/` (only the 5 `impactSoft_heavy` files; the pack has 130)
+- Used for: the hoe thud in the Week 8 feel test
+
+Add more from CC0 packs like [Kenney audio](https://kenney.nl/assets?q=audio) or [freesound.org](https://freesound.org/).
 
 ## Asset cohesion rule
 
