@@ -54,9 +54,9 @@ Target: ~8 hrs/week. Adjust pace to your reality; don't crunch.
 
 ## Week 8 — Feel test (throwaway)
 
-- [ ] New throwaway scene: the baseline character with a hoe and a 5×5 tile grid
-- [ ] Swing: animation → hitbox → the hit tile changes colour
-- [ ] Add "pop": sound, dust particle, tiny camera shake, ~50 ms hit-stop
+- [x] New throwaway scene: the baseline character with a hoe and a 5×5 tile grid (`scenes/feel_test.tscn`; the hoe is KayKit's 2H axe as a stand-in)
+- [x] Swing: animation → hitbox → the hit tile changes colour (the "hitbox" is the grid cell one tile ahead)
+- [ ] Add "pop": sound, dust particle, tiny camera shake, ~50 ms hit-stop (all done except sound, which needs a CC0 sound pack)
 - [ ] Tweak until 10 swings in a row feel satisfying, then write down what made the difference
 
 **Exit criterion:** swinging the hoe feels good, and you have notes on what made it feel good for Phase 1's tool pipeline.
@@ -80,3 +80,10 @@ Use this section to log anything weird, things you learned, or "wouldn't it be c
 ---
 
 (Add notes below as you progress.)
+
+### Carry into Phase 1 (from the Week 8 review)
+
+- The axe head lands about 0.6 m to the player's right of the tile that gets tilled (the chop swings across the body). Fix with a real hoe asset or by offsetting the tool in `handslot_r`.
+- The tool target is one world point. Phase 1 needs grid cells from one function shared by the target highlight and the effect, so charge areas work.
+- A press during swing recovery is dropped. Consider input buffering.
+- Move the hit-stop to an autoload so scene changes can't leave `Engine.time_scale` at 0.

@@ -1,0 +1,9 @@
+[gd_scene format=3]
+
+[ext_resource type="PackedScene" uid="uid://dcioyglrkrrrc" path="res://assets/characters/kaykit-adventurers/props/axe_2handed.gltf" id="1_axe"]
+[ext_resource type="Material" path="res://assets/characters/kaykit-adventurers/props/tool_cel.tres" id="2_tool"]
+
+[node name="Hoe" instance=ExtResource("1_axe")]
+
+[node name="axe_2handed" parent="." index="0"]
+material_override = ExtResource("2_tool")

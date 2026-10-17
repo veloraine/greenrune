@@ -1,0 +1,140 @@
+[gd_scene format=3 uid="uid://dnby4aqlg25t5"]
+
+[ext_resource type="Script" uid="uid://c5wrl7ph3wok7" path="res://scripts/feel_test.gd" id="1_feel"]
+[ext_resource type="PackedScene" uid="uid://c14b85d5dhk4i" path="res://scenes/player.tscn" id="2_player"]
+[ext_resource type="Script" uid="uid://nd5gwe3tx61k" path="res://scripts/follow_camera.gd" id="3_follow"]
+[ext_resource type="Shader" uid="uid://svrl22en4dqx" path="res://assets/shaders/cel/cel-shader-base.gdshader" id="4_cel"]
+[ext_resource type="Script" uid="uid://c0hcx248oudv5" path="res://scripts/farm_grid.gd" id="5_grid"]
+
+[sub_resource type="Environment" id="Environment_sky"]
+background_mode = 1
+background_color = Color(0.55, 0.78, 0.95, 1)
+ambient_light_source = 2
+ambient_light_color = Color(0.75, 0.8, 0.9, 1)
+ambient_light_energy = 0.6
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_ground"]
+size = Vector3(40, 0.2, 40)
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_ground"]
+render_priority = 0
+shader = ExtResource("4_cel")
+shader_parameter/color = Color(0.34, 0.52, 0.24, 1)
+shader_parameter/specular = Color(0.3, 0.3, 0.3, 0.5)
+shader_parameter/fresnel = Color(0.2, 0.2, 0.2, 0.3)
+shader_parameter/uv_scale = Vector2(1, 1)
+shader_parameter/uv_offset = Vector2(0, 0)
+
+[sub_resource type="BoxMesh" id="BoxMesh_ground"]
+material = SubResource("ShaderMaterial_ground")
+size = Vector3(40, 0.2, 40)
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_untilled"]
+render_priority = 0
+shader = ExtResource("4_cel")
+shader_parameter/color = Color(0.45, 0.62, 0.3, 1)
+shader_parameter/specular = Color(0.3, 0.3, 0.3, 0.5)
+shader_parameter/fresnel = Color(0.2, 0.2, 0.2, 0.3)
+shader_parameter/uv_scale = Vector2(1, 1)
+shader_parameter/uv_offset = Vector2(0, 0)
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_tilled"]
+render_priority = 0
+shader = ExtResource("4_cel")
+shader_parameter/color = Color(0.42, 0.27, 0.16, 1)
+shader_parameter/specular = Color(0.3, 0.3, 0.3, 0.5)
+shader_parameter/fresnel = Color(0.2, 0.2, 0.2, 0.3)
+shader_parameter/uv_scale = Vector2(1, 1)
+shader_parameter/uv_offset = Vector2(0, 0)
+
+[sub_resource type="Gradient" id="Gradient_fade"]
+colors = PackedColorArray(1, 1, 1, 1, 1, 1, 1, 0)
+
+[sub_resource type="GradientTexture1D" id="GradientTexture1D_fade"]
+gradient = SubResource("Gradient_fade")
+
+[sub_resource type="Gradient" id="Gradient_puff"]
+colors = PackedColorArray(1, 1, 1, 1, 1, 1, 1, 0)
+
+[sub_resource type="GradientTexture2D" id="GradientTexture2D_puff"]
+gradient = SubResource("Gradient_puff")
+width = 32
+height = 32
+fill = 1
+fill_from = Vector2(0.5, 0.5)
+fill_to = Vector2(0.5, 0)
+
+[sub_resource type="ParticleProcessMaterial" id="ParticleProcessMaterial_dust"]
+emission_shape = 1
+emission_sphere_radius = 0.2
+direction = Vector3(0, 1, 0)
+spread = 60.0
+initial_velocity_min = 1.5
+initial_velocity_max = 3.0
+gravity = Vector3(0, -6, 0)
+scale_min = 0.5
+color = Color(0.93, 0.85, 0.7, 1)
+color_ramp = SubResource("GradientTexture1D_fade")
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_dust"]
+transparency = 1
+shading_mode = 0
+vertex_color_use_as_albedo = true
+albedo_texture = SubResource("GradientTexture2D_puff")
+billboard_mode = 3
+particles_anim_h_frames = 1
+particles_anim_v_frames = 1
+particles_anim_loop = false
+
+[sub_resource type="QuadMesh" id="QuadMesh_dust"]
+material = SubResource("StandardMaterial3D_dust")
+size = Vector2(0.5, 0.5)
+
+[node name="FeelTest" type="Node3D" unique_id=44722212]
+script = ExtResource("1_feel")
+
+[node name="WorldEnvironment" type="WorldEnvironment" parent="." unique_id=252553464]
+environment = SubResource("Environment_sky")
+
+[node name="Sun" type="DirectionalLight3D" parent="." unique_id=691975850]
+transform = Transform3D(0.866025, -0.353553, 0.353553, 0, 0.707107, 0.707107, -0.5, -0.612372, 0.612372, 0, 10, 0)
+shadow_enabled = true
+
+[node name="Ground" type="StaticBody3D" parent="." unique_id=1748924256]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.1, 0)
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Ground" unique_id=330546655]
+shape = SubResource("BoxShape3D_ground")
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="Ground" unique_id=1656376434]
+mesh = SubResource("BoxMesh_ground")
+
+[node name="FarmGrid" type="Node3D" parent="." unique_id=1298642683]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2.5, 0, 0.5)
+script = ExtResource("5_grid")
+untilled_material = SubResource("ShaderMaterial_untilled")
+tilled_material = SubResource("ShaderMaterial_tilled")
+
+[node name="Player" parent="." unique_id=1231294114 instance=ExtResource("2_player")]
+transform = Transform3D(-1, 0, 0, 0, 1, 0, 0, 0, -1, 0, 0, 0)
+
+[node name="CameraRig" type="Node3D" parent="." unique_id=482423893 node_paths=PackedStringArray("target")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1, 0)
+script = ExtResource("3_follow")
+target = NodePath("../Player")
+
+[node name="SpringArm3D" type="SpringArm3D" parent="CameraRig" unique_id=1326298307]
+transform = Transform3D(1, 0, 0, 0, 0.707107, 0.707107, 0, -0.707107, 0.707107, 0, 0, 0)
+spring_length = 9.0
+
+[node name="Camera3D" type="Camera3D" parent="CameraRig/SpringArm3D" unique_id=916536625]
+fov = 45.0
+
+[node name="Dust" type="GPUParticles3D" parent="." unique_id=1006185296]
+emitting = false
+amount = 24
+lifetime = 0.5
+one_shot = true
+explosiveness = 1.0
+process_material = SubResource("ParticleProcessMaterial_dust")
+draw_pass_1 = SubResource("QuadMesh_dust")
