@@ -1,0 +1,42 @@
+[gd_scene format=3 uid="uid://btnebqni6wn5s"]
+
+[ext_resource type="Script" uid="uid://bmo4unu4xnpfj" path="res://cube.gd" id="1_cube"]
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_floor"]
+size = Vector3(20, 0.2, 20)
+
+[sub_resource type="BoxMesh" id="BoxMesh_floor"]
+size = Vector3(20, 0.2, 20)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_cube"]
+
+[sub_resource type="BoxMesh" id="BoxMesh_cube"]
+
+[node name="Main" type="Node3D" unique_id=1119161494]
+
+[node name="Sun" type="DirectionalLight3D" parent="." unique_id=1383967292]
+transform = Transform3D(1, 0, 0, 0, 0.7071068, 0.7071068, 0, -0.7071068, 0.7071068, -0.12891388, 5.6407495, -0.3371582)
+light_color = Color(1, 0.5623432, 0.39810318, 1)
+shadow_enabled = true
+
+[node name="Camera3D" type="Camera3D" parent="." unique_id=1410528398]
+transform = Transform3D(1, 0, 0, 0, 0.866025, 0.5, 0, -0.5, 0.866025, 0, 8, 10)
+
+[node name="Floor" type="StaticBody3D" parent="." unique_id=2014998008]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.1, 0)
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Floor" unique_id=1622119648]
+shape = SubResource("BoxShape3D_floor")
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="Floor" unique_id=1196691920]
+mesh = SubResource("BoxMesh_floor")
+
+[node name="Cube" type="CharacterBody3D" parent="." unique_id=132687962]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.5, 0)
+script = ExtResource("1_cube")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Cube" unique_id=1361999221]
+shape = SubResource("BoxShape3D_cube")
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="Cube" unique_id=573722497]
+mesh = SubResource("BoxMesh_cube")

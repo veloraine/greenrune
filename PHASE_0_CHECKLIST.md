@@ -4,12 +4,12 @@ Target: ~8 hrs/week. Adjust pace to your reality; don't crunch.
 
 ## Week 1 — Setup + first 3D taste
 
-- [ ] Install Godot 4 stable (`brew install --cask godot`)
-- [ ] Enable Editor Settings → Text Editor → Behavior → Files → **Auto Reload Scripts on External Change**
-- [ ] Open Claude Code in the project folder; check it picks up `CLAUDE.md`
-- [ ] Set up Git LFS: `git lfs install` then verify `.gitattributes` rules are tracking
+- [x] Install Godot 4 stable (`brew install --cask godot`)
+- [x] Enable Editor Settings → Text Editor → Behavior → Files → **Auto Reload Scripts on External Change**
+- [x] Open Claude Code in the project folder; check it picks up `CLAUDE.md`
+- [x] Set up Git LFS: `git lfs install` then verify `.gitattributes` rules are tracking
 - [x] Complete [Godot Docs: Your First 3D Game](https://docs.godotengine.org/en/stable/getting_started/first_3d_game/index.html) (~3 hours)
-- [ ] Spend 1 hour in a fresh project: add a cube, make it move with WASD
+- [x] Spend 1 hour in a fresh project: add a cube, make it move with WASD
 
 **Exit criterion:** you have a working "Squash the Creeps" project and a separate sandbox project with a moving cube.
 
