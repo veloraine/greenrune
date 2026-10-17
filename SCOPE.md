@@ -31,9 +31,15 @@ When unlocked, scope will be:
 
 - Player movement (KayKit chibi + Mixamo) with fixed RF4-angle camera
 - One 3D farm scene built from Quaternius + KayKit Dungeon props
-- Tools: hoe, watering can, seeds, harvest
+- Tools: hoe, watering can, sickle, seeds, harvest — each a swing with a hitbox, RP cost and skill XP
+- RP bar spent by every tool action; empty RP drains HP; sleep refills
+- 4–6 skills that level by use (lower RP cost, raise max RP)
 - 2 crop types with 3 growth-stage 3D models
-- Inventory + hotbar (2D UI over 3D)
-- Day cycle with sleep-to-next-day
-- Save/load (implemented in week 2–3, NOT later)
+- Crop and seed levels 1–10; sickle-reaping returns seeds, sometimes a level higher
+- Data-driven item definitions (Godot `Resource` or CSV), no hard-coded items
+- Inventory + hotbar (2D UI over 3D), stacks stored as item id + level
+- Day cycle with sleep-to-next-day; one ordered 06:00 daily tick
+- Save/load (implemented in week 2–3, NOT later), including item levels, RP and skill XP
 - Single shop NPC with sell economy
+
+Step-by-step checklist: [docs/phases/phase-01-farm-loop.md](docs/phases/phase-01-farm-loop.md). See [docs/rf4-research.md](docs/rf4-research.md) for why each of these is here.

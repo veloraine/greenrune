@@ -28,7 +28,7 @@ Phase summary:
 - Phase 0 — Learn Godot 3D, Blender, toon shader (~6–8 weeks)
 - Phase 1 — 3D farming prototype (~2–3 months)
 - Phase 2 — 3D town + NPCs + dialogue (~3–4 months)
-- Phase 3 — Seasons + festivals + weather (~2 months)
+- Phase 3 — Seasons + festivals + weather + cooking + town orders (~2–3 months)
 - Phase 3.5 — Re-evaluate, ship vertical slice, or continue to combat
 
 ## Scope
@@ -36,6 +36,9 @@ Phase summary:
 - [SCOPE.md](SCOPE.md) — what is in scope right now
 - [NOT_IN_SCOPE.md](NOT_IN_SCOPE.md) — deferred features (combat, marriage, dungeons, etc.)
 - [PHASE_0_CHECKLIST.md](PHASE_0_CHECKLIST.md) — current learning checklist
+- [docs/rf4-research.md](docs/rf4-research.md) — sourced RF4 research the plan is based on
+- [docs/endgame.md](docs/endgame.md) — road to 1.0: scope targets, milestones, definition of done
+- [docs/phases/](docs/phases/) — one plan per phase: steps, checklists, and what counts as done
 
 ## Setup
 

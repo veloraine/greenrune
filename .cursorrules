@@ -9,7 +9,7 @@ Repo folder is still named `runefactory-clone` as a placeholder; may be renamed 
 # Phase status
 Currently in Phase 0 (learning Godot 3D, Blender basics, toon shader setup).
 Phase 1 starts only after Phase 0 exit criteria are met (see SCOPE.md and PHASE_0_CHECKLIST.md).
-Combat, dungeons, monsters, marriage, magic, fishing, mining, cooking, and taming are OUT OF SCOPE until Phase 4+. See NOT_IN_SCOPE.md.
+Combat, dungeons, monsters, marriage, magic, fishing, mining, crafting/forging, and taming are OUT OF SCOPE until Phase 4+. Cooking arrives in Phase 3. RP and use-based skills are farming systems and start in Phase 1. See NOT_IN_SCOPE.md.
 
 # Engine and language
 - Engine: Godot 4 stable (4.5+). NEVER use Godot 3 syntax or APIs.
@@ -39,6 +39,15 @@ Combat, dungeons, monsters, marriage, magic, fishing, mining, cooking, and tamin
 - KayKit characters retextured for variety, not custom-modeled.
 - Toon shader is a community cel shader applied via ShaderMaterial.
 - Fixed semi-top-down camera using Camera3D on a SpringArm3D.
+
+# Hybrid 2D/3D convention (see docs/plan.md "Hybrid 2D/3D — design convention")
+- The world is 3D; abstractions of things are 2D. Default to this split.
+- Inventory icons, hotbar, shop UI, tooltips, recipes, quest items: 2D Texture2D in Control nodes. NEVER put a 3D mesh in an inventory slot.
+- Dropped/floating items on the ground (pre-pickup): 2D billboard Sprite3D (always-face-camera), reusing the same icon asset as the inventory.
+- FX, "+N" pickup popups, sparkles, dust, distant filler grass: Sprite3D or sprite-textured GPUParticles3D.
+- Crop growth stages: Sprite3D billboards (RF4-style), not per-stage 3D models.
+- Things that occupy real space (player, NPCs, trees, buildings, terrain, props): 3D models, toon-shaded.
+- Each item has ONE icon asset that serves both the inventory UI and the world-drop billboard. Don't author separate art for each.
 
 # When in doubt
 - Verify any Godot API call against https://docs.godotengine.org/en/stable/

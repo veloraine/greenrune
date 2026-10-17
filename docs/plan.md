@@ -11,10 +11,22 @@ Chibi low-poly 3D characters with toon/cel shading in a stylized 3D world, viewe
 ## Ground rules (read these first)
 
 1. **You are learning Godot AND Blender AND building a game at the same time.** That's three skill curves at once. Multiply your time estimates by ~2x; this is normal for a first 3D hobby project.
-2. **Combat, monsters, dungeons, marriage, magic — all deferred.** Not "skipped forever," just not now. The moment you let these creep in early, the project dies.
+2. **Combat, monsters, dungeons, marriage, magic — all deferred.** Not "skipped forever," just not now. The moment you let these creep in early, the project dies. RP and use-based skills are *not* combat systems: in RF4 they are the farming energy bar and progression first, so they start in Phase 1.
 3. **Assets first, custom modeling later (if ever).** You will use **KayKit**, **Quaternius**, **Mixamo**, and **Kenney 3D** for the entire first year. Only model things in Blender that you can't find in a free pack. Even commercial indies do this.
 4. **AI assists, you understand.** Never paste code you can't explain in plain English. AI is great at GDScript boilerplate, shaders, and state machines, but it will confidently invent Godot APIs that don't exist. Verify against the [Godot 4 docs](https://docs.godotengine.org/en/stable/).
 5. **Done > perfect.** Every phase ends in a playable build you'd send to a friend, even if it's ugly.
+
+## Design pillars (from RF4 research)
+
+What makes RF4 work, per [rf4-research.md](rf4-research.md). Check every feature against these.
+
+1. **Every action feels good and levels something.** Tool swings "pop", and each one spends RP and earns skill XP.
+2. **Systems intersect.** Each activity's output is another activity's input (crops → dishes → gifts and festival entries; later, dungeon drops → gear → deeper dungeons).
+3. **A small microcosm.** Every NPC is named and reacts to time, season, weather and events.
+4. **The player chooses the day.** No forced path; the story (if any) can be ignored.
+5. **Teach fast.** RF4's ~10-hour tutorial is its most-cited flaw. Unlock systems through play (requests, orders), not long guided sequences.
+
+**Scale reality check:** Stardew Valley took one person 4.5 years at reported 10–12-hour days. RF4's own director and writer estimate 10–20 years for their two-person RF-like without funding. Copy RF4's *structure*, not its scale; the cost is content and writing, not code.
 
 ## Engine & tooling decision
 
@@ -105,6 +117,21 @@ The fix: a strong `.cursorrules` file + always cross-checking unfamiliar APIs ag
 
 Budget ~1 weekend in Phase 0 to get a toon shader you're happy with running on a test sphere + character.
 
+### Hybrid 2D/3D — design convention
+
+**Project convention (locked in):** the world is 3D; *abstractions* of things are 2D.
+
+| Thing | Representation | Why |
+|---|---|---|
+| Anything that occupies space in the world (terrain, buildings, trees, NPCs, the player, growing crops in a tile) | **3D model** (toon-shaded) | It's a physical object in a 3D world. |
+| Inventory icons, hotbar, shop UI, tooltips, recipes, quest items | **2D `Texture2D` in `Control` nodes** | It's a UI abstraction of an item, not the item itself. Reads better at small sizes, stack counts overlay naturally, ~free to render. |
+| Dropped/floating item on the ground (pre-pickup) | **2D billboard `Sprite3D`** (always faces camera) | RF4-style "JRPG charm," reuses the same icon asset as the inventory, no extra 3D model needed per item. |
+| FX, popups ("+1 Turnip"), sparkles, dust, distant filler grass | **2D billboard `Sprite3D` or sprite-textured `GPUParticles3D`** | Cheap, expressive, on-aesthetic. |
+
+**The unification trick:** one icon asset (e.g. `turnip_icon.png`) is the single source of truth — it shows up as the inventory icon, the hotbar icon, *and* the dropped-on-ground billboard. No style drift, no doubled art workload.
+
+**Optional later:** if you ever want inventory icons that match 3D models more literally (Minecraft-style), render the 3D model once via a `SubViewport` in Godot (or in Blender) to a `Texture2D` and use that as the icon. Keeps the workflow 3D-first but UI still cheap. Don't do this in Phase 1 — paint icons directly.
+
 ### Hybrid 2D/3D — Sprite3D for crops, props, and effects
 
 **Look closely at RF4 and you'll notice many "3D" elements are actually 2D sprites billboarded in 3D space.** Crop growth stages, pickup pop-ups ("+1 Turnip"), sparkle particles, distant grass, some held tools at rest — all flat 2D sprites that always face the camera. This is a deliberate hybrid technique, not a limitation.
@@ -117,11 +144,11 @@ Budget ~1 weekend in Phase 0 to get a toon shader you're happy with running on a
 - ~100x cheaper than even a low-poly 3D mesh
 - Reuses the same image asset for both the world view and the inventory icon
 
-**When to use `Sprite3D` over a 3D model:**
+**When to use `Sprite3D` over a 3D model** (for things actually in the 3D world — inventory/UI is always plain 2D `Texture2D`, see convention table above):
 
 | Use case | Sprite3D | 3D model |
 |---|---|---|
-| Inventory icons | Always (it's UI anyway) | — |
+| Dropped item on ground (pre-pickup) | **Yes — recommended** | Overkill |
 | Pickup pop-up effects ("+1") | Yes | Overkill |
 | Crop growth stages | **Yes — recommended** | Optional |
 | Small ground plants, flowers, mushrooms | Yes | Overkill |
@@ -143,11 +170,13 @@ Timelines below assume ~8 hrs/week **and** the asset-packs-only commitment from 
 flowchart TD
     P0[Phase 0: Learn Godot + Blender basics - 6 to 8 weeks] --> P1[Phase 1: Farming prototype 3D - 2 to 3 months]
     P1 --> P2[Phase 2: Town and NPCs - 3 to 4 months]
-    P2 --> P3[Phase 3: Calendar and seasons - 2 months]
+    P2 --> P3[Phase 3: Calendar, seasons, cooking, orders - 2 to 3 months]
     P3 --> Decide{Re-evaluate}
     Decide --> Polish[Polish and ship vertical slice]
     Decide --> Combat[Phase 4: Combat and dungeons - later]
 ```
+
+For everything after the slice (Phases 4–10, milestones, scope targets for 1.0), see [endgame.md](endgame.md).
 
 **Total to playable vertical slice: ~12–15 months** (asset-packs-only). If you start custom-modeling humanoids or buildings, expect 16–20+ months instead.
 
@@ -223,35 +252,45 @@ Smallest possible playable loop. **One 3D farm scene, no town yet.**
 - **Player character:** KayKit Adventurer chibi model + Mixamo walk/idle animations.
 - **Camera:** fixed semi-top-down (~45° angle, follows player), similar to RF4. Implement as a `Camera3D` attached to a `SpringArm3D`.
 - **Farm scene:** terrain (small flat MeshInstance or HeightMap), Quaternius/KayKit barn + fences + trees as props.
-- **Tools:** hoe (till — modifies a tile state), watering can, seeds, harvest. Tile state is a 2D grid managed in code, but visuals are 3D.
+- **Tools:** hoe (till — modifies a tile state), watering can, sickle, seeds, harvest. Tile state is a 2D grid managed in code, but visuals are 3D.
+- **Tools are combat-shaped:** every tool use is a swing with a hitbox, an RP cost and skill XP. Phase 4 weapons then become more items on the same pipeline (RF4 already lets weapons do farm work) instead of a bolt-on rewrite.
+- **RP bar:** one Rune Points bar that every tool action spends. Empty RP drains HP instead. Refill by sleeping (and later food). This gives the day its budget.
+- **Skills that level by use:** 4–6 to start, tied to Phase 1 actions (e.g. tilling, watering, reaping, walking, sleeping). Each level lowers that skill's RP cost and raises max RP. RF4 has 38; don't go near that.
 - **Crops:** 2 types (e.g. turnip fast, potato slow), each with 3 growth stages. **Recommended: use `Sprite3D` billboards with painted/pixel-art textures** — see "Hybrid 2D/3D" above. This is much faster than modeling 3D crops and visually matches RF's actual approach. Alternative: Quaternius vegetation 3D meshes if you want pure 3D.
-- **Inventory + hotbar:** 2D UI (`Control` nodes) overlaid on the 3D world. Start with 8 slots.
-- **Day cycle:** sleep-to-next-day. Use a `DirectionalLight3D` rotating around to fake sun position. Skybox can be a simple gradient.
-- **Save/load:** implement in week 2–3, NOT later. Refactoring saves into a finished project is hell. Save tile states, inventory, time, gold.
+- **Crop and seed levels (1–10):** harvests carry a level; reaping a grown crop with the sickle returns seeds, sometimes a level higher. This is RF4's long-term farm goal with no extra content.
+- **Data-driven items:** one Godot `Resource` per item definition (or a CSV) from day one. Hard-coded items are the classic RF-clone killer.
+- **Inventory + hotbar:** 2D UI (`Control` nodes) overlaid on the 3D world. Start with 8 slots. Each stack is an item *instance* (item id + level), not a bare count.
+- **Day cycle:** sleep-to-next-day. Use a `DirectionalLight3D` rotating around to fake sun position. Skybox can be a simple gradient. Crops grow and soil dries at the 06:00 wake-up tick; build one ordered end-of-day pipeline now, since crops, NPCs, requests and monsters will all hook into it.
+- **Save/load:** implement in week 2–3, NOT later. Refactoring saves into a finished project is hell. Save tile states, inventory (item id + level per stack), RP, skill XP, time, gold.
 - **One shop NPC:** another KayKit model with Mixamo idle, talk to → "sell all" menu.
 
-**Exit criterion:** play 5 in-game days, save, quit, reload, continue farming. It's ugly and minimal but the 3D loop works.
+**Exit criterion:** play 5 in-game days, save, quit, reload, continue farming. RP runs out by evening, at least one skill levels up, and a reaped seed comes back a level higher. It's ugly and minimal but the 3D loop works.
 
 ### Phase 2 — Town & NPCs (4–5 months)
 
 Now add the social layer in 3D.
 
 - **Town scene:** second 3D scene built from Quaternius/KayKit buildings. Seamless transition from farm (probably scene-switch with fade rather than streaming for simplicity).
-- **3–5 NPCs:** each = a KayKit model with a different texture/color + Mixamo animations. Daily state-machine schedules (home → work → tavern → sleep).
+- **3–5 NPCs:** each = a KayKit model with a different texture/color + Mixamo animations. Every NPC is named; no nameless shop clerks. Daily state-machine schedules (home → work → tavern → sleep).
 - **Pathfinding:** Godot's `NavigationAgent3D` + baked navmesh on the town scene.
 - **Dialogue:** [Dialogic 2](https://github.com/dialogic-godot/dialogic) plugin. Use 2D portrait art for dialogue boxes — for placeholder portraits, you can commission cheap art on Fiverr later, or use AI-generated placeholders (single static images are fine; AI is bad at animated frames but okay at single portraits).
-- **Friendship/affection points** per NPC.
-- **Gift system** with per-NPC likes/dislikes/hates.
+- **Line selection layer:** Dialogic 2 handles display and branching, not *which* line to say. Build a small "pick the best-matching line" layer keyed on time, season, weather, friendship and recent events. RF4's writer: if routines change but lines don't, "the village will feel lifeless."
+- **Friendship/affection points** per NPC: daily talk, one counted gift per day, birthdays double the gift value.
+- **Gift system** with per-NPC likes/dislikes/hates. Crop level should affect gift value.
 - **Proper shop:** buy seeds, sell crops at different rates.
 
-**Exit criterion:** max friendship with one NPC over ~14 in-game days through dialogue and gifts. Watching a chibi character walk a navmesh-pathed daily routine in your toon-shaded town is the moment this feels "real."
+**Budget warning:** this phase is content-bound, not code-bound. Most of the 4–5 months is writing lines, not building systems.
 
-### Phase 3 — Calendar & seasons (~2–3 months)
+**Exit criterion:** max friendship with one NPC over ~14 in-game days through dialogue and gifts, and that NPC says different things in the morning than in the evening. Watching a chibi character walk a navmesh-pathed daily routine in your toon-shaded town is the moment this feels "real."
 
-- **4 seasons, 28 days each** (RF/SDV standard).
-- Season-specific crops (some die out of season).
+### Phase 3 — Calendar, seasons & town progression (~2–3 months)
+
+- **4 seasons, 30 days each** (RF4's calendar; 28 days is the Stardew / Story of Seasons convention).
+- **Seasonal growth multipliers, no crop death:** in-season crops grow 1.5x, out-of-season 0.75x (RF4's model). Simpler to build and test than dying crops. Unwatered crops can still wither.
 - **Visual season swap:** terrain texture, tree variants (Quaternius has seasonal tree variants), skybox tint. This is the moment your 3D investment really pays off — autumn looks tangibly different from spring, not just a palette swap.
-- 1–2 simple festivals (e.g. a harvest contest, a fishing day).
+- **Cooking:** the first "make things from crops" system. Dishes restore RP, make good gifts and serve as festival entries; this is what makes crop levels matter before combat exists.
+- **Orders menu (town points):** earn points from shipping and festivals; spend them to unlock a shop, a festival or a farm expansion. RF4's Prince Points; mostly data plus one menu.
+- 1–2 simple festivals, unlocked through Orders (most RF4 festivals are ordered). Prefer exhibition-style first, e.g. a harvest contest judged on crop level — cheap to build, unlike minigame festivals.
 - Weather (sunny / rainy — `GPUParticles3D` for rain, rain waters crops automatically).
 
 **Exit criterion:** play through a full in-game year and the loop still feels good.
@@ -260,8 +299,12 @@ Now add the social layer in 3D.
 
 After ~12–15 months you'll have a finished, playable cozy 3D farming-and-town game with a distinctive chibi toon-shaded look. **This is a real accomplishment for a first 3D game.** Now choose:
 
-- **Path A (recommended for first project):** Polish, add 2–3 more NPCs, polish portraits, ship it on itch.io as your first finished game. Then start a second project with combat from day one knowing what you now know.
-- **Path B:** Add combat, dungeons, monsters — Phase 4. Add another ~18–24 months (3D combat is harder than 2D combat). This is where most hobby RF clones die. Only choose this if Phases 0–3 felt sustainable.
+- **Path A (recommended for first project):** Polish, add 2–3 more NPCs, polish portraits, ship it on itch.io as your first finished game. Then start a second project with combat from day one knowing what you now know. Be honest about the label: without combat, dungeons and taming this is a Story of Seasons-like, not an RF-like. That is a fine first game.
+- **Path B:** Add combat, dungeons, monsters — Phase 4. Add another ~18–24 months, and treat that as optimistic (3D combat is harder than 2D, and even a funded studio got RF5's 3D feel and performance wrong). This is where most hobby RF clones die. Only choose this if Phases 0–3 felt sustainable. If you do, invert RF4's weak spots:
+  - Make **monster taming** the first combat payoff — tamed monsters doing farm chores ties combat back to the farm.
+  - Keep dungeons few and short; RF4's lever-puzzle dungeons are its most-criticized system.
+  - No health-sponge bosses.
+  - Forging/crafting with stat inheritance (RF4's most-praised system) comes after combat, since gear needs something to fight.
 
 ## AI assistance — how to use it well
 
@@ -273,7 +316,10 @@ After ~12–15 months you'll have a finished, playable cozy 3D farming-and-town 
 ## Risks to actively manage
 
 - **The Blender rabbit hole** — every hour you spend in Blender that isn't strictly needed is an hour not spent on the game. If a free asset exists, use it. Custom modeling is a "nice to have" Phase 4+ activity.
-- **Save system debt** — implement early, version your save format from v1.
+- **Save system debt** — implement early, version your save format from v1. Store item instances (id + level) and NPC state from the start.
+- **Hard-coded items** — keep every item, recipe and gift taste in data, never in scripts.
+- **Writing volume** — dialogue, not code, is the bottleneck for an RF-like town. Budget writing time explicitly.
+- **Long tutorial** — RF4's most consistent criticism. Teach through play.
 - **Scope creep** — keep a `NOT_IN_SCOPE.md` next to your TODO. When you get a "wouldn't it be cool if…" thought, write it there, not into the code.
 - **Asset cohesion drift** — if you ever spend a session looking for art instead of coding, stop and go back to your one chosen pack combo. Inconsistent styles instantly look amateur.
 - **3D performance traps** — beginners often overload scenes with high-poly meshes and dynamic lights. Stay low-poly, bake lighting where possible, profile early.

@@ -11,7 +11,7 @@ The presence of an idea here means it will be considered AFTER the current phase
 - Dungeons and dungeon generation
 - Monsters and monster taming
 - Boss fights
-- Stamina / RP system
+- Crafting / forging (with stat inheritance — needs combat to matter)
 
 ## Deferred to Phase 2+ (after farm prototype is solid)
 
@@ -20,6 +20,7 @@ The presence of an idea here means it will be considered AFTER the current phase
 - Dialogue system (Dialogic 2 integration)
 - Friendship / affection system
 - Gift system
+- Context-sensitive dialogue line selection
 
 ## Deferred to Phase 3+ (after town is solid)
 
@@ -27,16 +28,20 @@ The presence of an idea here means it will be considered AFTER the current phase
 - Festivals
 - Weather beyond clear / sunny
 - Calendar UI
+- Cooking
+- Orders menu / town points (unlock shops, festivals, farm expansion)
 
 ## Deferred indefinitely (consider only post-vertical-slice)
 
 - Marriage / romance
 - Children
-- Cooking
 - Fishing
 - Mining
 - Foraging
-- Crafting / forging
+- Chemistry (medicine)
+- Soil hidden stats, giant crops
+- More than ~6 skills (RF4 has 38)
+- Minigame festivals (exhibition-style festivals come first)
 - Online multiplayer
 - Mod support
 - Console / Switch port
