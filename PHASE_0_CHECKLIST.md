@@ -16,23 +16,23 @@ Target: ~8 hrs/week. Adjust pace to your reality; don't crunch.
 ## Week 2 — Second 3D project
 
 - [x] Complete [GDQuest: Survivor Arena FPS](https://www.youtube.com/watch?v=NJJNWGD25rg) (~5–7 hours)
-- [ ] Read [Godot Docs: Introduction to 3D](https://docs.godotengine.org/en/stable/tutorials/3d/introduction_to_3d.html)
+- [x] Read [Godot Docs: Introduction to 3D](https://docs.godotengine.org/en/stable/tutorials/3d/introduction_to_3d.html)
 - [ ] Read [Godot Docs: Using 3D Transforms](https://docs.godotengine.org/en/stable/tutorials/3d/using_transforms.html)
 
 **Exit criterion:** comfortable in the Godot editor. Can move things in 3D space without thinking.
 
 ## Weeks 3–5 — The big one (3D RPG fundamentals)
 
-- [ ] Complete [Coding Quests 3D Action RPG Remastered](https://www.youtube.com/watch?v=1m6UXCtw2Pg) (~8 hours of video, 25–40 hours real time)
+- [x] Complete [Coding Quests 3D Action RPG Remastered](https://www.youtube.com/watch?v=1m6UXCtw2Pg) (~8 hours of video, 25–40 hours real time)
 
 **Exit criterion:** you understand state machines, AnimationTree, GridMap, and basic AI patterns. You could explain them to a friend.
 
 ## Week 6 — Pipeline + assets + first character
 
-- [ ] Download [KayKit Adventurers](https://kaylousberg.com/game-assets) → `assets/characters/`
-- [ ] Download [KayKit Dungeon Pack](https://kaylousberg.com/game-assets) → `assets/environment/`
+- [x] Download [KayKit Adventurers](https://kaylousberg.com/game-assets) → `assets/characters/`
+- [ ] Download [KayKit Dungeon Pack](https://kaylousberg.com/game-assets) → `assets/environment/` (deferred to Phase 1: unused in Phase 0, and its default import makes 203 separate texture copies)
 - [ ] Download [Quaternius Ultimate Nature](https://quaternius.com/) → `assets/environment/`
-- [ ] Complete [Antz: From Mixamo to Godot](https://antzgames.github.io/godot/demo/tutorial/Mixamo/) — get a Mixamo animation playing on a KayKit character
+- [x] ~~Complete [Antz: From Mixamo to Godot](https://antzgames.github.io/godot/demo/tutorial/Mixamo/)~~ Not needed: KayKit Adventurers ships 76 built-in animations (Idle, Walking_A, Running_A, 2H_Melee_Attack_Chop, ...). `scenes/player.tscn` uses them.
 
 **Exit criterion:** a KayKit chibi character is animated with a Mixamo walk/idle in a Godot scene.
 
