@@ -15,7 +15,7 @@ Target: ~8 hrs/week. Adjust pace to your reality; don't crunch.
 
 ## Week 2 — Second 3D project
 
-- [ ] Complete [GDQuest: Survivor Arena FPS](https://www.youtube.com/watch?v=NJJNWGD25rg) (~5–7 hours)
+- [x] Complete [GDQuest: Survivor Arena FPS](https://www.youtube.com/watch?v=NJJNWGD25rg) (~5–7 hours)
 - [ ] Read [Godot Docs: Introduction to 3D](https://docs.godotengine.org/en/stable/tutorials/3d/introduction_to_3d.html)
 - [ ] Read [Godot Docs: Using 3D Transforms](https://docs.godotengine.org/en/stable/tutorials/3d/using_transforms.html)
 
