@@ -1,35 +1,59 @@
-[gd_scene format=3]
+[gd_scene format=3 uid="uid://c14b85d5dhk4i"]
 
-[ext_resource type="Script" path="res://scripts/player.gd" id="1_player"]
-[ext_resource type="PackedScene" path="res://assets/characters/kaykit-adventurers/Rogue.glb" id="2_rogue"]
+[ext_resource type="Script" uid="uid://dbi7k3blxkxvo" path="res://scripts/player.gd" id="1_player"]
+[ext_resource type="PackedScene" uid="uid://dstijduemsdrb" path="res://assets/characters/kaykit-adventurers/Rogue.glb" id="2_rogue"]
+[ext_resource type="Material" path="res://assets/characters/kaykit-adventurers/rogue_cel.tres" id="3_cel"]
+[ext_resource type="Material" path="res://assets/characters/kaykit-adventurers/rogue_cape_cel.tres" id="4_cape"]
 
 [sub_resource type="CapsuleShape3D" id="CapsuleShape3D_player"]
 radius = 0.4
 height = 2.2
 
-[node name="Player" type="CharacterBody3D"]
+[node name="Player" type="CharacterBody3D" unique_id=797724010]
+collision_layer = 2
 script = ExtResource("1_player")
 
-[node name="CollisionShape3D" type="CollisionShape3D" parent="."]
+[node name="CollisionShape3D" type="CollisionShape3D" parent="." unique_id=407028212]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.1, 0)
 shape = SubResource("CapsuleShape3D_player")
 
-[node name="Model" parent="." instance=ExtResource("2_rogue")]
+[node name="Model" parent="." unique_id=6923916 instance=ExtResource("2_rogue")]
 transform = Transform3D(-1, 0, 0, 0, 1, 0, 0, 0, -1, 0, 0, 0)
 
-[node name="Knife_Offhand" parent="Model/Rig/Skeleton3D/handslot_l" index="0"]
+[node name="Knife_Offhand" parent="Model/Rig/Skeleton3D/handslot_l" parent_id_path=PackedInt32Array(6923916, 167068506) index="0" unique_id=128552813]
 visible = false
 
-[node name="1H_Crossbow" parent="Model/Rig/Skeleton3D/handslot_r" index="0"]
+[node name="1H_Crossbow" parent="Model/Rig/Skeleton3D/handslot_r" parent_id_path=PackedInt32Array(6923916, 1874755659) index="0" unique_id=663624870]
 visible = false
 
-[node name="2H_Crossbow" parent="Model/Rig/Skeleton3D/handslot_r" index="1"]
+[node name="2H_Crossbow" parent="Model/Rig/Skeleton3D/handslot_r" parent_id_path=PackedInt32Array(6923916, 1874755659) index="1" unique_id=335796441]
 visible = false
 
-[node name="Knife" parent="Model/Rig/Skeleton3D/handslot_r" index="2"]
+[node name="Knife" parent="Model/Rig/Skeleton3D/handslot_r" parent_id_path=PackedInt32Array(6923916, 1874755659) index="2" unique_id=1103605602]
 visible = false
 
-[node name="Throwable" parent="Model/Rig/Skeleton3D/handslot_r" index="3"]
+[node name="Throwable" parent="Model/Rig/Skeleton3D/handslot_r" parent_id_path=PackedInt32Array(6923916, 1874755659) index="3" unique_id=105570727]
 visible = false
+
+[node name="Rogue_Cape" parent="Model/Rig/Skeleton3D/chest" parent_id_path=PackedInt32Array(6923916, 70486167) index="0" unique_id=987790991]
+material_override = ExtResource("4_cape")
+
+[node name="Rogue_ArmLeft" parent="Model/Rig/Skeleton3D" parent_id_path=PackedInt32Array(6923916, 856780600) index="3" unique_id=541642171]
+material_override = ExtResource("3_cel")
+
+[node name="Rogue_ArmRight" parent="Model/Rig/Skeleton3D" parent_id_path=PackedInt32Array(6923916, 856780600) index="4" unique_id=1444755380]
+material_override = ExtResource("3_cel")
+
+[node name="Rogue_Body" parent="Model/Rig/Skeleton3D" parent_id_path=PackedInt32Array(6923916, 856780600) index="5" unique_id=720684109]
+material_override = ExtResource("3_cel")
+
+[node name="Rogue_Head" parent="Model/Rig/Skeleton3D" parent_id_path=PackedInt32Array(6923916, 856780600) index="6" unique_id=98852118]
+material_override = ExtResource("3_cel")
+
+[node name="Rogue_LegLeft" parent="Model/Rig/Skeleton3D" parent_id_path=PackedInt32Array(6923916, 856780600) index="7" unique_id=263363667]
+material_override = ExtResource("3_cel")
+
+[node name="Rogue_LegRight" parent="Model/Rig/Skeleton3D" parent_id_path=PackedInt32Array(6923916, 856780600) index="8" unique_id=1118909591]
+material_override = ExtResource("3_cel")
 
 [editable path="Model"]

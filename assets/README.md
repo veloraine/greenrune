@@ -50,8 +50,11 @@ assets/
 ### Complete Cel Shader for Godot 4
 
 - Source: <https://godotshaders.com/shader/complete-cel-shader-for-godot-4/>
+- Code: <https://github.com/eldskald/godot4-cel-shader> (`src/`, unmodified)
+- License: MIT, see `shaders/cel/LICENSE`
 - Location: `shaders/cel/`
 - Used for: toon/cel shading on all 3D models
+- Ours: `outline_material.tres`, `cel-shader-double-sided.gdshader` (a cull-disabled copy for capes). `diffuse_curve.tres` is the upstream demo's `diffuse-texture.tres`.
 
 ## Audio
 

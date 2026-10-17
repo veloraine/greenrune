@@ -1,0 +1,10 @@
+[gd_resource type="ShaderMaterial" format=3]
+
+[ext_resource type="Shader" uid="uid://bctd2wnh4jjo4" path="res://assets/shaders/cel/cel-shader-double-sided.gdshader" id="1_cel"]
+[ext_resource type="Texture2D" uid="uid://cqgs17yhqceqb" path="res://assets/characters/kaykit-adventurers/Rogue_rogue_texture.png" id="2_tex"]
+
+[resource]
+render_priority = 0
+shader = ExtResource("1_cel")
+shader_parameter/color = Color(1, 1, 1, 1)
+shader_parameter/base_texture = ExtResource("2_tex")

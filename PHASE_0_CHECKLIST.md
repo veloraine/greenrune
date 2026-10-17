@@ -38,7 +38,7 @@ Target: ~8 hrs/week. Adjust pace to your reality; don't crunch.
 
 ## Week 7 — Toon shader + baseline scene
 
-- [ ] Download [Complete Cel Shader for Godot 4](https://godotshaders.com/shader/complete-cel-shader-for-godot-4/) → `assets/shaders/`
+- [x] Download [Complete Cel Shader for Godot 4](https://godotshaders.com/shader/complete-cel-shader-for-godot-4/) → `assets/shaders/`
 - [ ] Read [Supermatrix Studio: Godot 4 Anime Shader Guide](https://supermatrix.studio/blog/creating-a-stylized-3D-cel-shader-in-godot-4-from-scratch) (optional)
 - [ ] Apply cel shader to test scene with KayKit character + Quaternius grass
 - [ ] Build `baseline_scene.tscn`:
