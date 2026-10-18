@@ -25,14 +25,14 @@ func _process(_delta: float) -> void:
 	if tool == null or _player.is_swinging():
 		_cells.clear()
 	else:
-		_field.cells_hit(_player.tool_point(tool), _player.facing(), tool.charges[_player.charge_level()].cells, _cells)
+		_field.cells_hit(_player.tool_point(tool), tool.charges[_player.charge_level()], _cells)
 	_field.show_target(_cells)
 
 
 func _on_tool_used(stack: ItemStack, charge_level: int) -> void:
 	var tool: ToolDef = stack.item
 	var point: Vector3 = _player.tool_point(tool)
-	_field.cells_hit(point, _player.facing(), tool.charges[charge_level].cells, _cells)
+	_field.cells_hit(point, tool.charges[charge_level], _cells)
 	# Debug → Visible Collision Shapes turns this on.
 	if get_tree().debug_collisions_hint:
 		_field.flash_hitbox(_cells)

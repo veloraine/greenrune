@@ -56,16 +56,19 @@ func world_to_cell(world: Vector3) -> Vector2i:
 	return Vector2i(floori(local.x / tile_size), floori(local.z / tile_size))
 
 
-## Fills out with the field cells a tool hits when it lands at point.
-## facing is a grid direction such as Vector2i(0, -1); offsets are ToolCharge.cells.
-func cells_hit(point: Vector3, facing: Vector2i, offsets: Array[Vector2i], out: Array[Vector2i]) -> void:
+## Fills out with the field cells a tool hits when it lands at point: the size × size
+## block containing the target tile, aligned to the field's corner like Rune Factory's sections.
+func cells_hit(point: Vector3, charge: ToolCharge, out: Array[Vector2i]) -> void:
 	out.clear()
-	var base: Vector2i = world_to_cell(point)
-	var right := Vector2i(-facing.y, facing.x)
-	for offset in offsets:
-		var cell: Vector2i = base + right * offset.x + facing * offset.y
-		if _tiles.has(cell):
-			out.append(cell)
+	var target: Vector2i = world_to_cell(point)
+	if not _tiles.has(target):
+		return
+	var origin := Vector2i(floori(target.x / float(charge.size)), floori(target.y / float(charge.size))) * charge.size
+	for y in charge.size:
+		for x in charge.size:
+			var cell: Vector2i = origin + Vector2i(x, y)
+			if _tiles.has(cell):
+				out.append(cell)
 
 
 func show_target(cells: Array[Vector2i]) -> void:
