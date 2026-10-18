@@ -9,12 +9,12 @@ Every checked item must meet the [definition of done](../endgame.md#definition-o
 
 ## Step 1 — Skeleton, player, farm scene (weeks 1–2)
 
-- [ ] Folder layout: `scenes/`, `scripts/`, `data/items/`, `data/crops/`, `data/skills/`, `ui/`
-- [ ] Input map: move, use tool, next/prev hotbar slot, interact, menu
-- [ ] Farm scene from KayKit/Quaternius: house with bed, ~12×12 field, shipping bin, fences, trees
-- [ ] Player: `CharacterBody3D` + KayKit model + Mixamo idle/walk/run
-- [ ] Camera: `SpringArm3D` + `Camera3D` at the fixed RF4 angle, follows the player
-- [ ] Main scene runs with F5
+- [x] Folder layout: `scenes/`, `scripts/`, `data/items/`, `data/crops/`, `data/skills/`, `ui/`
+- [x] Input map: move, use tool, next/prev hotbar slot, interact, menu (WASD, Space/left click, E/Q or mouse wheel, F, Tab/Esc)
+- [x] Farm scene from KayKit/Quaternius: house with bed, ~12×12 field, shipping bin, fences, trees (`scenes/farm.tscn`; the bed stands beside the house until the Step 5 interior)
+- [x] Player: `CharacterBody3D` + KayKit model + ~~Mixamo~~ KayKit built-in idle/run
+- [x] Camera: `SpringArm3D` + `Camera3D` at the fixed RF4 angle, follows the player (`scenes/camera_rig.tscn`)
+- [x] Main scene runs with F5
 
 **Done when:** you walk around the farm at 60 fps and the camera never clips through props.
 
@@ -58,6 +58,7 @@ Every checked item must meet the [definition of done](../endgame.md#definition-o
 - [ ] `CropDef` data: seed item, growth stages, days per stage, harvest item, sell price
 - [ ] Plant a seed on a tilled tile; `Sprite3D` billboard per stage
 - [ ] Clock: day runs 06:00–24:00; HUD clock; forced faint at midnight
+- [ ] House interior scene with the bed, entered through the house door
 - [ ] Bed interaction → sleep → next day
 - [ ] `DayTick`: one ordered pipeline at 06:00 (crops grow → soil dries → future hooks)
 - [ ] Sun: rotating `DirectionalLight3D`, gradient sky

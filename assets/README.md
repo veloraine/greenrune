@@ -38,6 +38,17 @@ assets/
 - Format: FBX, because the pack ships no glTF. Godot 4 imports FBX natively.
 - Ours: the `*_cel.tres` materials. Each `.fbx.import` maps the model's Wood/Green/DarkGreen materials to them, so every instance is cel-shaded.
 
+### Quaternius farm props
+
+- Source: three Quaternius packs, each from its official Google Drive `FBX/` folder:
+  [Farm Buildings](https://quaternius.com/packs/farmbuildings.html) (`SmallBarn`, `Fence`),
+  [Ultimate House Interior](https://quaternius.com/packs/ultimatehomeinterior.html) (`Bed_Single`),
+  [Ultimate RPG](https://quaternius.com/packs/ultimaterpg.html) (`Chest_Closed`)
+- License: CC0, see `environment/quaternius-farm/License.txt` (identical in all three packs)
+- Location: `environment/quaternius-farm/`
+- Used for: the farm house, field fences, bed and shipping bin. `scenes/props/` wraps each in a `StaticBody3D` with a collider.
+- Ours: the `*_cel.tres` materials, mapped in each `.fbx.import` like the nature pack.
+
 ## Animations
 
 ### Mixamo

@@ -13,6 +13,7 @@ Every checked item must meet the [definition of done](../endgame.md#definition-o
 - [ ] Farm ↔ town exits with a fade; spawn points per entrance
 - [ ] Baked navmesh covering every walkable area
 - [ ] Building interiors as separate scenes, or doors that hide NPCs inside
+- [ ] Buildings and trees you can walk behind fade or dither when they hide the player (the farm avoids this by placing them at the north edge and outside the bounds)
 
 **Done when:** you walk farm → town → every interior → farm with no stuck spots, and the navmesh debug view covers every walkable area.
 

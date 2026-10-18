@@ -98,4 +98,4 @@ Use this section to log anything weird, things you learned, or "wouldn't it be c
 - The tool target is one world point. Phase 1 needs grid cells from one function shared by the target highlight and the effect, so charge areas work.
 - A press during swing recovery is dropped. Consider input buffering.
 - Move the hit-stop to an autoload so scene changes can't leave `Engine.time_scale` at 0.
-- The baseline scene's trees have no collision, so the player walks through trunks. Add a trunk collider (Week 7 review).
+- ~~The baseline scene's trees have no collision, so the player walks through trunks.~~ Done for the farm: `scenes/props/tree_*.tscn` have trunk colliders.
