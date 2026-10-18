@@ -70,3 +70,10 @@ func add_xp(id: StringName, amount: float) -> void:
 func recover(hp_fraction: float) -> void:
 	hp = maxi(1, roundi(_vitals.max_hp * hp_fraction))
 	changed.emit()
+
+
+## Restores these fractions of max RP and max HP, capped at the max.
+func rest(rp_fraction: float, hp_fraction: float) -> void:
+	rp = mini(max_rp(), rp + roundi(max_rp() * rp_fraction))
+	hp = mini(_vitals.max_hp, hp + roundi(_vitals.max_hp * hp_fraction))
+	changed.emit()

@@ -1,6 +1,6 @@
 extends VBoxContainer
 
-const HELP: String = "add <item> [level] [count] | inv | save | load | rp <n> | hp <n> | xp <skill> <amount> | skills"
+const HELP: String = "add <item> [level] [count] | inv | save | load | rp <n> | hp <n> | xp <skill> <amount> | skills | time [hh:mm, 25:30 is 01:30 that night]"
 
 var _was_paused: bool = false
 
@@ -31,7 +31,8 @@ func _input(event: InputEvent) -> void:
 		get_tree().paused = true
 		_line.grab_focus()
 	else:
-		get_tree().paused = _was_paused
+		# The sleep prompt can unpause while the console is open; don't restore a stale pause.
+		get_tree().paused = _was_paused and get_tree().paused
 
 
 func _on_text_submitted(text: String) -> void:
@@ -70,6 +71,12 @@ func _run(args: PackedStringArray) -> String:
 			return _skills()
 		"skills":
 			return _skills()
+		"time":
+			if args.size() > 1:
+				var hm: PackedStringArray = args[1].split(":")
+				var minute: float = int(hm[0]) * 60.0 + (int(hm[1]) if hm.size() > 1 else 0)
+				Game.minute = maxf(minute, Game.clock.wake_hour * 60.0)
+			return "Day %d, %02d:%02d" % [Game.day, int(Game.minute / 60.0) % 24, int(Game.minute) % 60]
 	return HELP
 
 

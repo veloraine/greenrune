@@ -11,12 +11,17 @@ var _water_query := PhysicsPointQueryParameters3D.new()
 @onready var _field: FarmGrid = $Field
 @onready var _feedback: ToolFeedback = $ToolFeedback
 @onready var _camera_rig: FollowCamera = $CameraRig
-@onready var _wake_point: Marker3D = $WakePoint
+@onready var _wake_point: Marker3D = $HouseInterior/WakePoint
+@onready var _bed: Area3D = $HouseInterior/Bed/Reach
+@onready var _sleep_prompt: SleepPrompt = $HUD/SleepPrompt
 
 
 func _ready() -> void:
 	_player.tool_used.connect(_on_tool_used)
 	Game.stats.fainted.connect(_on_fainted)
+	_sleep_prompt.confirmed.connect(_sleep)
+	$HouseDoor.body_entered.connect(_go_through_door.bind($HouseInterior/Entrance))
+	$HouseInterior/Door.body_entered.connect(_go_through_door.bind($HouseEntrance))
 	_water_query.collide_with_areas = true
 	_water_query.collide_with_bodies = false
 	_water_query.collision_mask = WATER_LAYER
@@ -29,6 +34,11 @@ func _process(_delta: float) -> void:
 	else:
 		_field.cells_hit(_player.global_position, _player.tool_point(tool), tool.charges[_player.charge_level()], _cells)
 	_field.show_target(_cells)
+
+
+func _unhandled_input(event: InputEvent) -> void:
+	if event.is_action_pressed("interact") and _player.is_idle() and _bed.overlaps_body(_player):
+		_sleep_prompt.open()
 
 
 func _on_tool_used(stack: ItemStack, charge_level: int) -> void:
@@ -60,12 +70,24 @@ func _on_tool_used(stack: ItemStack, charge_level: int) -> void:
 	_pop(point, tool)
 
 
-# Until Step 5's day tick, a faint skips straight to the next morning here.
 func _on_fainted() -> void:
-	Game.day += 1
 	Game.gold = maxi(0, Game.gold - Game.vitals.faint_gold_penalty)
 	Game.stats.recover(Game.vitals.faint_wake_hp)
+	Game.day_tick()
 	_player.global_position = _wake_point.global_position
+
+
+## The XP comes first, so a sleeping level-up's extra max RP is refilled too.
+func _sleep() -> void:
+	if Game.minute < Game.clock.bedtime_hour * 60.0:
+		Game.stats.add_xp(&"sleeping", Game.skills[&"sleeping"].xp_per_use)
+	Game.stats.rest(Game.vitals.sleep_rp_restore, Game.vitals.sleep_hp_restore)
+	Game.day_tick()
+
+
+func _go_through_door(_body: Node3D, to: Marker3D) -> void:
+	_player.global_position = to.global_position
+	_player.rotation.y = to.rotation.y
 
 
 func _pop(point: Vector3, tool: ToolDef) -> void:

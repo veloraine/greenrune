@@ -62,6 +62,11 @@ func is_swinging() -> bool:
 	return _state == State.SWING
 
 
+## True when not charging or swinging a tool.
+func is_idle() -> bool:
+	return _state == State.MOVE
+
+
 ## The grid direction the player faces, snapped to the nearest of four.
 func facing() -> Vector2i:
 	var forward: Vector3 = -global_basis.z

@@ -1,0 +1,160 @@
+[gd_scene format=3]
+
+[ext_resource type="PackedScene" path="res://scenes/props/bed.tscn" id="1_bed"]
+[ext_resource type="Shader" path="res://assets/shaders/cel/cel-shader-base.gdshader" id="2_cel"]
+[ext_resource type="Material" path="res://assets/environment/quaternius-farm/bed_sheet_cel.tres" id="3_wall"]
+[ext_resource type="Material" path="res://assets/environment/quaternius-farm/barn_red_cel.tres" id="4_mat"]
+[ext_resource type="Material" path="res://assets/environment/quaternius-farm/barn_dark_red_cel.tres" id="5_rug"]
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_void"]
+shading_mode = 0
+albedo_color = Color(0, 0, 0, 1)
+
+[sub_resource type="PlaneMesh" id="PlaneMesh_void"]
+material = SubResource("StandardMaterial3D_void")
+size = Vector2(80, 80)
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_floor"]
+render_priority = 0
+shader = ExtResource("2_cel")
+shader_parameter/color = Color(0.4386, 0.3193, 0.2794, 1)
+shader_parameter/specular = Color(0, 0, 0, 0)
+
+[sub_resource type="BoxMesh" id="BoxMesh_floor"]
+material = SubResource("ShaderMaterial_floor")
+size = Vector3(8, 0.2, 6)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_floor"]
+size = Vector3(8, 0.2, 6)
+
+[sub_resource type="BoxMesh" id="BoxMesh_back_wall"]
+material = ExtResource("3_wall")
+size = Vector3(8.4, 2.5, 0.2)
+
+[sub_resource type="BoxMesh" id="BoxMesh_side_wall"]
+material = ExtResource("3_wall")
+size = Vector3(0.2, 2.5, 6.2)
+
+[sub_resource type="BoxMesh" id="BoxMesh_front_wall"]
+material = ExtResource("3_wall")
+size = Vector3(3.3, 0.3, 0.2)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_back_wall"]
+size = Vector3(8.4, 2.5, 0.2)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_side_wall"]
+size = Vector3(0.2, 2.5, 6.2)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_front_wall"]
+size = Vector3(3.3, 2.5, 0.2)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_door_stop"]
+size = Vector3(1.6, 2.5, 0.2)
+
+[sub_resource type="BoxMesh" id="BoxMesh_doormat"]
+material = ExtResource("4_mat")
+size = Vector3(1.4, 0.02, 0.8)
+
+[sub_resource type="BoxMesh" id="BoxMesh_rug"]
+material = ExtResource("5_rug")
+size = Vector3(2.4, 0.02, 1.6)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_door"]
+size = Vector3(1.6, 2, 0.6)
+
+[node name="HouseInterior" type="Node3D"]
+
+[node name="Void" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.2, 0)
+cast_shadow = 0
+mesh = SubResource("PlaneMesh_void")
+
+[node name="Floor" type="StaticBody3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.1, 0)
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Floor"]
+shape = SubResource("BoxShape3D_floor")
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="Floor"]
+mesh = SubResource("BoxMesh_floor")
+
+[node name="Walls" type="StaticBody3D" parent="."]
+collision_layer = 8
+collision_mask = 0
+
+[node name="Back" type="CollisionShape3D" parent="Walls"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.25, -3.1)
+shape = SubResource("BoxShape3D_back_wall")
+
+[node name="BackMesh" type="MeshInstance3D" parent="Walls/Back"]
+cast_shadow = 0
+mesh = SubResource("BoxMesh_back_wall")
+
+[node name="West" type="CollisionShape3D" parent="Walls"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -4.1, 1.25, 0)
+shape = SubResource("BoxShape3D_side_wall")
+
+[node name="WestMesh" type="MeshInstance3D" parent="Walls/West"]
+cast_shadow = 0
+mesh = SubResource("BoxMesh_side_wall")
+
+[node name="East" type="CollisionShape3D" parent="Walls"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 4.1, 1.25, 0)
+shape = SubResource("BoxShape3D_side_wall")
+
+[node name="EastMesh" type="MeshInstance3D" parent="Walls/East"]
+cast_shadow = 0
+mesh = SubResource("BoxMesh_side_wall")
+
+[node name="FrontLeft" type="CollisionShape3D" parent="Walls"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2.45, 1.25, 3.1)
+shape = SubResource("BoxShape3D_front_wall")
+
+[node name="FrontLeftMesh" type="MeshInstance3D" parent="Walls/FrontLeft"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -1.1, 0)
+cast_shadow = 0
+mesh = SubResource("BoxMesh_front_wall")
+
+[node name="FrontRight" type="CollisionShape3D" parent="Walls"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2.45, 1.25, 3.1)
+shape = SubResource("BoxShape3D_front_wall")
+
+[node name="FrontRightMesh" type="MeshInstance3D" parent="Walls/FrontRight"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -1.1, 0)
+cast_shadow = 0
+mesh = SubResource("BoxMesh_front_wall")
+
+[node name="DoorStop" type="CollisionShape3D" parent="Walls"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.25, 3.9)
+shape = SubResource("BoxShape3D_door_stop")
+
+[node name="Doormat" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.01, 2.6)
+mesh = SubResource("BoxMesh_doormat")
+
+[node name="Rug" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.8, 0.01, -0.4)
+mesh = SubResource("BoxMesh_rug")
+
+[node name="Bed" parent="." instance=ExtResource("1_bed")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -3.1, 0, -1.6)
+
+[node name="WakePoint" type="Marker3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.8, 0, -1.2)
+
+[node name="Lamp" type="OmniLight3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2.4, 0)
+light_color = Color(1, 0.85, 0.6, 1)
+light_energy = 0.6
+omni_range = 7.0
+
+[node name="Door" type="Area3D" parent="."]
+collision_layer = 0
+collision_mask = 2
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Door"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1, 3.4)
+shape = SubResource("BoxShape3D_door")
+
+[node name="Entrance" type="Marker3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 1.8)

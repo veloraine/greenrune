@@ -1,0 +1,13 @@
+[gd_resource type="Resource" script_class="ClockDef" format=3]
+
+[ext_resource type="Script" path="res://scripts/clock_def.gd" id="1_clock"]
+
+[resource]
+script = ExtResource("1_clock")
+seconds_per_minute = 1.0
+wake_hour = 6
+bedtime_hour = 25
+yawn_message = "*yawn* It's getting late..."
+sleep_question = "Sleep until morning?"
+wake_message = "Day %d"
+wake_fade_seconds = 2.0

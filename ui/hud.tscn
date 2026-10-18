@@ -4,12 +4,51 @@
 [ext_resource type="PackedScene" path="res://ui/debug_console.tscn" id="2_console"]
 [ext_resource type="PackedScene" path="res://ui/vitals_bars.tscn" id="3_bars"]
 [ext_resource type="Script" path="res://scripts/stat_popup.gd" id="4_popup"]
+[ext_resource type="Script" path="res://scripts/clock_label.gd" id="5_clock"]
+[ext_resource type="Script" path="res://scripts/day_fade.gd" id="6_fade"]
+[ext_resource type="Script" path="res://scripts/sleep_prompt.gd" id="7_sleep"]
 
 [node name="HUD" type="CanvasLayer"]
 
 [node name="Hotbar" parent="." instance=ExtResource("1_hotbar")]
 
 [node name="VitalsBars" parent="." instance=ExtResource("3_bars")]
+
+[node name="Clock" type="Label" parent="."]
+anchors_preset = 1
+anchor_left = 1.0
+anchor_right = 1.0
+offset_left = -256.0
+offset_top = 16.0
+offset_right = -16.0
+offset_bottom = 50.0
+grow_horizontal = 0
+theme_override_colors/font_outline_color = Color(0, 0, 0, 1)
+theme_override_constants/outline_size = 6
+theme_override_font_sizes/font_size = 24
+horizontal_alignment = 2
+script = ExtResource("5_clock")
+
+[node name="DayFade" type="ColorRect" parent="."]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+color = Color(0, 0, 0, 1)
+script = ExtResource("6_fade")
+
+[node name="Label" type="Label" parent="DayFade"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_font_sizes/font_size = 32
+horizontal_alignment = 1
+vertical_alignment = 1
 
 [node name="StatPopup" type="Label" parent="."]
 anchors_preset = 10
@@ -23,5 +62,45 @@ theme_override_constants/outline_size = 6
 theme_override_font_sizes/font_size = 24
 horizontal_alignment = 1
 script = ExtResource("4_popup")
+
+[node name="SleepPrompt" type="PanelContainer" parent="."]
+process_mode = 2
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -140.0
+offset_top = -60.0
+offset_right = 140.0
+offset_bottom = 60.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("7_sleep")
+
+[node name="Box" type="VBoxContainer" parent="SleepPrompt"]
+layout_mode = 2
+alignment = 1
+
+[node name="Question" type="Label" parent="SleepPrompt/Box"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 24
+horizontal_alignment = 1
+
+[node name="Buttons" type="HBoxContainer" parent="SleepPrompt/Box"]
+layout_mode = 2
+alignment = 1
+
+[node name="Yes" type="Button" parent="SleepPrompt/Box/Buttons"]
+custom_minimum_size = Vector2(96, 0)
+layout_mode = 2
+theme_override_font_sizes/font_size = 20
+text = "Yes"
+
+[node name="No" type="Button" parent="SleepPrompt/Box/Buttons"]
+custom_minimum_size = Vector2(96, 0)
+layout_mode = 2
+theme_override_font_sizes/font_size = 20
+text = "No"
 
 [node name="DebugConsole" parent="." instance=ExtResource("2_console")]

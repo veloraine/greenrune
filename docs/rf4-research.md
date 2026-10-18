@@ -91,7 +91,7 @@ Details come from the community wiki unless marked otherwise. The official XSEED
 - **Calendar:** 4 seasons of 30 days each ([Fandom: Calendar][w-cal] [community]). The plan's "28 days, RF standard" is the Stardew/Story of Seasons convention, not RF4's.
 - **Daily tick:** crops grow and watered soil dries at 06:00, the time the player wakes ([Fandom: Farming Mechanics][w-farm]).
 - **Day pressure:** the Guardian describes the day as a clock "slowly counting down to midnight", which pushes constant micro-optimization ([Guardian][guardian] [press]).
-- **Not verified:** the real-time length of an in-game minute.
+- **Clock rate and sleep:** see [Time and sleep (researched)](#time-and-sleep-researched).
 
 ### Farming
 - **Fields:** up to 5 fields on the farm, plus 4 "field dungeons" elsewhere. Each field is split into 2x2 sections and holds at most 76 entities. New fields start covered in debris: branches, rocks, stumps and weeds, each cleared by a specific tool. Charging a tool widens its area ([Fandom: Farming Mechanics][w-farm]).
@@ -137,6 +137,16 @@ Details come from the community wiki unless marked otherwise. The official XSEED
 - **Unknown:** the base RP cost of each farm tool, and the exact HP rule for tools. A Neoseeker walkthrough line claims 50% HP per action at 0 RP. Low confidence: one unsourced line.
 - **Unknown: whether a swing that changes nothing costs RP.** This covers hoeing tilled soil, re-watering, and swings at empty ground. The RP bar was measured frame by frame in gameplay video. A normal till or watering lowers it about 0.5 to 1.2 px of a 121 px bar, and it stays flat while planting, walking or refilling ([YouTube: Day 9 farming][yt-day9], 95–111 s and 180–203 s). One re-watering at about 220 s moved the bar 0.15 px or less, a weak hint that it is free. No clip showed the other cases. Greenrune charges RP for every swing until this is checked in-game.
 - **Analysis:** Greenrune applies the crafting rule (1/4 of max HP) to tools too. Its charge bonuses keep RF4's ratio to the base swing, divided by 5, so XP per RP spent stays close to a tap's (see [Phase 1, Step 4](phases/phase-01-farm-loop.md#step-4--rp-hp-skills-weeks-89)).
+
+### Time and sleep (researched)
+- **Clock rate:** 1 real second is 1 game minute, and the clock keeps running indoors ([Gameranbu: time][gr-time] [community], [Netto's Game Room][netto] [press]). Medium-high confidence: two sources agree.
+- **No late-night collapse:** nothing happens at midnight or at any later hour. You can stay up straight through 06:00 ([wikiwiki: Q&A][jp-qa], [wikiwiki: trophies][jp-trophy], [Steam discussion][steam-allnight] [community]). Medium-high confidence: three sources agree.
+- **Day tick without sleep:** crops grow and watered soil dries at 06:00 whether or not you slept ([Fandom: Farming Mechanics][w-farm]). Medium confidence.
+- **Fatigue and Cold:** going to bed by 05:59 avoids both. An all-nighter has a small chance to cause Fatigue, which raises RP costs. Another all-nighter while Fatigued has a small chance to cause Cold, which drains RP over time. There is no money, HP or RP penalty for staying up ([wikiwiki: Q&A][jp-qa], [wikiwiki: combat][jp-combat], [wikiwiki: 小ネタ][jp-tips]). Medium-high confidence: the wiki pages agree, and the Cold trophy needs an all-nighter.
+- **Sleep:** the bed asks before you sleep. Sleep lasts until 06:00 the next morning and fully restores HP, RP and status ailments, even at a 05:59 bedtime ([Gameranbu: sleep][gr-sleep], [Steam discussion][steam-allnight], [Guidestrats: beginner tips][gs-tips]). Medium confidence.
+- **Sleeping skill:** XP once per sleep, only for a bedtime by 00:59. Greenrune makes the player yawn at 01:00 as the cue; that hour is inferred, since only Fandom's Stay-Up Ring page mentions yawning and it gives no time. XP per sleep is small and shrinks to almost nothing at high levels. The skill raises max HP and RP among other stats ([wikiwiki: Q&A][jp-qa], [Fandom: Skills][w-skills]). Medium-high confidence.
+- **Faint:** see [Tool, RP and HP rules](#tool-rp-and-hp-rules-researched). Money is the only penalty.
+- **Lighting:** no source gives the hours of dawn, day, dusk and night. Greenrune's sun is a design default.
 
 ### Combat, magic and bosses
 - **Weapon classes:** short sword, long sword, spear, axe/hammer, dual blades, fists, and staves for magic ([XSEED: Farming & Fighting][xseed-farm], [Fandom: Skills][w-skills]).
@@ -433,7 +443,6 @@ Applied to `docs/plan.md`, `SCOPE.md`, `NOT_IN_SCOPE.md` and `README.md` on 2026
 - RF4's engine (3DS) and the engine of the Special ports: no first-party source found.
 - RF4 team headcount and development duration: only the studio's 36-person size at closure and Manabe's "small team" remark.
 - Worldwide lifetime sales of RF4 or RF4 Special. A GameRevolution article states 300,000 for 3DS with no attribution ([GameRevolution][gamerev]), so I left it out.
-- Real-time length of an RF4 day.
 - Polygon and Destructoid review texts were not retrievable. Their scores are taken from Wikipedia.
 - Metacritic pages blocked direct fetch. Scores come from Wikipedia's reception table, which cites Metacritic.
 
@@ -574,3 +583,11 @@ Applied to `docs/plan.md`, `SCOPE.md`, `NOT_IN_SCOPE.md` and `README.md` on 2026
 [gf-xp]: https://web.archive.org/web/20240214030041/https://gamefaqs.gamespot.com/boards/635388-rune-factory-4/76520117
 [gf-rp]: https://web.archive.org/web/20241214131830/https://gamefaqs.gamespot.com/boards/635388-rune-factory-4/68247636
 [yt-day9]: https://www.youtube.com/watch?v=X8tIKBLawZU
+[gr-time]: https://gameranbu.jp/runefactory4sp/8ecf8ef038e244b04259
+[gr-sleep]: https://gameranbu.jp/runefactory4sp/e83ea8c1dd6c9ddcfbf9
+[netto]: https://www.nettosgameroom.com/2014/04/rune-factory-4-review.html
+[jp-qa]: https://wikiwiki.jp/rf4bu/Q%EF%BC%86A
+[jp-combat]: https://wikiwiki.jp/rf4bu/%E6%88%A6%E9%97%98
+[jp-trophy]: https://wikiwiki.jp/rf4bu/%E3%83%88%E3%83%AD%E3%83%95%E3%82%A3%E3%83%BC
+[steam-allnight]: https://steamcommunity.com/app/1580240/discussions/0/604142859631746666
+[gs-tips]: https://guidestrats.com/rf4-beginner-tips-tricks/

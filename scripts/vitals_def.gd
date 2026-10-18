@@ -11,5 +11,8 @@ extends Resource
 @export var faint_gold_penalty: int = 0
 ## Fraction of max HP the player wakes with after a faint.
 @export_range(0.0, 1.0) var faint_wake_hp: float = 0.0
+## Fractions of max RP and max HP a sleep restores.
+@export_range(0.0, 1.0) var sleep_rp_restore: float = 0.0
+@export_range(0.0, 1.0) var sleep_hp_restore: float = 0.0
 ## Shown when the player wakes after a faint.
 @export var faint_message: String = ""

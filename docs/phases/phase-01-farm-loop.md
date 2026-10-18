@@ -11,7 +11,7 @@ Every checked item must meet the [definition of done](../endgame.md#definition-o
 
 - [x] Folder layout: `scenes/`, `scripts/`, `data/items/`, `data/crops/`, `data/skills/`, `ui/`
 - [x] Input map: move, use tool, next/prev hotbar slot, interact, menu (WASD, Space/left click, E/Q or mouse wheel, F, Tab/Esc)
-- [x] Farm scene from KayKit/Quaternius: house with bed, ~12×12 field, shipping bin, fences, trees (`scenes/farm.tscn`; the bed stands beside the house until the Step 5 interior)
+- [x] Farm scene from KayKit/Quaternius: house with bed, ~12×12 field, shipping bin, fences, trees (`scenes/farm.tscn`; the bed is in the house interior from Step 5)
 - [x] Player: `CharacterBody3D` + KayKit model + ~~Mixamo~~ KayKit built-in idle/run
 - [x] Camera: `SpringArm3D` + `Camera3D` at the fixed RF4 angle, follows the player (`scenes/camera_rig.tscn`)
 - [x] Main scene runs with F5
@@ -45,9 +45,9 @@ Every checked item must meet the [definition of done](../endgame.md#definition-o
 
 - [x] RP and HP bars in the HUD (bottom left, with the numbers; base values in `data/vitals.tres`; RP, HP and skill XP are saved from Step 6)
 - [x] Every tool use spends RP; when RP can't cover a swing, it costs a flat 25% of max HP instead, rounded up, and RP is left alone (`rp_short_hp_cost`; RF4's rule for crafting short of RP; refilling the can and swinging it dry are free)
-- [x] HP 0 → faint, wake next morning with half HP and a gold penalty; RP stays as it was, like RF4 (`faint_wake_hp`) (until the Step 5 day tick, `farm.gd` does day + 1 and wakes the player at `WakePoint` beside the bed)
+- [x] HP 0 → faint, wake next morning with half HP and a gold penalty; RP stays as it was, like RF4 (`faint_wake_hp`) (from Step 5 the faint runs the `DayTick` and wakes the player at `WakePoint` beside the bed indoors)
 - [x] `SkillDef` data: id, name, XP curve (`data/skills/`; the curve is `level_xp`, the total XP for each level)
-- [x] 4–6 skills: tilling, watering, reaping, walking, sleeping (+1 optional) (reaping and sleeping are data only until the sickle and sleep arrive in Step 5)
+- [x] 4–6 skills: tilling, watering, reaping, walking, sleeping (+1 optional) (reaping is data only until the sickle arrives in Step 5; sleeping levels from Step 5)
 - [x] XP per use; level-up popup (walking earns XP per metre walked; a tool swing earns `xp_per_use` plus its charge level's `xp_bonus` once, not per tile, and only if it changed at least one tile's soil; a swing that changes nothing still costs RP and water)
 - [x] Each level lowers that skill's RP cost and raises max RP (`rp_cost_cut_per_level` and `max_rp_per_level` on each `SkillDef`)
 
@@ -60,11 +60,11 @@ Every checked item must meet the [definition of done](../endgame.md#definition-o
 - [ ] `CropDef` data: seed item, growth stages, days per stage, harvest item, sell price
 - [ ] Plant a seed on a tilled tile; `Sprite3D` billboard per stage
   - `Field.Soil` is one value per tile and can't say "planted and watered". Store watered as its own flag, with the crop beside it, and give seeds a way in that isn't `ToolDef.Effect`.
-- [ ] Clock: day runs 06:00–24:00; HUD clock; forced faint at midnight
-- [ ] House interior scene with the bed, entered through the house door
-- [ ] Bed interaction → sleep → next day
-- [ ] `DayTick`: one ordered pipeline at 06:00 (crops grow → soil dries → future hooks)
-- [ ] Sun: rotating `DirectionalLight3D`, gradient sky
+- [x] Clock: day starts at 06:00 and runs on past midnight, like RF4; HUD clock (`data/clock.tres`: 1 real second per game minute, indoors too; no faint at any hour, and staying up until 06:00 runs the `DayTick` with no HP, RP or gold change; the player yawns at 01:00 (`bedtime_hour`); the clock pauses while the sleep prompt or the debug console is open, a design default; console `time hh:mm`, 25:30 is 01:30 that night; the time is saved from Step 6)
+- [x] House interior scene with the bed, entered through the house door (`scenes/house_interior.tscn`, built from boxes; a sub-scene of the farm at x = 100, so one player, HUD and saved position cover both; walk into the barn door to go in, onto the doormat to go out)
+- [x] Bed interaction → sleep → next day (F beside the bed asks `sleep_question`; Yes at any hour sleeps until 06:00 the next morning, fully restores RP and HP (`sleep_rp_restore` and `sleep_hp_restore` in `data/vitals.tres`) and gives the sleeping skill's `xp_per_use` only for a bedtime before 01:00; every new morning opens on a black "Day N" screen that fades out, a design default; the Yes and No labels live in the scene; F does nothing while a tool is charging or swinging)
+- [x] `DayTick`: one ordered pipeline at 06:00 (crops grow → soil dries → future hooks) (`Game.day_tick()`: day + 1 and the wake hour, then `Field.grow_crops()`, empty until crops arrive, then `Field.dry()`, then the `Game.day_started` signal; sleep, the faint and an all-nighter run it)
+- [x] Sun: rotating `DirectionalLight3D`, gradient sky (`scripts/sun.gd`; sunrise 05:00, sunset 20:00; light, ambient and sky colours follow gradients on the `Sun` node in `farm.tscn`, kept on the node so they can be tuned by eye in the inspector, an exception to keeping numbers in `data/`; a design default, since no RF4 source gives the lighting phases)
 - [ ] Harvest: crop level = seed level
 - [ ] Sickle reaping: returns seeds; chance of +1 level (data-tuned)
 - [ ] 2 crops: turnip (fast), potato (slow)
@@ -76,7 +76,7 @@ Every checked item must meet the [definition of done](../endgame.md#definition-o
 - [ ] Shipping bin: sold at 06:00, gold added
 - [ ] Shop NPC: talk → "sell all" menu
 - [ ] Price scales with item level (data-tuned)
-- [ ] Save v2 adds: tiles, crops, RP, HP, skill XP, time, watering-can water; v1 saves still load
+- [ ] Save v2 adds: tiles, crops, RP, HP, skill XP, time (`Game.minute`), watering-can water; v1 saves still load
   - Load the field in place (one bulk replace that emits `changed`), not by swapping `Game.field`: `FarmGrid` stays connected to the old object.
   - A load mid-swing must reset the player, or the swing spends water from a stack that is no longer in the inventory.
 
@@ -89,6 +89,10 @@ Every checked item must meet the [definition of done](../endgame.md#definition-o
 - [ ] Fix every bug found; anything new goes to [NOT_IN_SCOPE.md](../../NOT_IN_SCOPE.md)
 
 **Done when:** the 5-day run has no bugs left open.
+
+**Later, not needed for Step 7:**
+
+- [ ] Fatigue and Cold from all-nighters, like RF4: staying up through 06:00 has a small chance to cause Fatigue (higher RP costs), and another all-nighter while Fatigued has a small chance to cause Cold (RP drains over time); a bedtime by 05:59 avoids both, and sleep cures them (see [RF4 research](../rf4-research.md#time-and-sleep-researched))
 
 ## Phase done when
 

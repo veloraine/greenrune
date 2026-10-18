@@ -11,6 +11,7 @@ func _ready() -> void:
 	modulate.a = 0.0
 	Game.stats.leveled_up.connect(_on_leveled_up)
 	Game.stats.fainted.connect(_on_fainted)
+	Game.yawned.connect(_on_yawned)
 
 
 func _on_leveled_up(skill: SkillDef, level: int) -> void:
@@ -19,6 +20,10 @@ func _on_leveled_up(skill: SkillDef, level: int) -> void:
 
 func _on_fainted() -> void:
 	_show(Game.vitals.faint_message)
+
+
+func _on_yawned() -> void:
+	_show(Game.clock.yawn_message)
 
 
 func _show(message: String) -> void:

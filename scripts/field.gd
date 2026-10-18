@@ -29,3 +29,16 @@ func apply(effect: ToolDef.Effect, cell: Vector2i) -> bool:
 	_soil[cell] = after
 	changed.emit(cell)
 	return true
+
+
+## Step 5b: each crop grows by one day here.
+func grow_crops() -> void:
+	pass
+
+
+## Watered soil dries back to tilled overnight.
+func dry() -> void:
+	for cell in _soil:
+		if _soil[cell] == Soil.WATERED:
+			_soil[cell] = Soil.TILLED
+			changed.emit(cell)
