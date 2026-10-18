@@ -36,7 +36,7 @@ Every checked item must meet the [definition of done](../endgame.md#definition-o
 - [x] `ToolDef` (extends `ItemDef`): RP cost, linked skill, hitbox shape, effect (RP cost and hit area size live per charge level in `ToolCharge`)
 - [x] Swing: animation → hitbox active frames → effect on every tile hit
 - [x] Hoe tills; watering can waters (with a water count, refilled at a pond or well) (15 uses; the pond is east of the field)
-- [x] Hold to charge: wider area, higher RP cost (tap 1 tile, 0.6 s the field's 2×2 section containing the target tile, like Rune Factory's 2×2 sections, 1.2 s the aligned 4×4 block containing it; a bigger level waits for tool upgrades at the forge in Phase 6; the cost is data now and is spent from Step 4)
+- [x] Hold to charge: wider area, higher RP cost (tap 1 tile, 0.6 s the 2×2 around the player, 1.2 s the 4×4 around the player, like Rune Factory 4; a bigger level waits for tool upgrades at the forge in Phase 6; the cost is data now and is spent from Step 4)
 - [ ] "Pop" feedback on every hit: sound, particle, tiny camera shake (hoe done; the watering can still needs a splash sound)
 
 **Done when:** you till and water 20 tiles, charged and uncharged, and every swing shows its hitbox in debug view.

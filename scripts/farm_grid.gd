@@ -51,19 +51,13 @@ func _process(delta: float) -> void:
 		_place(_hitboxes, _no_cells, hitbox_material, 0.04)
 
 
-func world_to_cell(world: Vector3) -> Vector2i:
-	var local: Vector3 = to_local(world)
-	return Vector2i(floori(local.x / tile_size), floori(local.z / tile_size))
-
-
-## Fills out with the field cells a tool hits when it lands at point: the size × size
-## block containing the target tile, aligned to the field's corner like Rune Factory's sections.
-func cells_hit(point: Vector3, charge: ToolCharge, out: Array[Vector2i]) -> void:
+## Fills out with the field cells a tool hits: the size × size block around the player, like
+## Rune Factory 4, or for size 1 the tile at point in front of them. Cells off the field are left out.
+func cells_hit(player: Vector3, point: Vector3, charge: ToolCharge, out: Array[Vector2i]) -> void:
 	out.clear()
-	var target: Vector2i = world_to_cell(point)
-	if not _tiles.has(target):
-		return
-	var origin := Vector2i(floori(target.x / float(charge.size)), floori(target.y / float(charge.size))) * charge.size
+	var center: Vector3 = to_local(point if charge.size == 1 else player) / tile_size
+	var offset: float = (charge.size - 1) / 2.0
+	var origin := Vector2i(floori(center.x - offset), floori(center.z - offset))
 	for y in charge.size:
 		for x in charge.size:
 			var cell: Vector2i = origin + Vector2i(x, y)
