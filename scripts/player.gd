@@ -15,8 +15,6 @@ const TURN_SPEED: float = 10.0
 const ANIM_BLEND: float = 0.2
 ## Speed at which Running_A's planted foot moves backward, measured at floor height (4.0 to 4.4).
 const RUN_ANIM_SPEED: float = 4.0
-## The KayKit model faces +Z, so it is turned around to face the player's forward (-Z).
-const MODEL_YAW: float = PI
 
 var _state: State = State.MOVE
 ## The stack being charged or swung, fixed even if the hotbar selection changes mid-swing.
@@ -30,7 +28,6 @@ var _buffered: bool = false
 var _hand_tool: Node3D
 var _hand_tool_def: ToolDef
 
-@onready var _model: Node3D = $Model
 @onready var _anim: AnimationPlayer = $Model/AnimationPlayer
 @onready var _hand: Node3D = $Model/Rig/Skeleton3D/handslot_r
 
@@ -134,7 +131,6 @@ func _charge(delta: float) -> void:
 	_swing_level = charge_level()
 	_state = State.SWING
 	_impact_sent = false
-	_model.rotation.y = MODEL_YAW + deg_to_rad(tool.aim_yaw_degrees)
 	_anim.play(tool.swing_animation, ANIM_BLEND, tool.swing_speed)
 	# play() continues a clip that is still running, which would skip straight past the impact.
 	_anim.seek(0.0, true)
@@ -148,7 +144,6 @@ func _swing() -> void:
 	if _anim.current_animation != tool.swing_animation or (_impact_sent and anim_time >= _swing_end_time):
 		_state = State.MOVE
 		_stack = null
-		_model.rotation.y = MODEL_YAW
 		if _hand_tool:
 			_hand_tool.visible = false
 		return

@@ -17,8 +17,6 @@ enum Effect { TILL, WATER }
 @export var swing_speed: float = 1.0
 ## Seconds into swing_animation where the tool hits.
 @export var impact_time: float = 0.5
-## Turns the body during the swing so the tool lands straight ahead.
-@export var aim_yaw_degrees: float = 0.0
 ## Metres ahead of the player where the tool lands.
 @export var reach: float = 1.0
 

@@ -94,7 +94,7 @@ Use this section to log anything weird, things you learned, or "wouldn't it be c
 
 ### Carry into Phase 1 (from the Week 8 review)
 
-- ~~The axe head lands about 0.6 m to the player's right of the tile that gets tilled.~~ Done in Phase 1 Step 3: the tool's `aim_yaw_degrees` turns the body 35° during the chop.
+- ~~The axe head lands about 0.6 m to the player's right of the tile that gets tilled.~~ Done in Phase 1 Step 3: a real hoe model, swung overhead with `1H_Melee_Attack_Chop` and angled in the hand so the blade lands straight ahead.
 - ~~The tool target is one world point.~~ Done: `FarmGrid.cells_hit()` feeds both the highlight and the effect.
 - ~~A press during swing recovery is dropped.~~ Done: the player buffers it.
 - ~~Move the hit-stop to an autoload.~~ Done: `HitStop`.

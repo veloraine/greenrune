@@ -5,4 +5,4 @@
 [node name="Hoe" type="Node3D"]
 
 [node name="Model" parent="." instance=ExtResource("1_model")]
-transform = Transform3D(-5.8, 0, 0, 0, 5.8, 0, 0, 0, -5.8, 0, -0.35, 0)
+transform = Transform3D(-5.5880666, 1.4498913, 0.55797, 0.45655537, 3.523773, -4.5841665, -1.4849488, -4.3727374, -3.5091443, -0.08749342, -0.21264152, 0.2638723)
