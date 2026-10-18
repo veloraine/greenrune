@@ -31,10 +31,12 @@ assets/
 
 ### Quaternius Ultimate Nature
 
-- Source: <https://quaternius.com/>
-- License: CC0
-- Location: `environment/quaternius-nature/`
-- Used for: trees, rocks, grass, terrain props
+- Source: <https://quaternius.com/packs/ultimatenature.html> (the pack's official Google Drive, `FBX/` folder)
+- License: CC0, see `environment/quaternius-nature/License.txt`
+- Location: `environment/quaternius-nature/` (only `CommonTree_1`–`3`, `Grass` and `Grass_Short`; the pack has 150 models)
+- Used for: trees and grass in the baseline scene
+- Format: FBX, because the pack ships no glTF. Godot 4 imports FBX natively.
+- Ours: the `*_cel.tres` materials. Each `.fbx.import` maps the model's Wood/Green/DarkGreen materials to them, so every instance is cel-shaded.
 
 ## Animations
 

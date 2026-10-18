@@ -31,7 +31,7 @@ Target: ~8 hrs/week. Adjust pace to your reality; don't crunch.
 
 - [x] Download [KayKit Adventurers](https://kaylousberg.com/game-assets) → `assets/characters/`
 - [ ] Download [KayKit Dungeon Pack](https://kaylousberg.com/game-assets) → `assets/environment/` (deferred to Phase 1: unused in Phase 0, and its default import makes 203 separate texture copies)
-- [ ] Download [Quaternius Ultimate Nature](https://quaternius.com/) → `assets/environment/`
+- [x] Download [Quaternius Ultimate Nature](https://quaternius.com/) → `assets/environment/` (only the 5 grass and tree models the baseline scene uses)
 - [x] ~~Complete [Antz: From Mixamo to Godot](https://antzgames.github.io/godot/demo/tutorial/Mixamo/)~~ Not needed: KayKit Adventurers ships 76 built-in animations (Idle, Walking_A, Running_A, 2H_Melee_Attack_Chop, ...). `scenes/player.tscn` uses them.
 
 **Exit criterion:** a KayKit chibi character is animated with a Mixamo walk/idle in a Godot scene.
@@ -40,15 +40,15 @@ Target: ~8 hrs/week. Adjust pace to your reality; don't crunch.
 
 - [x] Download [Complete Cel Shader for Godot 4](https://godotshaders.com/shader/complete-cel-shader-for-godot-4/) → `assets/shaders/`
 - [ ] Read [Supermatrix Studio: Godot 4 Anime Shader Guide](https://supermatrix.studio/blog/creating-a-stylized-3D-cel-shader-in-godot-4-from-scratch) (optional)
-- [ ] Apply cel shader to test scene with KayKit character + Quaternius grass
-- [ ] Build `baseline_scene.tscn`:
+- [x] Apply cel shader to test scene with KayKit character + Quaternius grass
+- [x] Build `baseline_scene.tscn`:
   - KayKit Adventurer character
-  - Mixamo idle/walk animation
+  - ~~Mixamo~~ KayKit built-in idle/run animation (see Week 6)
   - Quaternius grass patch + 2–3 trees
   - Cel shader on everything
   - Camera3D + SpringArm3D at semi-top-down RF4 angle
   - DirectionalLight3D for sun
-- [ ] Take screenshot, commit to repo as `docs/baseline_screenshot.png`
+- [x] Take screenshot, commit to repo as `docs/baseline_screenshot.png`
 
 **Exit criterion:** `baseline_scene.tscn` exists, looks RF4-ish, and you understand every node in it.
 
@@ -87,3 +87,4 @@ Use this section to log anything weird, things you learned, or "wouldn't it be c
 - The tool target is one world point. Phase 1 needs grid cells from one function shared by the target highlight and the effect, so charge areas work.
 - A press during swing recovery is dropped. Consider input buffering.
 - Move the hit-stop to an autoload so scene changes can't leave `Engine.time_scale` at 0.
+- The baseline scene's trees have no collision, so the player walks through trunks. Add a trunk collider (Week 7 review).
