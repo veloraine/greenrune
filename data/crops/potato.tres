@@ -1,0 +1,14 @@
+[gd_resource type="Resource" script_class="CropDef" format=3]
+
+[ext_resource type="Script" path="res://scripts/crop_def.gd" id="1_crop"]
+[ext_resource type="Resource" path="res://data/items/potato_seed.tres" id="2_seed"]
+[ext_resource type="Resource" path="res://data/items/potato.tres" id="3_harvest"]
+
+[resource]
+script = ExtResource("1_crop")
+seed_item = ExtResource("2_seed")
+harvest = ExtResource("3_harvest")
+stage_days = Array[int]([3, 4])
+harvest_count = 3
+dry_growth = 0.5
+reap_level_up_chance = 0.5

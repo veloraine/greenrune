@@ -10,8 +10,12 @@ extends Node3D
 @export var hitbox_material: Material
 
 const HITBOX_SECONDS: float = 0.3
+const CROP_HEIGHT: float = 0.35
 
 var _tiles: Dictionary[Vector2i, MeshInstance3D] = {}
+# One billboard per tile, made once and shown only while a crop grows there.
+# A placeholder Label3D until the stage sprites are painted.
+var _crops: Dictionary[Vector2i, Label3D] = {}
 var _soil_materials: Dictionary[Field.Soil, Material] = {}
 # Reused quads for the target highlight and the debug hitbox, so nothing is allocated per frame.
 var _targets: Array[MeshInstance3D] = []
@@ -39,6 +43,12 @@ func _ready() -> void:
 			tile.position = _cell_center(cell)
 			add_child(tile)
 			_tiles[cell] = tile
+			var crop := Label3D.new()
+			crop.billboard = BaseMaterial3D.BILLBOARD_ENABLED
+			crop.pixel_size = 0.003
+			crop.position = _cell_center(cell) + Vector3(0, CROP_HEIGHT, 0)
+			add_child(crop)
+			_crops[cell] = crop
 			_on_soil_changed(cell)
 	Game.field.changed.connect(_on_soil_changed)
 
@@ -53,13 +63,13 @@ func _process(delta: float) -> void:
 
 ## Fills out with the field cells a tool hits: the size × size block around the player, like
 ## Rune Factory 4, or for size 1 the tile at point in front of them. Cells off the field are left out.
-func cells_hit(player: Vector3, point: Vector3, charge: ToolCharge, out: Array[Vector2i]) -> void:
+func cells_hit(player: Vector3, point: Vector3, size: int, out: Array[Vector2i]) -> void:
 	out.clear()
-	var center: Vector3 = to_local(point if charge.size == 1 else player) / tile_size
-	var offset: float = (charge.size - 1) / 2.0
+	var center: Vector3 = to_local(point if size == 1 else player) / tile_size
+	var offset: float = (size - 1) / 2.0
 	var origin := Vector2i(floori(center.x - offset), floori(center.z - offset))
-	for y in charge.size:
-		for x in charge.size:
+	for y in size:
+		for x in size:
 			var cell: Vector2i = origin + Vector2i(x, y)
 			if _tiles.has(cell):
 				out.append(cell)
@@ -92,5 +102,10 @@ func _cell_center(cell: Vector2i) -> Vector3:
 
 
 func _on_soil_changed(cell: Vector2i) -> void:
-	if _tiles.has(cell):
-		_tiles[cell].material_override = _soil_materials[Game.field.soil(cell)]
+	if not _tiles.has(cell):
+		return
+	_tiles[cell].material_override = _soil_materials[Game.field.soil(cell)]
+	var crop: Field.Crop = Game.field.crop(cell)
+	_crops[cell].visible = crop != null
+	if crop:
+		_crops[cell].text = "%s\n%d/%d" % [crop.def.harvest.display_name, crop.stage() + 1, crop.def.stage_days.size() + 1]

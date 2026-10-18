@@ -148,6 +148,17 @@ Details come from the community wiki unless marked otherwise. The official XSEED
 - **Faint:** see [Tool, RP and HP rules](#tool-rp-and-hp-rules-researched). Money is the only penalty.
 - **Lighting:** no source gives the hours of dawn, day, dusk and night. Greenrune's sun is a design default.
 
+### Crops (researched)
+- **Sowing:** seeds are a stack, one seed per plot. A tap sows the tilled plot you face, and a charged sow covers one 2x2 section of the field. Seeds can't go on untilled soil ([GameFAQs: walkthrough][gf-walk], [Fandom: Farming Mechanics][w-farm] [community]). High confidence. There is no 3x3 around the player. The RP bar stays flat while planting ([YouTube: Day 9 farming][yt-day9]), so Greenrune makes sowing free.
+- **Turnip and potato:** the turnip takes 3 days, yields 2 and sells for 30G at level 1, from a 10G seed. The potato takes 7 days, yields 3 and sells for 90G, from an 80G seed. Neither regrows ([Fandom: Crops][w-crops], [Fandom: Turnip][w-turnip], [Fandom: Potato][w-potato]). High confidence. No source gives the number of visual stages or the days in each, so Greenrune's 3 stages are a design default.
+- **Water:** sources conflict. The Japanese wiki says an unwatered day still grows at 0.5x, and lowers the crop's level and yield ([wikiwiki: 農作業][jp-farm]). Fandom's Farming page says growth "may be slowed", and its Crops page says no growth at all ([Fandom: Farming Mechanics][w-farm], [Fandom: Crops][w-crops]). Greenrune grows an unwatered crop at 0.5x and leaves out the level and yield loss. A crop can wither only after it changes colour at 06:00 and then goes a day unwatered ([Fandom: Farming Mechanics][w-farm]). Medium confidence.
+- **Season factor:** in season is 1.5x in every source. Out of season is 0.75x on Fandom's Farming page and 0.5x on the Japanese wiki ([wikiwiki: 農作業][jp-farm]).
+- **Harvest by hand:** the player lifts the item overhead, then puts it in the Rucksack or throws it ([GameFAQs: walkthrough][gf-walk]). That crops work this way is inferred: the source describes held items in general.
+- **Level:** a crop starts at the seed's level. Soil quality can raise it while it grows, and missed watering can lower it ([Fandom: Farming Mechanics][w-farm], [wikiwiki: 農作業][jp-farm]). Phase 1 has no soil stats, so crop level = seed level.
+- **Sickle:** a ripe crop gives no harvest but a guaranteed seed, "often higher level" ([Fandom: Farming Mechanics][w-farm]). Fandom's Crops page says one seed, one level higher ([Fandom: Crops][w-crops]). The Japanese wiki says the sickle tier caps the seed level: Lv3 for the cheapest sickle, up to Lv10 for platinum ([wikiwiki: 農作業][jp-farm]). A sprouted crop that isn't ripe is destroyed. A seed that hasn't sprouted is untouched, which is inferred from the same page. Seeds back from an unripe crop: none found, inferred none.
+- **XP:** every farm chore trains one Farming skill. Harvest or pickup gives 2 XP, sowing 15 per seed, a sickled crop 15, tilling 3 and watering 4 ([GameFAQs: skill XP][gf-xp]). Medium confidence: one player's list. Greenrune's reaping skill takes the sickle's 15, divided by 5 like the hoe and can. Sowing and hand-harvest give no XP yet, because Greenrune splits Farming into tilling, watering and reaping, and neither fits.
+- **Unknown:** the sickle's RP cost and charge areas. Greenrune copies the hoe's.
+
 ### Combat, magic and bosses
 - **Weapon classes:** short sword, long sword, spear, axe/hammer, dual blades, fists, and staves for magic ([XSEED: Farming & Fighting][xseed-farm], [Fandom: Skills][w-skills]).
 - **Rune Abilities:** weapon skills and elemental, healing and "music" spells, used from equip slots ([Fandom: Rune Abilities][w-rabil]).
@@ -591,3 +602,7 @@ Applied to `docs/plan.md`, `SCOPE.md`, `NOT_IN_SCOPE.md` and `README.md` on 2026
 [jp-trophy]: https://wikiwiki.jp/rf4bu/%E3%83%88%E3%83%AD%E3%83%95%E3%82%A3%E3%83%BC
 [steam-allnight]: https://steamcommunity.com/app/1580240/discussions/0/604142859631746666
 [gs-tips]: https://guidestrats.com/rf4-beginner-tips-tricks/
+[gf-walk]: https://web.archive.org/web/20240117214229/https://gamefaqs.gamespot.com/3ds/635388-rune-factory-4/faqs/68010
+[w-turnip]: https://runefactory.fandom.com/wiki/Turnip
+[w-potato]: https://runefactory.fandom.com/wiki/Potato
+[jp-farm]: https://wikiwiki.jp/rf4bu/%E8%BE%B2%E4%BD%9C%E6%A5%AD

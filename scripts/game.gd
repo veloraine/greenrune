@@ -7,9 +7,12 @@ signal yawned
 
 const ITEMS_DIR: String = "res://data/items/"
 const SKILLS_DIR: String = "res://data/skills/"
+const CROPS_DIR: String = "res://data/crops/"
 
 var items: Dictionary[StringName, ItemDef] = {}
 var skills: Dictionary[StringName, SkillDef] = {}
+## Keyed by the seed item's id.
+var crops: Dictionary[StringName, CropDef] = {}
 var vitals: VitalsDef = load("res://data/vitals.tres")
 var clock: ClockDef = load("res://data/clock.tres")
 var stats: Stats
@@ -36,6 +39,10 @@ func _ready() -> void:
 		if file.ends_with(".tres"):
 			var skill: SkillDef = load(SKILLS_DIR + file)
 			skills[skill.id] = skill
+	for file in ResourceLoader.list_directory(CROPS_DIR):
+		if file.ends_with(".tres"):
+			var crop: CropDef = load(CROPS_DIR + file)
+			crops[crop.seed_item.id] = crop
 	stats = Stats.new(vitals, skills)
 
 

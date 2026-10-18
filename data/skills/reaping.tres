@@ -7,6 +7,6 @@ script = ExtResource("1_skill")
 id = &"reaping"
 display_name = "Reaping"
 level_xp = Array[int]([10, 30, 60, 100, 150, 210, 280, 360, 450])
-xp_per_use = 1.0
+xp_per_use = 3.0
 rp_cost_cut_per_level = 0.05
 max_rp_per_level = 10

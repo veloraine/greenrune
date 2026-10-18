@@ -34,6 +34,18 @@ func add(item: ItemDef, level: int, count: int) -> int:
 	return count
 
 
+## How many of item at level would fit.
+func room_for(item: ItemDef, level: int) -> int:
+	level = clampi(level, 1, ItemStack.MAX_LEVEL)
+	var room: int = 0
+	for stack in slots:
+		if stack == null:
+			room += item.max_stack
+		elif stack.item == item and stack.level == level:
+			room += item.max_stack - stack.count
+	return room
+
+
 func select(index: int) -> void:
 	selected = posmod(index, HOTBAR_SIZE)
 	changed.emit()

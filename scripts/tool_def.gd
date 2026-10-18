@@ -1,7 +1,7 @@
 class_name ToolDef
 extends ItemDef
 
-enum Effect { TILL, WATER }
+enum Effect { TILL, WATER, REAP }
 
 @export var effect: Effect
 ## The skill that gains XP from this tool.

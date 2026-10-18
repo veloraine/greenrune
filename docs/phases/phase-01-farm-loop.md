@@ -57,26 +57,26 @@ Every checked item must meet the [definition of done](../endgame.md#definition-o
 
 ## Step 5 — Crops, day tick, sleep (weeks 10–12)
 
-- [ ] `CropDef` data: seed item, growth stages, days per stage, harvest item, sell price
-- [ ] Plant a seed on a tilled tile; `Sprite3D` billboard per stage
-  - `Field.Soil` is one value per tile and can't say "planted and watered". Store watered as its own flag, with the crop beside it, and give seeds a way in that isn't `ToolDef.Effect`.
+- [x] `CropDef` data: seed item, growth stages, days per stage, harvest item, sell price (`data/crops/`; `stage_days` holds the days in each stage before ripe, so `[1, 2]` is 3 stages over 3 days; the sell price stays on the harvest `ItemDef`, so it has one home; `Game.crops` is keyed by seed id)
+- [ ] Plant a seed on a tilled tile; `Sprite3D` billboard per stage (sowing works: like RF4, Space with seeds selected sows one seed on the tilled, empty tile in front, not a 3×3 around the player, and costs no RP; the billboards are placeholder `Label3D`s reading "Turnip 2/3" until the stage sprites are painted; still to do: the sprites, and RF4's charged sow over a 2×2 section)
+  - Done: `Field.Soil` could not say "planted and watered", so now `Field` keeps a `Plot` per tilled tile with its own `watered` flag and its `Crop` (def, level, days), so an untilled tile can't be watered or sown; `Field.soil()` now only says how the ground looks. Seeds come in through `Field.sow()`.
 - [x] Clock: day starts at 06:00 and runs on past midnight, like RF4; HUD clock (`data/clock.tres`: 1 real second per game minute, indoors too; no faint at any hour, and staying up until 06:00 runs the `DayTick` with no HP, RP or gold change; the player yawns at 01:00 (`bedtime_hour`); the clock pauses while the sleep prompt or the debug console is open, a design default; console `time hh:mm`, 25:30 is 01:30 that night; the time is saved from Step 6)
 - [x] House interior scene with the bed, entered through the house door (`scenes/house_interior.tscn`, built from boxes; a sub-scene of the farm at x = 100, so one player, HUD and saved position cover both; walk into the barn door to go in, onto the doormat to go out)
 - [x] Bed interaction → sleep → next day (F beside the bed asks `sleep_question`; Yes at any hour sleeps until 06:00 the next morning, fully restores RP and HP (`sleep_rp_restore` and `sleep_hp_restore` in `data/vitals.tres`) and gives the sleeping skill's `xp_per_use` only for a bedtime before 01:00; every new morning opens on a black "Day N" screen that fades out, a design default; the Yes and No labels live in the scene; F does nothing while a tool is charging or swinging)
 - [x] `DayTick`: one ordered pipeline at 06:00 (crops grow → soil dries → future hooks) (`Game.day_tick()`: day + 1 and the wake hour, then `Field.grow_crops()`, empty until crops arrive, then `Field.dry()`, then the `Game.day_started` signal; sleep, the faint and an all-nighter run it)
 - [x] Sun: rotating `DirectionalLight3D`, gradient sky (`scripts/sun.gd`; sunrise 05:00, sunset 20:00; light, ambient and sky colours follow gradients on the `Sun` node in `farm.tscn`, kept on the node so they can be tuned by eye in the inspector, an exception to keeping numbers in `data/`; a design default, since no RF4 source gives the lighting phases)
-- [ ] Harvest: crop level = seed level
-- [ ] Sickle reaping: returns seeds; chance of +1 level (data-tuned)
-- [ ] 2 crops: turnip (fast), potato (slow)
+- [x] Harvest: crop level = seed level (F on a ripe crop in front puts `harvest_count` of it in the bag at the crop's level, and the soil stays tilled; RF4 lifts the crop overhead first, which waits for a carry state; a crop stays put unless all of it fits, and a sickled ripe crop stays put when its seed has no room)
+- [x] Sickle reaping: returns seeds; chance of +1 level (data-tuned) (`data/items/sickle.tres`, a `ToolDef` with the hoe's charges and RP; like RF4, a ripe crop gives no harvest but one seed, a level higher at `reap_level_up_chance`, 0.5; a sprouted unripe crop is destroyed with no seed; an unsprouted seed is untouched; XP goes to reaping once per swing that changes a crop; no hand model yet; RF4's sickle-tier cap on seed level waits for tool upgrades in Phase 6)
+- [x] 2 crops: turnip (fast), potato (slow) (RF4's numbers: turnip 3 days, 2 per crop, 30G; potato 7 days, 3 per crop, 90G; an unwatered day grows a crop by `dry_growth`, half a day, like the Japanese wiki's 0.5x; RF4's level and yield loss for a dry day and withering are left out; console `day [n]` runs the `DayTick` to skip days)
 
-**Done when:** a planted turnip grows through its 3 stages over several sleeps; reaping a ripe crop sometimes returns higher-level seeds.
+**Done when:** a planted turnip grows through its 3 stages over 3 watered sleeps; reaping a ripe crop sometimes returns higher-level seeds.
 
 ## Step 6 — Selling, save v2 (weeks 13–14)
 
 - [ ] Shipping bin: sold at 06:00, gold added
 - [ ] Shop NPC: talk → "sell all" menu
 - [ ] Price scales with item level (data-tuned)
-- [ ] Save v2 adds: tiles, crops, RP, HP, skill XP, time (`Game.minute`), watering-can water; v1 saves still load
+- [ ] Save v2 adds: tiles (tilled, watered), crops (seed id, level, days), RP, HP, skill XP, time (`Game.minute`), watering-can water; v1 saves still load
   - Load the field in place (one bulk replace that emits `changed`), not by swapping `Game.field`: `FarmGrid` stays connected to the old object.
   - A load mid-swing must reset the player, or the swing spends water from a stack that is no longer in the inventory.
 
