@@ -66,8 +66,7 @@ func add_xp(id: StringName, amount: float) -> void:
 		changed.emit()
 
 
-## Sets RP and HP to these fractions of their max.
-func recover(rp_fraction: float, hp_fraction: float) -> void:
+## Sets HP to this fraction of its max. RP is left as it is.
+func recover(hp_fraction: float) -> void:
 	hp = maxi(1, roundi(_vitals.max_hp * hp_fraction))
-	rp = roundi(max_rp() * rp_fraction)
 	changed.emit()

@@ -8,6 +8,5 @@ base_max_rp = 300
 max_hp = 50
 rp_short_hp_cost = 0.25
 faint_gold_penalty = 100
-faint_wake_rp = 0.5
 faint_wake_hp = 0.5
 faint_message = "You fainted, and woke up at home"

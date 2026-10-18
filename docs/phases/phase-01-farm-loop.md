@@ -45,7 +45,7 @@ Every checked item must meet the [definition of done](../endgame.md#definition-o
 
 - [x] RP and HP bars in the HUD (bottom left, with the numbers; base values in `data/vitals.tres`; RP, HP and skill XP are saved from Step 6)
 - [x] Every tool use spends RP; when RP can't cover a swing, it costs a flat 25% of max HP instead, rounded up, and RP is left alone (`rp_short_hp_cost`; RF4's rule for crafting short of RP; refilling the can and swinging it dry are free)
-- [x] HP 0 → faint, wake next morning with half HP, half RP and a gold penalty (`faint_wake_hp`, `faint_wake_rp`) (until the Step 5 day tick, `farm.gd` does day + 1 and wakes the player at `WakePoint` beside the bed)
+- [x] HP 0 → faint, wake next morning with half HP and a gold penalty; RP stays as it was, like RF4 (`faint_wake_hp`) (until the Step 5 day tick, `farm.gd` does day + 1 and wakes the player at `WakePoint` beside the bed)
 - [x] `SkillDef` data: id, name, XP curve (`data/skills/`; the curve is `level_xp`, the total XP for each level)
 - [x] 4–6 skills: tilling, watering, reaping, walking, sleeping (+1 optional) (reaping and sleeping are data only until the sickle and sleep arrive in Step 5)
 - [x] XP per use; level-up popup (walking earns XP per metre walked; a tool swing earns `xp_per_use` plus its charge level's `xp_bonus` once, not per tile, and only if it changed at least one tile's soil; a swing that changes nothing still costs RP and water)

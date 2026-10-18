@@ -129,12 +129,13 @@ Details come from the community wiki unless marked otherwise. The official XSEED
 
 ### Tool, RP and HP rules (researched)
 - **Short on RP:** crafting with too little RP costs 1/4 of max HP, whatever the RP cost ([wikiwiki: 小ネタ][jp-tips] [community]). Medium confidence: one fan wiki, stated plainly.
-- **Fainting:** you wake at the clinic with 50% HP. A treatment fee comes out of the money you carry and can drop it to 0G. Friendship is not lost ([wikiwiki: 小ネタ][jp-tips], [Guidestrats: clinic][gs-clinic] [community]). Medium-high confidence: two sources agree.
+- **Fainting:** you wake at the clinic with 50% HP. A treatment fee comes out of the money you carry and can drop it to 0G. Friendship is not lost ([wikiwiki: 小ネタ][jp-tips], [Guidestrats: clinic][gs-clinic] [community]). Medium-high confidence: two sources agree. RP is not restored; you keep what you had. That comes from the user's own RF4 play, not a written source.
 - **4th charge stage:** costs 0 RP and gives no XP ([wikiwiki: 小ネタ][jp-tips]). Medium confidence.
 - **Skill XP per action, not per tile:** the hoe gives 3 XP per action, with charge bonuses of 30 / 80 / 100. The watering can gives 4 XP per action, with charge bonuses of 20 / 40 / 60 ([GameFAQs: skill XP][gf-xp] [community]). Medium confidence: memory-read values from one player, not cross-checked.
 - **Watering XP:** only watering cultivated soil gives XP ([GameFAQs: skill XP][gf-xp]). Medium confidence.
 - **RP regen:** standing still slowly regenerates RP. A bath or sleep restores it fully ([GameFAQs: RP][gf-rp] [community]). Medium confidence.
 - **Unknown:** the base RP cost of each farm tool, and the exact HP rule for tools. A Neoseeker walkthrough line claims 50% HP per action at 0 RP. Low confidence: one unsourced line.
+- **Unknown: whether a swing that changes nothing costs RP.** This covers hoeing tilled soil, re-watering, and swings at empty ground. The RP bar was measured frame by frame in gameplay video. A normal till or watering lowers it about 0.5 to 1.2 px of a 121 px bar, and it stays flat while planting, walking or refilling ([YouTube: Day 9 farming][yt-day9], 95–111 s and 180–203 s). One re-watering at about 220 s moved the bar 0.15 px or less, a weak hint that it is free. No clip showed the other cases. Greenrune charges RP for every swing until this is checked in-game.
 - **Analysis:** Greenrune applies the crafting rule (1/4 of max HP) to tools too. Its charge bonuses keep RF4's ratio to the base swing, divided by 5, so XP per RP spent stays close to a tap's (see [Phase 1, Step 4](phases/phase-01-farm-loop.md#step-4--rp-hp-skills-weeks-89)).
 
 ### Combat, magic and bosses
@@ -510,6 +511,7 @@ Applied to `docs/plan.md`, `SCOPE.md`, `NOT_IN_SCOPE.md` and `README.md` on 2026
 - Guidestrats, RF4 clinic: https://guidestrats.com/rf4-clinic/
 - GameFAQs RF4 board, skill XP per action thread (archived): https://web.archive.org/web/20240214030041/https://gamefaqs.gamespot.com/boards/635388-rune-factory-4/76520117
 - GameFAQs RF4 board, RP regeneration thread (archived): https://web.archive.org/web/20241214131830/https://gamefaqs.gamespot.com/boards/635388-rune-factory-4/68247636
+- YouTube, RF4 Day 9 farming (RP bar measured frame by frame): https://www.youtube.com/watch?v=X8tIKBLawZU
 
 [xseed-new]: https://runefactory.com/rf4/whats-new.html
 [xseed-feat]: https://runefactory.com/rf4/feat.html
@@ -571,3 +573,4 @@ Applied to `docs/plan.md`, `SCOPE.md`, `NOT_IN_SCOPE.md` and `README.md` on 2026
 [gs-clinic]: https://guidestrats.com/rf4-clinic/
 [gf-xp]: https://web.archive.org/web/20240214030041/https://gamefaqs.gamespot.com/boards/635388-rune-factory-4/76520117
 [gf-rp]: https://web.archive.org/web/20241214131830/https://gamefaqs.gamespot.com/boards/635388-rune-factory-4/68247636
+[yt-day9]: https://www.youtube.com/watch?v=X8tIKBLawZU
