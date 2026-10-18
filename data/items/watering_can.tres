@@ -7,18 +7,18 @@
 [sub_resource type="Resource" id="ToolCharge_0"]
 script = ExtResource("2_charge")
 hold_seconds = 0.0
-rp_cost = 1
+rp_cost = 4
 
 [sub_resource type="Resource" id="ToolCharge_1"]
 script = ExtResource("2_charge")
 hold_seconds = 0.6
-rp_cost = 2
+rp_cost = 8
 size = 2
 
 [sub_resource type="Resource" id="ToolCharge_2"]
 script = ExtResource("2_charge")
 hold_seconds = 1.2
-rp_cost = 4
+rp_cost = 16
 size = 4
 
 [resource]

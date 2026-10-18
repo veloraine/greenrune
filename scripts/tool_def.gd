@@ -4,7 +4,7 @@ extends ItemDef
 enum Effect { TILL, WATER }
 
 @export var effect: Effect
-## The skill that gains XP from this tool (Step 4).
+## The skill that gains XP from this tool.
 @export var skill: StringName
 ## Index 0 is a tap; each later level needs a longer hold.
 @export var charges: Array[ToolCharge] = []

@@ -1,0 +1,11 @@
+[gd_resource type="Resource" script_class="SkillDef" format=3]
+
+[ext_resource type="Script" path="res://scripts/skill_def.gd" id="1_skill"]
+
+[resource]
+script = ExtResource("1_skill")
+id = &"walking"
+display_name = "Walking"
+level_xp = Array[int]([10, 30, 60, 100, 150, 210, 280, 360, 450])
+xp_per_use = 0.05
+max_rp_per_level = 5

@@ -2,9 +2,26 @@
 
 [ext_resource type="PackedScene" path="res://ui/hotbar.tscn" id="1_hotbar"]
 [ext_resource type="PackedScene" path="res://ui/debug_console.tscn" id="2_console"]
+[ext_resource type="PackedScene" path="res://ui/vitals_bars.tscn" id="3_bars"]
+[ext_resource type="Script" path="res://scripts/stat_popup.gd" id="4_popup"]
 
 [node name="HUD" type="CanvasLayer"]
 
 [node name="Hotbar" parent="." instance=ExtResource("1_hotbar")]
+
+[node name="VitalsBars" parent="." instance=ExtResource("3_bars")]
+
+[node name="StatPopup" type="Label" parent="."]
+anchors_preset = 10
+anchor_right = 1.0
+offset_top = 96.0
+offset_bottom = 130.0
+grow_horizontal = 2
+theme_override_colors/font_color = Color(1, 0.92, 0.55, 1)
+theme_override_colors/font_outline_color = Color(0, 0, 0, 1)
+theme_override_constants/outline_size = 6
+theme_override_font_sizes/font_size = 24
+horizontal_alignment = 1
+script = ExtResource("4_popup")
 
 [node name="DebugConsole" parent="." instance=ExtResource("2_console")]

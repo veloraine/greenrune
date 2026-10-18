@@ -1,6 +1,6 @@
 extends VBoxContainer
 
-const HELP: String = "add <item> [level] [count] | inv | save | load"
+const HELP: String = "add <item> [level] [count] | inv | save | load | rp <n> | hp <n> | xp <skill> <amount> | skills"
 
 var _was_paused: bool = false
 
@@ -53,6 +53,23 @@ func _run(args: PackedStringArray) -> String:
 		"load":
 			var err: Error = SaveGame.read(get_tree())
 			return "Loaded" if err == OK else "Load failed: %s" % error_string(err)
+		"rp":
+			if args.size() > 1:
+				Game.stats.rp = clampi(int(args[1]), 0, Game.stats.max_rp())
+				Game.stats.changed.emit()
+			return _skills()
+		"hp":
+			if args.size() > 1:
+				Game.stats.hp = clampi(int(args[1]), 0, Game.vitals.max_hp)
+				Game.stats.changed.emit()
+			return _skills()
+		"xp":
+			if args.size() < 3 or not Game.skills.has(StringName(args[1])):
+				return "Skills: %s" % ", ".join(Game.skills.keys())
+			Game.stats.add_xp(StringName(args[1]), float(args[2]))
+			return _skills()
+		"skills":
+			return _skills()
 	return HELP
 
 
@@ -73,4 +90,11 @@ func _list() -> String:
 		var stack: ItemStack = Game.inventory.slots[i]
 		if stack:
 			lines.append("%2d: %s Lv%d x%d" % [i, stack.item.id, stack.level, stack.count])
+	return "\n".join(lines)
+
+
+func _skills() -> String:
+	var lines: PackedStringArray = ["RP %d/%d, HP %d/%d" % [Game.stats.rp, Game.stats.max_rp(), Game.stats.hp, Game.vitals.max_hp]]
+	for id in Game.skills:
+		lines.append("%s Lv%d (%.1f XP)" % [id, Game.stats.level(id), Game.stats.xp(id)])
 	return "\n".join(lines)

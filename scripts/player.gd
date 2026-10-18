@@ -47,6 +47,9 @@ func _physics_process(delta: float) -> void:
 		velocity.y -= GRAVITY * delta
 
 	move_and_slide()
+	var moved: Vector3 = get_position_delta()
+	if moved.x != 0.0 or moved.z != 0.0:
+		Game.stats.add_xp(&"walking", Vector2(moved.x, moved.z).length() * Game.skills[&"walking"].xp_per_use)
 
 
 ## The tool being used, or else the one in the selected hotbar slot. null if neither.

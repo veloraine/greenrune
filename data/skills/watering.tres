@@ -1,0 +1,12 @@
+[gd_resource type="Resource" script_class="SkillDef" format=3]
+
+[ext_resource type="Script" path="res://scripts/skill_def.gd" id="1_skill"]
+
+[resource]
+script = ExtResource("1_skill")
+id = &"watering"
+display_name = "Watering"
+level_xp = Array[int]([10, 30, 60, 100, 150, 210, 280, 360, 450])
+xp_per_use = 1.0
+rp_cost_cut_per_level = 0.05
+max_rp_per_level = 10
