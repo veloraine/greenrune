@@ -1,0 +1,10 @@
+[gd_scene format=3]
+
+[ext_resource type="PackedScene" path="res://ui/hotbar.tscn" id="1_hotbar"]
+[ext_resource type="PackedScene" path="res://ui/debug_console.tscn" id="2_console"]
+
+[node name="HUD" type="CanvasLayer"]
+
+[node name="Hotbar" parent="." instance=ExtResource("1_hotbar")]
+
+[node name="DebugConsole" parent="." instance=ExtResource("2_console")]

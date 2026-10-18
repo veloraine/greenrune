@@ -20,12 +20,12 @@ Every checked item must meet the [definition of done](../endgame.md#definition-o
 
 ## Step 2 — Item data, inventory, save v1 (weeks 2–3)
 
-- [ ] `ItemDef` resource: id, name, icon, category, base sell price, max stack
-- [ ] `ItemStack`: item id + level (1–10) + count
-- [ ] Inventory model (24 slots) + 8-slot hotbar UI; scroll to select
-- [ ] Debug command to add any item at any level
-- [ ] Save v1 as JSON with a `version` field: inventory, player position, day, gold
-- [ ] Load from the title screen or a debug key
+- [x] `ItemDef` resource: id, name, icon, category, base sell price, max stack (one `.tres` per item in `data/items/`; icons still to paint)
+- [x] `ItemStack`: item id + level (1–10) + count (holds the `ItemDef` in memory, the id in saves)
+- [x] Inventory model (24 slots) + 8-slot hotbar UI; scroll to select (the hotbar is slots 0–7; wheel or Q/E)
+- [x] Debug command to add any item at any level (backquote opens the console: `add <item> [level] [count]`, `inv`)
+- [x] Save v1 as JSON with a `version` field: inventory, player position, day, gold (`user://save.json`)
+- [x] Load from the title screen or a debug key (console `save` / `load`; the title screen comes later)
 
 **Done when:** you add items at mixed levels, save, quit, relaunch and load, and the inventory is identical, levels included.
 

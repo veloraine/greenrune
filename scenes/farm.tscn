@@ -13,6 +13,7 @@
 [ext_resource type="PackedScene" path="res://scenes/props/tree_3.tscn" id="11_tree3"]
 [ext_resource type="PackedScene" path="res://assets/environment/quaternius-nature/Grass.fbx" id="12_grass"]
 [ext_resource type="PackedScene" path="res://assets/environment/quaternius-nature/Grass_Short.fbx" id="13_grass_short"]
+[ext_resource type="PackedScene" path="res://ui/hud.tscn" id="14_hud"]
 
 [sub_resource type="Environment" id="Environment_sky"]
 background_mode = 1
@@ -280,3 +281,5 @@ transform = Transform3D(-1, 0, 0, 0, 1, 0, 0, 0, -1, 0, 0, -12)
 [node name="CameraRig" parent="." node_paths=PackedStringArray("target") instance=ExtResource("2_camera")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1, -12)
 target = NodePath("../Player")
+
+[node name="HUD" parent="." instance=ExtResource("14_hud")]
