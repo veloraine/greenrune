@@ -4,7 +4,6 @@
 [ext_resource type="PackedScene" uid="uid://dstijduemsdrb" path="res://assets/characters/kaykit-adventurers/Rogue.glb" id="2_rogue"]
 [ext_resource type="Material" path="res://assets/characters/kaykit-adventurers/rogue_cel.tres" id="3_cel"]
 [ext_resource type="Material" path="res://assets/characters/kaykit-adventurers/rogue_cape_cel.tres" id="4_cape"]
-[ext_resource type="PackedScene" path="res://scenes/hoe.tscn" id="5_hoe"]
 
 [sub_resource type="CapsuleShape3D" id="CapsuleShape3D_player"]
 radius = 0.4
@@ -57,8 +56,5 @@ material_override = ExtResource("3_cel")
 
 [node name="Rogue_LegRight" parent="Model/Rig/Skeleton3D" parent_id_path=PackedInt32Array(6923916, 856780600) index="8" unique_id=1118909591]
 material_override = ExtResource("3_cel")
-
-[node name="Hoe" parent="Model/Rig/Skeleton3D/handslot_r" instance=ExtResource("5_hoe")]
-visible = false
 
 [editable path="Model"]

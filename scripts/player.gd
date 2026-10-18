@@ -1,12 +1,12 @@
 class_name Player
 extends CharacterBody3D
 
-signal tool_impact(target: Vector3)
+## Emitted at the swing's impact frame.
+signal tool_used(stack: ItemStack, charge_level: int)
 
-enum State { MOVE, SWING }
+enum State { MOVE, CHARGE, SWING }
 
 @export_range(1.0, 10.0) var speed: float = 6.0
-@export_range(0.5, 6.0) var swing_speed: float = 2.5
 ## Real seconds after the impact before the player can move or swing again.
 @export_range(0.0, 0.5) var swing_follow_through: float = 0.15
 
@@ -15,23 +15,32 @@ const TURN_SPEED: float = 10.0
 const ANIM_BLEND: float = 0.2
 ## Speed at which Running_A's planted foot moves backward, measured at floor height (4.0 to 4.4).
 const RUN_ANIM_SPEED: float = 4.0
-const SWING_ANIM: StringName = &"2H_Melee_Attack_Chop"
-## Seconds into SWING_ANIM for the hit. The axe head first touches the ground at 0.84 and is lowest at 1.0.
-const SWING_IMPACT_TIME: float = 1.0
-const TOOL_REACH: float = 1.0
+## The KayKit model faces +Z, so it is turned around to face the player's forward (-Z).
+const MODEL_YAW: float = PI
 
 var _state: State = State.MOVE
+## The stack being charged or swung, fixed even if the hotbar selection changes mid-swing.
+var _stack: ItemStack
+var _charge_time: float = 0.0
+var _swing_level: int = 0
 var _impact_sent: bool = false
 var _swing_end_time: float = 0.0
+## A press during a swing, carried over so it isn't lost.
+var _buffered: bool = false
+var _hand_tool: Node3D
+var _hand_tool_def: ToolDef
 
+@onready var _model: Node3D = $Model
 @onready var _anim: AnimationPlayer = $Model/AnimationPlayer
-@onready var _tool: Node3D = $Model/Rig/Skeleton3D/handslot_r/Hoe
+@onready var _hand: Node3D = $Model/Rig/Skeleton3D/handslot_r
 
 
 func _physics_process(delta: float) -> void:
 	match _state:
 		State.MOVE:
 			_move(delta)
+		State.CHARGE:
+			_charge(delta)
 		State.SWING:
 			_swing()
 
@@ -43,16 +52,44 @@ func _physics_process(delta: float) -> void:
 	move_and_slide()
 
 
+## The tool being used, or else the one in the selected hotbar slot. null if neither.
+func held_tool() -> ToolDef:
+	var stack: ItemStack = _stack if _state != State.MOVE else Game.inventory.slots[Game.inventory.selected]
+	return stack.item as ToolDef if stack else null
+
+
+func is_swinging() -> bool:
+	return _state == State.SWING
+
+
+## The grid direction the player faces, snapped to the nearest of four.
+func facing() -> Vector2i:
+	var forward: Vector3 = -global_basis.z
+	if absf(forward.x) > absf(forward.z):
+		return Vector2i(int(signf(forward.x)), 0)
+	return Vector2i(0, int(signf(forward.z)))
+
+
+## Where the tool lands: reach metres ahead along the snapped facing.
+func tool_point(tool: ToolDef) -> Vector3:
+	var f: Vector2i = facing()
+	return global_position + Vector3(f.x, 0.0, f.y) * tool.reach
+
+
+## The highest charge level whose hold time has passed. 0 unless charging.
+func charge_level() -> int:
+	if _state != State.CHARGE:
+		return 0
+	var tool: ToolDef = _stack.item
+	var level: int = 0
+	for i in tool.charges.size():
+		if _charge_time >= tool.charges[i].hold_seconds:
+			level = i
+	return level
+
+
 func _move(delta: float) -> void:
-	if Input.is_action_just_pressed("use_tool"):
-		_state = State.SWING
-		_impact_sent = false
-		_tool.visible = true
-		velocity.x = 0.0
-		velocity.z = 0.0
-		_anim.play(SWING_ANIM, ANIM_BLEND, swing_speed)
-		# play() continues a clip that is still running, which would skip straight past the impact.
-		_anim.seek(0.0, true)
+	if (Input.is_action_just_pressed("use_tool") or _buffered) and _start_charge():
 		return
 
 	var input_dir: Vector2 = Input.get_vector("move_left", "move_right", "move_forward", "move_back")
@@ -70,14 +107,65 @@ func _move(delta: float) -> void:
 		_anim.play(anim_name, ANIM_BLEND, anim_speed)
 
 
-func _swing() -> void:
-	var anim_time: float = _anim.current_animation_position
-	if _anim.current_animation != SWING_ANIM or (_impact_sent and anim_time >= _swing_end_time):
-		_state = State.MOVE
-		_tool.visible = false
+func _start_charge() -> bool:
+	_buffered = false
+	var stack: ItemStack = Game.inventory.slots[Game.inventory.selected]
+	if stack == null or not stack.item is ToolDef:
+		return false
+	_stack = stack
+	_state = State.CHARGE
+	_charge_time = 0.0
+	velocity.x = 0.0
+	velocity.z = 0.0
+	# Face exactly along the grid, so the tool lands on the targeted tile.
+	var f: Vector2i = facing()
+	rotation.y = atan2(-f.x, -f.y)
+	_equip(stack.item)
+	if _anim.current_animation != &"Idle":
+		_anim.play(&"Idle", ANIM_BLEND)
+	return true
+
+
+func _charge(delta: float) -> void:
+	_charge_time += delta
+	if Input.is_action_pressed("use_tool"):
 		return
-	if not _impact_sent and anim_time >= SWING_IMPACT_TIME:
+	var tool: ToolDef = _stack.item
+	_swing_level = charge_level()
+	_state = State.SWING
+	_impact_sent = false
+	_model.rotation.y = MODEL_YAW + deg_to_rad(tool.aim_yaw_degrees)
+	_anim.play(tool.swing_animation, ANIM_BLEND, tool.swing_speed)
+	# play() continues a clip that is still running, which would skip straight past the impact.
+	_anim.seek(0.0, true)
+
+
+func _swing() -> void:
+	if Input.is_action_just_pressed("use_tool"):
+		_buffered = true
+	var tool: ToolDef = _stack.item
+	var anim_time: float = _anim.current_animation_position
+	if _anim.current_animation != tool.swing_animation or (_impact_sent and anim_time >= _swing_end_time):
+		_state = State.MOVE
+		_stack = null
+		_model.rotation.y = MODEL_YAW
+		if _hand_tool:
+			_hand_tool.visible = false
+		return
+	if not _impact_sent and anim_time >= tool.impact_time:
 		_impact_sent = true
 		# Animation time runs swing_speed times faster than real time.
-		_swing_end_time = anim_time + swing_follow_through * swing_speed
-		tool_impact.emit(global_position - global_basis.z * TOOL_REACH)
+		_swing_end_time = anim_time + swing_follow_through * tool.swing_speed
+		tool_used.emit(_stack, _swing_level)
+
+
+func _equip(tool: ToolDef) -> void:
+	if tool != _hand_tool_def:
+		if _hand_tool:
+			_hand_tool.queue_free()
+		_hand_tool = tool.hand_model.instantiate() if tool.hand_model else null
+		if _hand_tool:
+			_hand.add_child(_hand_tool)
+		_hand_tool_def = tool
+	if _hand_tool:
+		_hand_tool.visible = true

@@ -4,6 +4,7 @@ const ITEMS_DIR: String = "res://data/items/"
 
 var items: Dictionary[StringName, ItemDef] = {}
 var inventory: Inventory = Inventory.new()
+var field: Field = Field.new()
 var day: int = 1
 var gold: int = 0
 

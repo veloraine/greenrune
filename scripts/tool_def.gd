@@ -1,0 +1,30 @@
+class_name ToolDef
+extends ItemDef
+
+enum Effect { TILL, WATER }
+
+@export var effect: Effect
+## The skill that gains XP from this tool (Step 4).
+@export var skill: StringName
+## Index 0 is a tap; each later level needs a longer hold.
+@export var charges: Array[ToolCharge] = []
+## Uses before a refill at water. 0 means the tool never runs dry.
+@export var capacity: int = 0
+
+@export_group("Swing")
+@export var hand_model: PackedScene
+@export var swing_animation: StringName
+@export var swing_speed: float = 1.0
+## Seconds into swing_animation where the tool hits.
+@export var impact_time: float = 0.5
+## Turns the body during the swing so the tool lands straight ahead.
+@export var aim_yaw_degrees: float = 0.0
+## Metres ahead of the player where the tool lands.
+@export var reach: float = 1.0
+
+@export_group("Feedback")
+@export var impact_sound: AudioStream
+@export var dust_color: Color = Color.WHITE
+@export_range(0.0, 0.2) var hit_stop: float = 0.0
+@export_range(0.0, 1.0) var shake: float = 0.0
+@export_range(0.0, 0.5) var shake_seconds: float = 0.1

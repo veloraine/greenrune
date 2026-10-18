@@ -17,6 +17,7 @@ config/features=PackedStringArray("4.7")
 [autoload]
 
 Game="*res://scripts/game.gd"
+HitStop="*res://scripts/hit_stop.gd"
 
 [input]
 
@@ -81,6 +82,7 @@ debug_console={
 3d_physics/layer_2="player"
 3d_physics/layer_3="bounds"
 3d_physics/layer_4="props"
+3d_physics/layer_5="water"
 
 [shader_globals]
 

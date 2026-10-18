@@ -59,7 +59,7 @@ Target: ~8 hrs/week. Adjust pace to your reality; don't crunch.
 - [x] Add "pop": sound, dust particle, tiny camera shake, ~50 ms hit-stop (sound: Kenney CC0 `impactSoft_heavy`)
 - [x] Tweak until 10 swings in a row feel satisfying, then write down what made the difference
 
-**Week 8 tuning notes.** These are the final values in `player.gd` and `feel_test.gd`.
+**Week 8 tuning notes.** These were the final values in `player.gd` and `feel_test.gd`. Phase 1 moved them into `data/items/hoe.tres`.
 
 - `swing_speed` 2.5. The chop at 1x felt sluggish; RF tools are fast.
 - `SWING_IMPACT_TIME` 1.0, the frame where the axe head is lowest. At 0.3 the tile changed mid-windup, before the tool touched it, and the hit felt fake.
@@ -94,8 +94,8 @@ Use this section to log anything weird, things you learned, or "wouldn't it be c
 
 ### Carry into Phase 1 (from the Week 8 review)
 
-- The axe head lands about 0.6 m to the player's right of the tile that gets tilled (the chop swings across the body). Fix with a real hoe asset or by offsetting the tool in `handslot_r`.
-- The tool target is one world point. Phase 1 needs grid cells from one function shared by the target highlight and the effect, so charge areas work.
-- A press during swing recovery is dropped. Consider input buffering.
-- Move the hit-stop to an autoload so scene changes can't leave `Engine.time_scale` at 0.
+- ~~The axe head lands about 0.6 m to the player's right of the tile that gets tilled.~~ Done in Phase 1 Step 3: the tool's `aim_yaw_degrees` turns the body 35° during the chop.
+- ~~The tool target is one world point.~~ Done: `FarmGrid.cells_hit()` feeds both the highlight and the effect.
+- ~~A press during swing recovery is dropped.~~ Done: the player buffers it.
+- ~~Move the hit-stop to an autoload.~~ Done: `HitStop`.
 - ~~The baseline scene's trees have no collision, so the player walks through trunks.~~ Done for the farm: `scenes/props/tree_*.tscn` have trunk colliders.

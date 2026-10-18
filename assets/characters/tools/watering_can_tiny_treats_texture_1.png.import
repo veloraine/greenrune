@@ -2,17 +2,20 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://c8occ77vog4ax"
-path.s3tc="res://.godot/imported/barbarian_texture.png-87f01451af0a8c56c949357c7b2bdce3.s3tc.ctex"
+uid="uid://b50myd40c0o3r"
+path.s3tc="res://.godot/imported/watering_can_tiny_treats_texture_1.png-ddfb30264483b5b6ecb8f70d778510e3.s3tc.ctex"
 metadata={
 "imported_formats": ["s3tc_bptc"],
 "vram_texture": true
 }
+generator_parameters={
+"md5": "fc25b922799f122c8b038b3c3d068730"
+}
 
 [deps]
 
-source_file="res://assets/characters/kaykit-adventurers/props/barbarian_texture.png"
-dest_files=["res://.godot/imported/barbarian_texture.png-87f01451af0a8c56c949357c7b2bdce3.s3tc.ctex"]
+source_file="res://assets/characters/tools/watering_can_tiny_treats_texture_1.png"
+dest_files=["res://.godot/imported/watering_can_tiny_treats_texture_1.png-ddfb30264483b5b6ecb8f70d778510e3.s3tc.ctex"]
 
 [params]
 

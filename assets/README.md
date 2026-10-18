@@ -21,6 +21,15 @@ assets/
 - Location: `characters/kaykit-adventurers/`
 - Used for: player + NPC chibi character models, pre-rigged for Mixamo
 
+### Tool models
+
+- Source: [Poly Pizza](https://poly.pizza), each CC0 per its model page:
+  [Tool Hoe](https://poly.pizza/m/YFNA1jgfjG) by Kenney (`hoe.glb`),
+  [Watering Can](https://poly.pizza/m/V8J1TC441f) by Isa Lousberg (`watering_can.glb` and its extracted texture)
+- Location: `characters/tools/`
+- Used for: the tools held in the player's hand. `scenes/tools/` sizes each one for `handslot_r`.
+- Ours: the `*_cel.tres` materials, mapped in each `.glb.import`.
+
 ## Environment packs
 
 ### KayKit Dungeon Pack

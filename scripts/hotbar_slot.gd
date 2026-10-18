@@ -14,6 +14,8 @@ func show_stack(stack: ItemStack) -> void:
 	_name.text = stack.item.display_name if stack and stack.item.icon == null else ""
 	_level.text = "Lv%d" % stack.level if stack else ""
 	_count.text = str(stack.count) if stack and stack.count > 1 else ""
+	if stack and stack.item is ToolDef and stack.item.capacity > 0:
+		_count.text = str(stack.water)
 
 
 func set_selected(selected: bool) -> void:

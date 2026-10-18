@@ -31,13 +31,13 @@ Every checked item must meet the [definition of done](../endgame.md#definition-o
 
 ## Step 3 — Field grid and tool pipeline (weeks 4–7)
 
-- [ ] `FarmGrid`: per-tile state (untilled, tilled, watered, planted) stored in code, drawn in 3D
-- [ ] Target tile = tile in front of the player, highlighted
-- [ ] `ToolDef` (extends `ItemDef`): RP cost, linked skill, hitbox shape, effect
-- [ ] Swing: animation → hitbox active frames → effect on every tile hit
-- [ ] Hoe tills; watering can waters (with a water count, refilled at a pond or well)
-- [ ] Hold to charge: wider area, higher RP cost
-- [ ] "Pop" feedback on every hit: sound, particle, tiny camera shake
+- [x] `FarmGrid`: per-tile state (untilled, tilled, watered, planted) stored in code, drawn in 3D (state in `Field` on the `Game` autoload, drawn by `FarmGrid`; "planted" arrives with crops in Step 5; tiles are saved from Step 6)
+- [x] Target tile = tile in front of the player, highlighted (the tile where the tool lands, `reach` metres ahead)
+- [x] `ToolDef` (extends `ItemDef`): RP cost, linked skill, hitbox shape, effect (RP cost and hit cells live per charge level in `ToolCharge`)
+- [x] Swing: animation → hitbox active frames → effect on every tile hit
+- [x] Hoe tills; watering can waters (with a water count, refilled at a pond or well) (15 uses; the pond is east of the field)
+- [x] Hold to charge: wider area, higher RP cost (tap 1 tile, 0.6 s a row of 3, 1.2 s a 3×3; the cost is data now and is spent from Step 4)
+- [ ] "Pop" feedback on every hit: sound, particle, tiny camera shake (hoe done; the watering can still needs a splash sound)
 
 **Done when:** you till and water 20 tiles, charged and uncharged, and every swing shows its hitbox in debug view.
 
@@ -57,6 +57,7 @@ Every checked item must meet the [definition of done](../endgame.md#definition-o
 
 - [ ] `CropDef` data: seed item, growth stages, days per stage, harvest item, sell price
 - [ ] Plant a seed on a tilled tile; `Sprite3D` billboard per stage
+  - `Field.Soil` is one value per tile and can't say "planted and watered". Store watered as its own flag, with the crop beside it, and give seeds a way in that isn't `ToolDef.Effect`.
 - [ ] Clock: day runs 06:00–24:00; HUD clock; forced faint at midnight
 - [ ] House interior scene with the bed, entered through the house door
 - [ ] Bed interaction → sleep → next day
@@ -73,7 +74,9 @@ Every checked item must meet the [definition of done](../endgame.md#definition-o
 - [ ] Shipping bin: sold at 06:00, gold added
 - [ ] Shop NPC: talk → "sell all" menu
 - [ ] Price scales with item level (data-tuned)
-- [ ] Save v2 adds: tiles, crops, RP, HP, skill XP, time; v1 saves still load
+- [ ] Save v2 adds: tiles, crops, RP, HP, skill XP, time, watering-can water; v1 saves still load
+  - Load the field in place (one bulk replace that emits `changed`), not by swapping `Game.field`: `FarmGrid` stays connected to the old object.
+  - A load mid-swing must reset the player, or the swing spends water from a stack that is no longer in the inventory.
 
 **Done when:** a v1 save loads into v2 without errors, and a level-5 turnip sells for more than a level-1 turnip.
 
