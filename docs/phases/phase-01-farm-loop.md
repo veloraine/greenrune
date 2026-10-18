@@ -44,16 +44,16 @@ Every checked item must meet the [definition of done](../endgame.md#definition-o
 ## Step 4 — RP, HP, skills (weeks 8–9)
 
 - [x] RP and HP bars in the HUD (bottom left, with the numbers; base values in `data/vitals.tres`; RP, HP and skill XP are saved from Step 6)
-- [x] Every tool use spends RP; at 0 RP actions drain HP (whatever RP can't cover comes out of HP; refilling the can and swinging it dry are free)
-- [x] HP 0 → faint, wake next morning with half RP and a gold penalty (until the Step 5 day tick, `farm.gd` does day + 1 and wakes the player at `WakePoint` beside the bed)
+- [x] Every tool use spends RP; when RP can't cover a swing, it costs a flat 25% of max HP instead, rounded up, and RP is left alone (`rp_short_hp_cost`; RF4's rule for crafting short of RP; refilling the can and swinging it dry are free)
+- [x] HP 0 → faint, wake next morning with half HP, half RP and a gold penalty (`faint_wake_hp`, `faint_wake_rp`) (until the Step 5 day tick, `farm.gd` does day + 1 and wakes the player at `WakePoint` beside the bed)
 - [x] `SkillDef` data: id, name, XP curve (`data/skills/`; the curve is `level_xp`, the total XP for each level)
 - [x] 4–6 skills: tilling, watering, reaping, walking, sleeping (+1 optional) (reaping and sleeping are data only until the sickle and sleep arrive in Step 5)
-- [x] XP per use; level-up popup (walking earns XP per metre walked)
+- [x] XP per use; level-up popup (walking earns XP per metre walked; a tool swing earns `xp_per_use` plus its charge level's `xp_bonus` once, not per tile, and only if it changed at least one tile's soil; a swing that changes nothing still costs RP and water)
 - [x] Each level lowers that skill's RP cost and raises max RP (`rp_cost_cut_per_level` and `max_rp_per_level` on each `SkillDef`)
 
 **Done when:** at level 1, normal farming empties RP by evening; at tilling level 5 a till visibly costs less.
 
-**RP budget until the Step 5 clock.** "By evening" becomes "a morning of tilling and watering most of the 12×12 field". Max RP at level 1 is 300. The hoe costs 5 / 15 / 30 per tap / 2×2 / 4×4 swing and the can 4 / 8 / 16, so tilling and watering one tile costs 9 RP by taps, 5.75 RP with 2×2 charges and 2.9 RP with 4×4 charges. RP runs out after about 33, 52 or 96 of the 144 tiles. Each skill level cuts 5% of the base cost, so at tilling level 5 a tap costs 4 instead of 5. Re-check in Step 7: once crops arrive, a normal day is mostly watering, which costs less than tilling.
+**RP budget until the Step 5 clock.** "By evening" becomes "a morning of tilling and watering most of the 12×12 field". Max RP at level 1 is 300. The hoe costs 5 / 15 / 30 per tap / 2×2 / 4×4 swing and the can 4 / 8 / 16, so tilling and watering one tile costs 9 RP by taps, 5.75 RP with 2×2 charges and 2.9 RP with 4×4 charges. RP runs out after about 33, 52 or 96 of the 144 tiles. Each skill level cuts 5% of the base cost, so at tilling level 5 a tap costs 4 instead of 5. Charge bonuses keep RF4's ratio to the base swing (hoe 3 XP with +30 / +80, can 4 XP with +20 / +40), divided by 5, so a hoe swing gives 1 / 3 / 6 XP and a can swing 1 / 2 / 3. At those values a charged swing earns about the same XP per RP as a tap, so a morning levels tilling to about 3 however you charge. Tilling level 2 takes 10 taps or 2 4×4 swings, and level 5 takes 100 taps or 17 4×4 swings. Unscaled, a morning of 4×4 swings reaches tilling level 6. Re-check in Step 7: once crops arrive, a normal day is mostly watering, which costs less than tilling.
 
 ## Step 5 — Crops, day tick, sleep (weeks 10–12)
 

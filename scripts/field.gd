@@ -13,7 +13,8 @@ func soil(cell: Vector2i) -> Soil:
 	return _soil.get(cell, Soil.UNTILLED)
 
 
-func apply(effect: ToolDef.Effect, cell: Vector2i) -> void:
+## Returns whether the cell's soil changed.
+func apply(effect: ToolDef.Effect, cell: Vector2i) -> bool:
 	var before: Soil = soil(cell)
 	var after: Soil = before
 	match effect:
@@ -24,6 +25,7 @@ func apply(effect: ToolDef.Effect, cell: Vector2i) -> void:
 			if before == Soil.TILLED:
 				after = Soil.WATERED
 	if after == before:
-		return
+		return false
 	_soil[cell] = after
 	changed.emit(cell)
+	return true

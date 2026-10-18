@@ -13,12 +13,14 @@ rp_cost = 4
 script = ExtResource("2_charge")
 hold_seconds = 0.6
 rp_cost = 8
+xp_bonus = 1.0
 size = 2
 
 [sub_resource type="Resource" id="ToolCharge_2"]
 script = ExtResource("2_charge")
 hold_seconds = 1.2
 rp_cost = 16
+xp_bonus = 2.0
 size = 4
 
 [resource]

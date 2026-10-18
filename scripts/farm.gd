@@ -48,11 +48,15 @@ func _on_tool_used(stack: ItemStack, charge_level: int) -> void:
 			return
 		stack.water -= 1
 		Game.inventory.changed.emit()
-	# XP first, so a level-up popup can't replace the faint message.
-	Game.stats.add_xp(tool.skill, Game.skills[tool.skill].xp_per_use)
-	Game.stats.spend(Game.stats.rp_cost(tool, charge_level))
+	var soil_changed: bool = false
 	for cell in _cells:
-		Game.field.apply(tool.effect, cell)
+		if Game.field.apply(tool.effect, cell):
+			soil_changed = true
+	# Priced before the XP, so a swing that levels up still pays the old cost.
+	var cost: int = Game.stats.rp_cost(tool, charge_level)
+	if soil_changed:
+		Game.stats.add_xp(tool.skill, Game.skills[tool.skill].xp_per_use + tool.charges[charge_level].xp_bonus)
+	Game.stats.spend(cost)
 	_pop(point, tool)
 
 
@@ -60,7 +64,7 @@ func _on_tool_used(stack: ItemStack, charge_level: int) -> void:
 func _on_fainted() -> void:
 	Game.day += 1
 	Game.gold = maxi(0, Game.gold - Game.vitals.faint_gold_penalty)
-	Game.stats.recover(Game.vitals.faint_wake_rp)
+	Game.stats.recover(Game.vitals.faint_wake_rp, Game.vitals.faint_wake_hp)
 	_player.global_position = _wake_point.global_position
 
 

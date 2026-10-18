@@ -45,13 +45,15 @@ func rp_cost(tool: ToolDef, charge_level: int) -> int:
 	return maxi(1, roundi(tool.charges[charge_level].rp_cost * (1.0 - cut)))
 
 
-## Whatever RP can't cover comes out of HP.
+## If RP can't cover the cost, a flat share of max HP is lost instead and RP is left alone.
 func spend(cost: int) -> void:
-	var from_rp: int = mini(rp, cost)
-	rp -= from_rp
-	hp = maxi(0, hp - (cost - from_rp))
+	if rp >= cost:
+		rp -= cost
+		changed.emit()
+		return
+	hp = maxi(0, hp - maxi(1, ceili(snappedf(_vitals.max_hp * _vitals.rp_short_hp_cost, 0.001))))
 	changed.emit()
-	if hp == 0 and cost > from_rp:
+	if hp == 0:
 		fainted.emit()
 
 
@@ -64,8 +66,8 @@ func add_xp(id: StringName, amount: float) -> void:
 		changed.emit()
 
 
-## Refills HP and sets RP to rp_fraction of max.
-func recover(rp_fraction: float) -> void:
-	hp = _vitals.max_hp
+## Sets RP and HP to these fractions of their max.
+func recover(rp_fraction: float, hp_fraction: float) -> void:
+	hp = maxi(1, roundi(_vitals.max_hp * hp_fraction))
 	rp = roundi(max_rp() * rp_fraction)
 	changed.emit()

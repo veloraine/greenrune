@@ -127,6 +127,16 @@ Details come from the community wiki unless marked otherwise. The official XSEED
 - **Character level:** a separate overall level also exists ([Guardian][guardian]).
 - **How it plays:** "every action" fills a bar, giving "a tiny dopamine rush of progress" ([Guardian][guardian] [press]).
 
+### Tool, RP and HP rules (researched)
+- **Short on RP:** crafting with too little RP costs 1/4 of max HP, whatever the RP cost ([wikiwiki: 小ネタ][jp-tips] [community]). Medium confidence: one fan wiki, stated plainly.
+- **Fainting:** you wake at the clinic with 50% HP. A treatment fee comes out of the money you carry and can drop it to 0G. Friendship is not lost ([wikiwiki: 小ネタ][jp-tips], [Guidestrats: clinic][gs-clinic] [community]). Medium-high confidence: two sources agree.
+- **4th charge stage:** costs 0 RP and gives no XP ([wikiwiki: 小ネタ][jp-tips]). Medium confidence.
+- **Skill XP per action, not per tile:** the hoe gives 3 XP per action, with charge bonuses of 30 / 80 / 100. The watering can gives 4 XP per action, with charge bonuses of 20 / 40 / 60 ([GameFAQs: skill XP][gf-xp] [community]). Medium confidence: memory-read values from one player, not cross-checked.
+- **Watering XP:** only watering cultivated soil gives XP ([GameFAQs: skill XP][gf-xp]). Medium confidence.
+- **RP regen:** standing still slowly regenerates RP. A bath or sleep restores it fully ([GameFAQs: RP][gf-rp] [community]). Medium confidence.
+- **Unknown:** the base RP cost of each farm tool, and the exact HP rule for tools. A Neoseeker walkthrough line claims 50% HP per action at 0 RP. Low confidence: one unsourced line.
+- **Analysis:** Greenrune applies the crafting rule (1/4 of max HP) to tools too. Its charge bonuses keep RF4's ratio to the base swing, divided by 5, so XP per RP spent stays close to a tap's (see [Phase 1, Step 4](phases/phase-01-farm-loop.md#step-4--rp-hp-skills-weeks-89)).
+
 ### Combat, magic and bosses
 - **Weapon classes:** short sword, long sword, spear, axe/hammer, dual blades, fists, and staves for magic ([XSEED: Farming & Fighting][xseed-farm], [Fandom: Skills][w-skills]).
 - **Rune Abilities:** weapon skills and elemental, healing and "music" spells, used from equip slots ([Fandom: Rune Abilities][w-rabil]).
@@ -496,6 +506,10 @@ Applied to `docs/plan.md`, `SCOPE.md`, `NOT_IN_SCOPE.md` and `README.md` on 2026
 - Glitches (RF4): https://runefactory.fandom.com/wiki/Glitches_%28RF4%29
 - Rune Factory 4: https://runefactory.fandom.com/wiki/Rune_Factory_4
 - r/runefactory "endgame crafting" thread (mirror): https://reddit.sudovanilla.org/r/runefactory/comments/1jqjdc1/endgame_crafting
+- wikiwiki.jp RF4 wiki, 小ネタ (tips): https://wikiwiki.jp/rf4bu/%E5%B0%8F%E3%83%8D%E3%82%BF
+- Guidestrats, RF4 clinic: https://guidestrats.com/rf4-clinic/
+- GameFAQs RF4 board, skill XP per action thread (archived): https://web.archive.org/web/20240214030041/https://gamefaqs.gamespot.com/boards/635388-rune-factory-4/76520117
+- GameFAQs RF4 board, RP regeneration thread (archived): https://web.archive.org/web/20241214131830/https://gamefaqs.gamespot.com/boards/635388-rune-factory-4/68247636
 
 [xseed-new]: https://runefactory.com/rf4/whats-new.html
 [xseed-feat]: https://runefactory.com/rf4/feat.html
@@ -553,3 +567,7 @@ Applied to `docs/plan.md`, `SCOPE.md`, `NOT_IN_SCOPE.md` and `README.md` on 2026
 [w-glitch]: https://runefactory.fandom.com/wiki/Glitches_%28RF4%29
 [w-rf4]: https://runefactory.fandom.com/wiki/Rune_Factory_4
 [reddit-endgame]: https://reddit.sudovanilla.org/r/runefactory/comments/1jqjdc1/endgame_crafting
+[jp-tips]: https://wikiwiki.jp/rf4bu/%E5%B0%8F%E3%83%8D%E3%82%BF
+[gs-clinic]: https://guidestrats.com/rf4-clinic/
+[gf-xp]: https://web.archive.org/web/20240214030041/https://gamefaqs.gamespot.com/boards/635388-rune-factory-4/76520117
+[gf-rp]: https://web.archive.org/web/20241214131830/https://gamefaqs.gamespot.com/boards/635388-rune-factory-4/68247636
