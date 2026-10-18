@@ -7,8 +7,8 @@ No custom humanoid or building modeling until at least Phase 4.
 Repo folder is still named `runefactory-clone` as a placeholder; may be renamed to `greenrune` later. This does not affect any code paths.
 
 # Phase status
-Currently in Phase 0 (learning Godot 3D and the toon-shader pipeline). See PHASE_0_CHECKLIST.md.
-Phase 1 starts only after Phase 0 exit criteria are met (see SCOPE.md and docs/phases/phase-01-farm-loop.md).
+Currently in Phase 1 (farm loop). See docs/phases/phase-01-farm-loop.md.
+Phase 0 (learning Godot 3D and the toon-shader pipeline) is done. See PHASE_0_CHECKLIST.md.
 Combat, dungeons, monsters, marriage, magic, fishing, mining, crafting/forging, and taming are OUT OF SCOPE until Phase 4+. Cooking arrives in Phase 3. RP and use-based skills are farming systems and start in Phase 1. See NOT_IN_SCOPE.md.
 Every checklist item must meet the definition of done in docs/endgame.md.
 

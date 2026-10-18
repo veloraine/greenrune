@@ -57,7 +57,18 @@ Target: ~8 hrs/week. Adjust pace to your reality; don't crunch.
 - [x] New throwaway scene: the baseline character with a hoe and a 5×5 tile grid (`scenes/feel_test.tscn`; the hoe is KayKit's 2H axe as a stand-in)
 - [x] Swing: animation → hitbox → the hit tile changes colour (the "hitbox" is the grid cell one tile ahead)
 - [x] Add "pop": sound, dust particle, tiny camera shake, ~50 ms hit-stop (sound: Kenney CC0 `impactSoft_heavy`)
-- [ ] Tweak until 10 swings in a row feel satisfying, then write down what made the difference
+- [x] Tweak until 10 swings in a row feel satisfying, then write down what made the difference
+
+**Week 8 tuning notes.** These are the final values in `player.gd` and `feel_test.gd`.
+
+- `swing_speed` 2.5. The chop at 1x felt sluggish; RF tools are fast.
+- `SWING_IMPACT_TIME` 1.0, the frame where the axe head is lowest. At 0.3 the tile changed mid-windup, before the tool touched it, and the hit felt fake.
+- `swing_follow_through` 0.15 s. The player recovers soon after the hit, which keeps it snappy without cutting the swing.
+- Each press restarts the swing clip. Without that, fast presses skipped the impact.
+- Hit-stop 0.05 s. The freeze is short enough to feel like weight, not lag.
+- Camera shake 0.05 strength for 0.1 s. The first 0.15 for 0.2 s felt like an explosion, too much for a farm tool.
+- The thud picks from 5 samples with random pitch, so 10 swings in a row don't sound identical.
+- Dust spawns after the hit-stop ends, so the burst is visible.
 
 **Exit criterion:** swinging the hoe feels good, and you have notes on what made it feel good for Phase 1's tool pipeline.
 
