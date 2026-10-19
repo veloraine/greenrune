@@ -88,11 +88,12 @@ func _on_tool_used(stack: ItemStack, charge_level: int) -> void:
 			field_changed = true
 			if seed_level > 0:
 				Game.inventory.add(crop.def.seed_item, seed_level, 1)
-	# Priced before the XP, so a swing that levels up still pays the old cost.
-	var cost: int = Game.stats.rp_cost(tool, charge_level)
+	# Like RF4, a swing that changes nothing costs no RP and gives no XP.
 	if field_changed:
+		# Priced before the XP, so a swing that levels up still pays the old cost.
+		var cost: int = Game.stats.rp_cost(tool, charge_level)
 		Game.stats.add_xp(tool.skill, Game.skills[tool.skill].xp_per_use + tool.charges[charge_level].xp_bonus)
-	Game.stats.spend(cost)
+		Game.stats.spend(cost)
 	_pop(point, tool)
 
 
