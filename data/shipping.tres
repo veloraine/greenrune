@@ -1,0 +1,13 @@
+[gd_resource type="Resource" script_class="ShippingDef" format=3]
+
+[ext_resource type="Script" path="res://scripts/shipping_def.gd" id="1_shipping"]
+
+[resource]
+script = ExtResource("1_shipping")
+sell_hour = 8
+bin_size = 60
+level_percent = Dictionary[int, PackedInt32Array]({
+0: PackedInt32Array(100, 110, 120, 130, 140, 150, 160, 170, 180, 200),
+1: PackedInt32Array(100, 102, 104, 106, 108, 110, 112, 114, 116, 120),
+2: PackedInt32Array(100, 110, 120, 130, 140, 150, 160, 170, 180, 200)
+})

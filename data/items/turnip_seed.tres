@@ -7,5 +7,5 @@ script = ExtResource("1_def")
 id = &"turnip_seed"
 display_name = "Turnip Seeds"
 category = 1
-sell_price = 10
+sell_price = 2
 max_stack = 99

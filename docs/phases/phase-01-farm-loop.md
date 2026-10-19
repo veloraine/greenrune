@@ -60,7 +60,7 @@ Every checked item must meet the [definition of done](../endgame.md#definition-o
 - [x] `CropDef` data: seed item, growth stages, days per stage, harvest item, sell price (`data/crops/`; `stage_days` holds the days in each stage before ripe, so `[1, 2]` is 3 stages over 3 days; the sell price stays on the harvest `ItemDef`, so it has one home; `Game.crops` is keyed by seed id)
 - [ ] Plant a seed on a tilled tile; `Sprite3D` billboard per stage (sowing works: like RF4, Space with seeds selected sows one seed on the tilled, empty tile in front, not a 3×3 around the player, and costs no RP; the billboards are placeholder `Label3D`s reading "Turnip 2/3" until the stage sprites are painted; still to do: the sprites, and RF4's charged sow over a 2×2 section)
   - Done: `Field.Soil` could not say "planted and watered", so now `Field` keeps a `Plot` per tilled tile with its own `watered` flag and its `Crop` (def, level, days), so an untilled tile can't be watered or sown; `Field.soil()` now only says how the ground looks. Seeds come in through `Field.sow()`.
-- [x] Clock: day starts at 06:00 and runs on past midnight, like RF4; HUD clock (`data/clock.tres`: 1 real second per game minute, indoors too; no faint at any hour, and staying up until 06:00 runs the `DayTick` with no HP, RP or gold change; the player yawns at 01:00 (`bedtime_hour`); the clock pauses while the sleep prompt or the debug console is open, a design default; console `time hh:mm`, 25:30 is 01:30 that night; the time is saved from Step 6)
+- [x] Clock: day starts at 06:00 and runs on past midnight, like RF4; HUD clock (`data/clock.tres`: 1 real second per game minute, indoors too; no faint at any hour, and staying up until 06:00 runs the `DayTick` with no HP, RP or gold change; the player yawns at 01:00 (`bedtime_hour`); the clock pauses while the sleep prompt, the bin screen or the debug console is open, a design default; console `time hh:mm`, 25:30 is 01:30 that night; the time is saved from Step 6)
 - [x] House interior scene with the bed, entered through the house door (`scenes/house_interior.tscn`, built from boxes; a sub-scene of the farm at x = 100, so one player, HUD and saved position cover both; walk into the barn door to go in, onto the doormat to go out)
 - [x] Bed interaction → sleep → next day (F beside the bed asks `sleep_question`; Yes at any hour sleeps until 06:00 the next morning, fully restores RP and HP (`sleep_rp_restore` and `sleep_hp_restore` in `data/vitals.tres`) and gives the sleeping skill's `xp_per_use` only for a bedtime before 01:00; every new morning opens on a black "Day N" screen that fades out, a design default; the Yes and No labels live in the scene; F does nothing while a tool is charging or swinging)
 - [x] `DayTick`: one ordered pipeline at 06:00 (crops grow → soil dries → future hooks) (`Game.day_tick()`: day + 1 and the wake hour, then `Field.grow_crops()`, empty until crops arrive, then `Field.dry()`, then the `Game.day_started` signal; sleep and an all-nighter run it)
@@ -73,14 +73,14 @@ Every checked item must meet the [definition of done](../endgame.md#definition-o
 
 ## Step 6 — Selling, save v2 (weeks 13–14)
 
-- [ ] Shipping bin: sold at 06:00, gold added
-- [ ] Shop NPC: talk → "sell all" menu
-- [ ] Price scales with item level (data-tuned)
+- [x] Shipping bin: sold at 08:00, gold added (08:00, not 06:00, per the [RF4 research](../rf4-research.md#shipping-and-selling-researched); like RF4 the bin is a container: F beside it opens the bag's 24 slots next to the bin's 60, and a click moves a stack to the other side, onto a stack of the same item and level first, then into the first empty slot, and only if all of it fits; items come back out until they sell; an item with no sell price, like a tool, can't go in, as RF4's key items can't be shipped; the tree pauses while it is open, and F or Esc closes it; when the clock passes 08:00 everything in the bin sells and the bin empties, once a day; a load or a console `time` jump past 08:00 sells nothing, and sleeping sells nothing until 08:00 comes; a "+N G" popup shows the gold, a design default since RF4's sources don't say how the game tells you; gold shows under the clock; the bin is saved, and a save without it loads with an empty bin; `sell_hour` and `bin_size` live in `data/shipping.tres`)
+- ~~Shop NPC: talk → "sell all" menu~~ Dropped: RF4 shops buy nothing, so the bin is the only way to sell (see the [RF4 research](../rf4-research.md#shipping-and-selling-researched); your own store comes in a later phase)
+- [x] Price scales with item level (data-tuned) (RF4's table, rounded down: `level_percent` in `data/shipping.tres` gives each `ItemDef` category a percentage per level; crops and tools 100, 110 … 180, then 200 at level 10; seeds 100, 102 … 116, then 120; a turnip ships for 30G at level 1, 42G at level 5 and 60G at level 10; seed prices are RF4's, turnip 2G and potato 8G)
 - [x] Save v2 adds: tiles (tilled, watered), crops (seed id, level, days), RP, HP, skill XP, time (`Game.minute`), watering-can water; v1 saves still load (console `save` / `load`; a value missing from the file loads as a new game has it, so a v1 save wakes at 06:00 with full RP and HP, no skill XP, an empty field and a full can; an unknown item, crop or skill is dropped with a warning; HP loads as at least 1)
   - Load the field in place (one bulk replace that emits `changed`), not by swapping `Game.field`: `FarmGrid` stays connected to the old object.
   - A load mid-swing must reset the player, or the swing spends water from a stack that is no longer in the inventory.
 
-**Done when:** a v1 save loads into v2 without errors, and a level-5 turnip sells for more than a level-1 turnip.
+**Done when:** a v1 save loads into v2 without errors, and a level-5 turnip ships for more than a level-1 turnip (42G against 30G).
 
 ## Step 7 — Playtest and tune (weeks 15–16)
 
@@ -92,6 +92,7 @@ Every checked item must meet the [definition of done](../endgame.md#definition-o
 
 **Later, not needed for Step 7:**
 
+- [ ] Stacks of at most 9, like RF4: Greenrune stacks an item up to its `max_stack` (99) in the bag and the bin alike, so this is an inventory-wide change (see the [RF4 research](../rf4-research.md#shipping-and-selling-researched))
 - [ ] Fatigue and Cold from all-nighters, like RF4: staying up through 06:00 has a small chance to cause Fatigue (higher RP costs), and another all-nighter while Fatigued has a small chance to cause Cold (RP drains over time); a bedtime by 05:59 avoids both, and sleep cures them (see [RF4 research](../rf4-research.md#time-and-sleep-researched))
 
 ## Phase done when

@@ -7,6 +7,19 @@
 [ext_resource type="Script" path="res://scripts/clock_label.gd" id="5_clock"]
 [ext_resource type="Script" path="res://scripts/day_fade.gd" id="6_fade"]
 [ext_resource type="Script" path="res://scripts/sleep_prompt.gd" id="7_sleep"]
+[ext_resource type="Script" path="res://scripts/gold_label.gd" id="8_gold"]
+[ext_resource type="Script" path="res://scripts/bin_screen.gd" id="9_bin"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_bin"]
+content_margin_left = 16.0
+content_margin_top = 12.0
+content_margin_right = 16.0
+content_margin_bottom = 16.0
+bg_color = Color(0.3, 0.25, 0.19, 0.95)
+corner_radius_top_left = 8
+corner_radius_top_right = 8
+corner_radius_bottom_right = 8
+corner_radius_bottom_left = 8
 
 [node name="HUD" type="CanvasLayer"]
 
@@ -28,6 +41,21 @@ theme_override_constants/outline_size = 6
 theme_override_font_sizes/font_size = 24
 horizontal_alignment = 2
 script = ExtResource("5_clock")
+
+[node name="Gold" type="Label" parent="."]
+anchors_preset = 1
+anchor_left = 1.0
+anchor_right = 1.0
+offset_left = -256.0
+offset_top = 50.0
+offset_right = -16.0
+offset_bottom = 84.0
+grow_horizontal = 0
+theme_override_colors/font_outline_color = Color(0, 0, 0, 1)
+theme_override_constants/outline_size = 6
+theme_override_font_sizes/font_size = 24
+horizontal_alignment = 2
+script = ExtResource("8_gold")
 
 [node name="DayFade" type="ColorRect" parent="."]
 anchors_preset = 15
@@ -102,5 +130,45 @@ custom_minimum_size = Vector2(96, 0)
 layout_mode = 2
 theme_override_font_sizes/font_size = 20
 text = "No"
+
+[node name="BinScreen" type="PanelContainer" parent="."]
+process_mode = 2
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_styles/panel = SubResource("StyleBoxFlat_bin")
+script = ExtResource("9_bin")
+
+[node name="Box" type="HBoxContainer" parent="BinScreen"]
+layout_mode = 2
+theme_override_constants/separation = 24
+
+[node name="Bag" type="VBoxContainer" parent="BinScreen/Box"]
+layout_mode = 2
+
+[node name="Title" type="Label" parent="BinScreen/Box/Bag"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 20
+text = "Bag"
+
+[node name="Grid" type="GridContainer" parent="BinScreen/Box/Bag"]
+layout_mode = 2
+columns = 6
+
+[node name="Bin" type="VBoxContainer" parent="BinScreen/Box"]
+layout_mode = 2
+
+[node name="Title" type="Label" parent="BinScreen/Box/Bin"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 20
+text = "Shipping Bin"
+
+[node name="Grid" type="GridContainer" parent="BinScreen/Box/Bin"]
+layout_mode = 2
+columns = 10
 
 [node name="DebugConsole" parent="." instance=ExtResource("2_console")]

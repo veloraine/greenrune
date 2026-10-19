@@ -10,9 +10,6 @@ static func write(tree: SceneTree) -> Error:
 	var player: Node3D = tree.get_first_node_in_group(&"player")
 	if player == null:
 		return ERR_UNCONFIGURED
-	var inventory: Array = []
-	for stack in Game.inventory.slots:
-		inventory.append({"id": stack.item.id, "level": stack.level, "count": stack.count, "water": stack.water} if stack else null)
 	var field: Array = []
 	var plots: Dictionary[Vector2i, Field.Plot] = Game.field.plots()
 	for cell in plots:
@@ -34,7 +31,8 @@ static func write(tree: SceneTree) -> Error:
 		"rp": Game.stats.rp,
 		"hp": Game.stats.hp,
 		"xp": xp,
-		"inventory": inventory,
+		"inventory": _stacks_to_json(Game.inventory),
+		"bin": _stacks_to_json(Game.bin),
 		"field": field,
 	}
 	# Write a temp file and swap it in, so a crash mid-write can't destroy the last good save.
@@ -65,16 +63,8 @@ static func read(tree: SceneTree) -> Error:
 	# JSON numbers come back as floats, hence the int() casts.
 	# A charge or swing holds a stack that is about to leave the inventory.
 	player.cancel_tool()
-	var slots: Array[ItemStack] = []
-	for entry: Variant in data.inventory:
-		var item: ItemDef = Game.items.get(StringName(entry.id)) if entry else null
-		if entry and item == null:
-			push_warning("Save has unknown item '%s'; dropping it" % entry.id)
-		var stack: ItemStack = ItemStack.new(item, int(entry.level), clampi(int(entry.count), 1, item.max_stack)) if item else null
-		if item is ToolDef and entry.has("water"):
-			stack.water = clampi(int(entry.water), 0, item.capacity)
-		slots.append(stack)
-	Game.inventory.replace_slots(slots)
+	Game.inventory.replace_slots(_stacks_from_json(data.inventory))
+	Game.bin.replace_slots(_stacks_from_json(data.bin))
 	var plots: Dictionary[Vector2i, Field.Plot] = {}
 	for entry: Dictionary in data.field:
 		var plot := Field.Plot.new()
@@ -112,6 +102,7 @@ static func _defaults() -> Dictionary:
 		"rp": Game.vitals.base_max_rp,
 		"hp": Game.vitals.max_hp,
 		"xp": {},
+		"bin": [],
 		"field": [],
 	}
 
@@ -129,14 +120,8 @@ static func _is_valid(data: Dictionary) -> bool:
 	var xp: Variant = data.get("xp")
 	if not (xp is Dictionary and xp.values().all(_is_number)):
 		return false
-	var inventory: Variant = data.get("inventory")
-	if not (inventory is Array and inventory.size() <= Inventory.SIZE):
+	if not (_is_valid_stacks(data.get("inventory"), Inventory.SIZE) and _is_valid_stacks(data.get("bin"), Game.shipping.bin_size)):
 		return false
-	for entry: Variant in inventory:
-		if entry == null:
-			continue
-		if not (entry is Dictionary and entry.get("id") is String and _is_number(entry.get("level")) and _is_number(entry.get("count")) and _is_number(entry.get("water", 0))):
-			return false
 	var field: Variant = data.get("field")
 	if not field is Array:
 		return false
@@ -148,6 +133,37 @@ static func _is_valid(data: Dictionary) -> bool:
 			return false
 		var crop: Variant = entry.get("crop")
 		if crop != null and not (crop is Dictionary and crop.get("seed") is String and _is_number(crop.get("level")) and _is_number(crop.get("days"))):
+			return false
+	return true
+
+
+static func _stacks_to_json(inventory: Inventory) -> Array:
+	var entries: Array = []
+	for stack in inventory.slots:
+		entries.append({"id": stack.item.id, "level": stack.level, "count": stack.count, "water": stack.water} if stack else null)
+	return entries
+
+
+static func _stacks_from_json(entries: Array) -> Array[ItemStack]:
+	var slots: Array[ItemStack] = []
+	for entry: Variant in entries:
+		var item: ItemDef = Game.items.get(StringName(entry.id)) if entry else null
+		if entry and item == null:
+			push_warning("Save has unknown item '%s'; dropping it" % entry.id)
+		var stack: ItemStack = ItemStack.new(item, int(entry.level), clampi(int(entry.count), 1, item.max_stack)) if item else null
+		if item is ToolDef and entry.has("water"):
+			stack.water = clampi(int(entry.water), 0, item.capacity)
+		slots.append(stack)
+	return slots
+
+
+static func _is_valid_stacks(entries: Variant, size: int) -> bool:
+	if not (entries is Array and entries.size() <= size):
+		return false
+	for entry: Variant in entries:
+		if entry == null:
+			continue
+		if not (entry is Dictionary and entry.get("id") is String and _is_number(entry.get("level")) and _is_number(entry.get("count")) and _is_number(entry.get("water", 0))):
 			return false
 	return true
 

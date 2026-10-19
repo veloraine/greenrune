@@ -14,6 +14,8 @@ var _water_query := PhysicsPointQueryParameters3D.new()
 @onready var _wake_point: Marker3D = $HouseInterior/WakePoint
 @onready var _bed: Area3D = $HouseInterior/Bed/Reach
 @onready var _sleep_prompt: SleepPrompt = $HUD/SleepPrompt
+@onready var _bin: Area3D = $ShippingBin/Reach
+@onready var _bin_screen: BinScreen = $HUD/BinScreen
 
 
 func _ready() -> void:
@@ -46,6 +48,8 @@ func _unhandled_input(event: InputEvent) -> void:
 	if event.is_action_pressed("interact"):
 		if _bed.overlaps_body(_player):
 			_sleep_prompt.open()
+		elif _bin.overlaps_body(_player):
+			_bin_screen.open()
 		else:
 			_harvest()
 	elif event.is_action_pressed("use_tool") and _held_crop():

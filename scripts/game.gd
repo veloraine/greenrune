@@ -4,6 +4,8 @@ extends Node
 signal day_started
 ## Emitted once a night, when the clock passes the bedtime hour.
 signal yawned
+## Emitted when the bin's contents sell, with the gold they made.
+signal shipped(gold: int)
 
 const ITEMS_DIR: String = "res://data/items/"
 const SKILLS_DIR: String = "res://data/skills/"
@@ -15,8 +17,11 @@ var skills: Dictionary[StringName, SkillDef] = {}
 var crops: Dictionary[StringName, CropDef] = {}
 var vitals: VitalsDef = load("res://data/vitals.tres")
 var clock: ClockDef = load("res://data/clock.tres")
+var shipping: ShippingDef = load("res://data/shipping.tres")
 var stats: Stats
 var inventory: Inventory = Inventory.new()
+## The shipping bin's contents, which can be taken back out until they sell.
+var bin: Inventory = Inventory.new(shipping.bin_size)
 var field: Field = Field.new()
 var day: int = 1
 ## Minutes since 00:00 of the current day. Past midnight it runs on beyond 1440.
@@ -51,6 +56,9 @@ func _process(delta: float) -> void:
 	minute += delta / clock.seconds_per_minute
 	if before < clock.bedtime_hour * 60.0 and minute >= clock.bedtime_hour * 60.0:
 		yawned.emit()
+	# Only the clock running past the hour sells, so a load or a console time jump past it doesn't.
+	if before < shipping.sell_hour * 60.0 and minute >= shipping.sell_hour * 60.0:
+		_ship()
 	# Like RF4, staying up all night costs nothing: the next morning simply starts.
 	if minute >= (24 + clock.wake_hour) * 60.0:
 		day_tick()
@@ -65,3 +73,16 @@ func day_tick() -> void:
 	field.grow_crops()
 	field.dry()
 	day_started.emit()
+
+
+## Sells everything in the bin, rounded down per item, and empties it.
+func _ship() -> void:
+	if bin.slots.count(null) == bin.slots.size():
+		return
+	var earned: int = 0
+	for stack in bin.slots:
+		if stack:
+			earned += shipping.price(stack.item, stack.level) * stack.count
+	bin.replace_slots([])
+	gold += earned
+	shipped.emit(earned)

@@ -229,7 +229,7 @@ Smallest possible playable loop. **One 3D farm scene, no town yet.**
 - **Inventory + hotbar:** 2D UI (`Control` nodes) overlaid on the 3D world. Start with 8 slots. Each stack is an item *instance* (item id + level), not a bare count.
 - **Day cycle:** sleep-to-next-day. Use a `DirectionalLight3D` rotating around to fake sun position. Skybox can be a simple gradient. Crops grow and soil dries at the 06:00 wake-up tick; build one ordered end-of-day pipeline now, since crops, NPCs, requests and monsters will all hook into it.
 - **Save/load:** implement in week 2–3, NOT later. Refactoring saves into a finished project is hell. Save tile states, inventory (item id + level per stack), RP, skill XP, time, gold.
-- **One shop NPC:** another KayKit model with Mixamo idle, talk to → "sell all" menu.
+- **Shipping bin:** like RF4, a container you fill and empty freely; everything in it sells at 08:00, priced by item level. RF4 shops buy nothing, so there is no "sell all" shop NPC (see the [RF4 research](rf4-research.md#shipping-and-selling-researched)).
 
 **Exit criterion:** play 5 in-game days, save, quit, reload, continue farming. RP runs out by evening, at least one skill levels up, and a reaped seed comes back a level higher. It's ugly and minimal but the 3D loop works.
 
@@ -244,7 +244,7 @@ Now add the social layer in 3D.
 - **Line selection layer:** Dialogic 2 handles display and branching, not *which* line to say. Build a small "pick the best-matching line" layer keyed on time, season, weather, friendship and recent events. RF4's writer: if routines change but lines don't, "the village will feel lifeless."
 - **Friendship/affection points** per NPC: daily talk, one counted gift per day, birthdays double the gift value.
 - **Gift system** with per-NPC likes/dislikes/hates. Crop level should affect gift value.
-- **Proper shop:** buy seeds, sell crops at different rates.
+- **Proper shop:** buy seeds. Like RF4, shops don't buy; selling stays with the shipping bin until your own store in a later phase.
 
 **Budget warning:** this phase is content-bound, not code-bound. Most of the 4–5 months is writing lines, not building systems.
 

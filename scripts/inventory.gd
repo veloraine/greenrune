@@ -12,8 +12,8 @@ var slots: Array[ItemStack] = []
 var selected: int = 0
 
 
-func _init() -> void:
-	slots.resize(SIZE)
+func _init(size: int = SIZE) -> void:
+	slots.resize(size)
 
 
 ## Fills stacks of the same item and level first, then empty slots. Returns what didn't fit.
@@ -25,7 +25,7 @@ func add(item: ItemDef, level: int, count: int) -> int:
 			var moved: int = mini(item.max_stack - stack.count, count)
 			stack.count += moved
 			count -= moved
-	for i in SIZE:
+	for i in slots.size():
 		if count > 0 and slots[i] == null:
 			var moved: int = mini(item.max_stack, count)
 			slots[i] = ItemStack.new(item, level, moved)
@@ -46,12 +46,31 @@ func room_for(item: ItemDef, level: int) -> int:
 	return room
 
 
+## Moves the stack at index into to, all of it or none: onto stacks of the same item and level first,
+## then the stack itself into the first empty slot, so a watering can keeps its water.
+func move(index: int, to: Inventory) -> void:
+	var stack: ItemStack = slots[index]
+	if stack == null or to.room_for(stack.item, stack.level) < stack.count:
+		return
+	slots[index] = null
+	for other in to.slots:
+		if other and other.item == stack.item and other.level == stack.level:
+			var moved: int = mini(stack.item.max_stack - other.count, stack.count)
+			other.count += moved
+			stack.count -= moved
+	if stack.count > 0:
+		to.slots[to.slots.find(null)] = stack
+	changed.emit()
+	to.changed.emit()
+
+
 func select(index: int) -> void:
 	selected = posmod(index, HOTBAR_SIZE)
 	changed.emit()
 
 
 func replace_slots(new_slots: Array[ItemStack]) -> void:
+	var size: int = slots.size()
 	slots = new_slots
-	slots.resize(SIZE)
+	slots.resize(size)
 	changed.emit()

@@ -12,6 +12,7 @@ func _ready() -> void:
 	Game.stats.leveled_up.connect(_on_leveled_up)
 	Game.stats.fainted.connect(_on_fainted)
 	Game.yawned.connect(_on_yawned)
+	Game.shipped.connect(_on_shipped)
 
 
 func _on_leveled_up(skill: SkillDef, level: int) -> void:
@@ -24,6 +25,10 @@ func _on_fainted() -> void:
 
 func _on_yawned() -> void:
 	_show(Game.clock.yawn_message)
+
+
+func _on_shipped(gold: int) -> void:
+	_show("+%d G" % gold)
 
 
 func _show(message: String) -> void:

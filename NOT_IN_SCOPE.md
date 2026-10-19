@@ -16,7 +16,7 @@ The presence of an idea here means it will be considered AFTER the current phase
 ## Deferred to Phase 2+ (after farm prototype is solid)
 
 - Town scene
-- NPCs beyond the single shop NPC
+- NPCs (Phase 1 sells through the shipping bin; RF4 shops buy nothing)
 - Dialogue system (Dialogic 2 integration)
 - Friendship / affection system
 - Gift system
