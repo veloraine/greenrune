@@ -161,6 +161,26 @@ Details come from the community wiki unless marked otherwise. The official XSEED
 - **XP:** every farm chore trains one Farming skill. Harvest or pickup gives 2 XP, sowing 15 per seed, a sickled crop 15, tilling 3 and watering 4 ([GameFAQs: skill XP][gf-xp]). Medium confidence: one player's list. Greenrune's reaping skill takes the sickle's 15, divided by 5 like the hoe and can. Sowing and hand-harvest give no XP yet, because Greenrune splits Farming into tilling, watering and reaping, and neither fits.
 - **Unknown:** the sickle's RP cost and charge areas. Greenrune copies the hoe's.
 
+### Shipping and selling (researched)
+- **The bin is a container:** talking to the bin opens its item grid, and items move between the Rucksack and the bin as with a fridge or storage box. Items can be taken back out until they ship. RF3 only let you throw items in, one slot at a time, with no way back out ([Hare blog: RF3 vs RF4][hare-rf3v4], [Steam: shipping?][steam-ship] [community]). Medium-high confidence: two sources agree. The bin's menu also offers "look at sales records" ([Steam: 100% shipment][steam-list]).
+- **Capacity:** the starting bin has 60 slots. "New Shipping Box" orders raise it to 90, 150 and 300 for Prince Points and Lumber. The first order appears after 50,000G shipped in total ([wikiwiki: orders][jp-orders], [Fandom: Prince Points][w-pp]). High confidence. A slot holds up to 9 of one item at one level, and cooked dishes, weapons and tools don't stack ([kuma blog][kuma-trophy], [Steam: shipping?][steam-ship], [Hare blog: RF3 vs RF4][hare-rf3v4]). Medium confidence. The bin's size caps what you can sell in a day ([sinoars blog][jp-sinoars]).
+- **When it pays:** every morning at 08:00 the bin's contents are sold and the gold goes into your wallet. Sleeping doesn't trigger it, and 06:00 isn't the time ([wikiwiki: furniture][jp-furn], [wikiwiki: Q&A][jp-qa], [wikiwiki: requests][jp-req], [Yahoo Chiebukuro][chie-sell], [Fandom: Crops][w-crops], [GameFAQs board via search][gf-ship] [community]). High confidence: five sources agree. One blog says the money arrives at 06:00 ([sinoars blog][jp-sinoars]); it stands alone and is partly written from memory. Shipping happens once a day ([wikiwiki: requests][jp-req]). Inferred: an item put in at 07:00 sells that same morning, and items put in the night before can still come out until 08:00.
+- **Where:** one bin stands at the top left of the farm behind the castle from the start ([Yahoo Chiebukuro][chie-sell]). The general store sells more bins for 25,000G, 30 Lumber and 50 Material Stone ([wikiwiki: furniture][jp-furn], [Fandom: Furniture][w-furn]). A bin can be lifted and carried, for example next to the kitchen or into the clinic ([Steam: shipping?][steam-ship], [wikiwiki: 小ネタ][jp-tips]). Medium confidence.
+- **Unknown: whether two bins share one inventory**, and whether a bin works on every map.
+- **Unknown: how the player is told.** No source mentions a summary screen or a message at 08:00. They only say the money comes in. The sales record is the only shipping screen found.
+- **Shops don't buy:** no RF4 shop has a sell option. A player who expected to sell at the general store, as in earlier games, found no "sell" command at any shop. The five answers all say to ship it or, later, to open your own store ([Yahoo Chiebukuro][chie-sell]). The wiki's store page weighs only those two ways too ([wikiwiki: own store][jp-store]). Medium-high confidence.
+- **Your own store (later phase):** a license order (1,000 Prince Points) after a request chain that includes 10% shipping completion. You stock a store box and stand at the counter, and villagers buy at higher prices than shipping pays, but slowly ([wikiwiki: own store][jp-store], [Yahoo Chiebukuro][chie-sell]). Shipping and store sales both train the Bartering skill ([Fandom: Skills][w-skills], [wikiwiki: skills][jp-skills]).
+- **Price by level:** ship price is the Lv1 price times a multiplier, rounded down. The multiplier depends on the item's category ([wikiwiki: shipping box][jp-ship]). Medium-high confidence: one detailed table; Fandom agrees that higher levels sell for more but gives no numbers ([Fandom: Shipping List][w-shiplist]).
+  - Table A covers vegetables, strawberries, pineapples, flowers grown from seed, equipment and tools: 1.0x at Lv1, then +0.1x per level to 1.8x at Lv9, then 2.0x at Lv10.
+  - Table C covers seeds: +0.02x per level to 1.16x at Lv9, then 1.2x at Lv10. Fruit, herbs, medicine, dishes and fish use other tables, up to 5x for the rarest fish.
+  - Turnip (30G): Lv1 30, Lv5 42, Lv10 60. Potato (90G): Lv1 90, Lv5 126, Lv10 180. Turnip seed (2G): 2 at every level. Potato seed (8G): 9 at Lv10.
+  - The wiki's farming page gives a simpler rule, +10% per level above 1, so Lv10 is 1.9x (turnip 57) ([wikiwiki: 農作業][jp-farm]). The per-category table is the more specific source.
+- **Shipping list (later phase):** the bin records every item shipped and its total value. An item earns a bronze, silver or gold crown at 20x, 50x or 100x its Lv1 price shipped in total ([wikiwiki: shipping box][jp-ship]). Items never shipped carry a "not shipped" tag in menus ([Hare blog: RF3 vs RF4][hare-rf3v4]). The shipping completion rate gates requests, the first field expansion (30,000G shipped and 5%) and a trophy ([wikiwiki: orders][jp-orders], [wikiwiki: requests][jp-req]).
+- **Shipping unlocks stock (later phase):** an early request, "Let's try shipping!", asks for a turnip in the bin and adds potato and spinach seeds to the general store. After the request "Ship a Lv2 turnip", seed shops sell each seed at the highest level you have shipped of it ([wikiwiki: requests][jp-req], [wikiwiki: Q&A][jp-qa], [Fandom: Crops][w-crops]). High confidence. A request to ship counts only when the item is in the bin at 08:00 ([wikiwiki: requests][jp-req]).
+- **Prince Points (later phase):** each day's shipment gives 50 to 125 points, scaled by its value up to 100,000G ([wikiwiki: orders][jp-orders], [Fandom: Prince Points][w-pp]).
+- **Monsters (later phase):** monsters on farm duty put the crops they harvest in the bin ([wikiwiki: Q&A][jp-qa]).
+- **Analysis:** Step 6 conflicts with RF4 in two places. The bin sells at 08:00, not 06:00, and RF4 shops buy nothing, so the "sell all" shop NPC has no RF4 counterpart. RF4's level table settles "data-tuned": a level-5 turnip ships for 42G against 30G at level 1.
+
 ### Combat, magic and bosses
 - **Weapon classes:** short sword, long sword, spear, axe/hammer, dual blades, fists, and staves for magic ([XSEED: Farming & Fighting][xseed-farm], [Fandom: Skills][w-skills]).
 - **Rune Abilities:** weapon skills and elemental, healing and "music" spells, used from equip slots ([Fandom: Rune Abilities][w-rabil]).
@@ -610,3 +630,17 @@ Applied to `docs/plan.md`, `SCOPE.md`, `NOT_IN_SCOPE.md` and `README.md` on 2026
 [w-turnip]: https://runefactory.fandom.com/wiki/Turnip
 [w-potato]: https://runefactory.fandom.com/wiki/Potato
 [jp-farm]: https://wikiwiki.jp/rf4bu/%E8%BE%B2%E4%BD%9C%E6%A5%AD
+[jp-ship]: https://wikiwiki.jp/rf4bu/%E5%87%BA%E8%8D%B7%E7%AE%B1
+[jp-furn]: https://wikiwiki.jp/rf4bu/%E5%AE%B6%E5%85%B7
+[jp-req]: https://wikiwiki.jp/rf4bu/%E4%BE%9D%E9%A0%BC
+[jp-orders]: https://wikiwiki.jp/rf4bu/%E3%82%AA%E3%83%BC%E3%83%80%E3%83%BC%E3%81%A8%E3%82%A4%E3%83%99%E3%83%B3%E3%83%88
+[jp-store]: https://wikiwiki.jp/rf4bu/%E8%87%AA%E5%88%86%E3%81%AE%E5%BA%97
+[jp-skills]: https://wikiwiki.jp/rf4bu/%E3%82%B9%E3%82%AD%E3%83%AB
+[chie-sell]: https://detail.chiebukuro.yahoo.co.jp/qa/question_detail/q1292814827
+[hare-rf3v4]: https://harenohiusagi.livedoor.blog/archives/6467305.html
+[kuma-trophy]: https://kumagorou0418.hatenablog.jp/entry/2024/08/21/083704
+[steam-ship]: https://steamcommunity.com/app/1580240/discussions/0/6589423877370158609
+[steam-list]: https://steamcommunity.com/app/1580240/discussions/0/3281443891467884410
+[gf-ship]: https://gamefaqs.gamespot.com/boards/635388-rune-factory-4/68620894
+[w-shiplist]: https://runefactory.fandom.com/wiki/Shipping_List_%28RF4%29
+[w-furn]: https://runefactory.fandom.com/wiki/Furniture_%28RF4%29
