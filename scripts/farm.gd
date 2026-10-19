@@ -20,6 +20,7 @@ var _water_query := PhysicsPointQueryParameters3D.new()
 
 func _ready() -> void:
 	_player.tool_used.connect(_on_tool_used)
+	_player.sow_released.connect(_sow)
 	Game.stats.fainted.connect(_on_fainted)
 	_sleep_prompt.confirmed.connect(_sleep)
 	$HouseDoor.body_entered.connect(_go_through_door.bind($HouseInterior/Entrance))
@@ -30,13 +31,15 @@ func _ready() -> void:
 
 
 func _process(_delta: float) -> void:
-	var tool: ToolDef = _player.held_tool()
+	# One source for what is held, so a hotbar change mid-charge can't hide the area about to be hit.
+	var stack: ItemStack = _player.held_stack()
+	var tool: ToolDef = stack.item as ToolDef if stack else null
 	if _player.is_swinging():
 		_cells.clear()
 	elif tool:
 		_field.cells_hit(_player.global_position, _player.tool_point(tool), tool.charges[_player.charge_level()].size, _cells)
-	elif _held_crop():
-		_field.cells_hit(_player.global_position, _front(), 1, _cells)
+	elif stack and Game.crops.has(stack.item.id):
+		_field.cells_hit(_player.global_position, _front(), _sow_size(_player.charge_level()), _cells)
 	else:
 		_cells.clear()
 	_field.show_target(_cells)
@@ -52,8 +55,6 @@ func _unhandled_input(event: InputEvent) -> void:
 			_bin_screen.open()
 		else:
 			_harvest()
-	elif event.is_action_pressed("use_tool") and _held_crop():
-		_sow(_held_crop())
 
 
 func _on_tool_used(stack: ItemStack, charge_level: int) -> void:
@@ -109,21 +110,28 @@ func _sleep() -> void:
 	Game.day_tick()
 
 
-## The crop that the selected hotbar item sows, or null.
-func _held_crop() -> CropDef:
-	var stack: ItemStack = Game.inventory.slots[Game.inventory.selected]
-	return Game.crops.get(stack.item.id) if stack else null
+## Tiles per side sown: the tile in front for a tap, the charged area for a charged sow.
+func _sow_size(charge_level: int) -> int:
+	return Game.sowing.charge_size if charge_level > 0 else 1
 
 
-## Sows one seed on the tile in front, if it is tilled and empty.
-func _sow(crop: CropDef) -> void:
-	var stack: ItemStack = Game.inventory.slots[Game.inventory.selected]
-	_field.cells_hit(_player.global_position, _front(), 1, _cells)
-	if _cells.is_empty() or not Game.field.sow(_cells[0], crop, stack.level):
+## Sows one seed on each tilled, empty tile in the area, until the stack runs out. Free of RP, like RF4.
+func _sow(stack: ItemStack, charge_level: int) -> void:
+	var crop: CropDef = Game.crops[stack.item.id]
+	_field.cells_hit(_player.global_position, _front(), _sow_size(charge_level), _cells)
+	var sown: bool = false
+	for cell in _cells:
+		if stack.count == 0:
+			break
+		if Game.field.sow(cell, crop, stack.level):
+			stack.count -= 1
+			sown = true
+	if not sown:
 		return
-	stack.count -= 1
 	if stack.count == 0:
-		Game.inventory.slots[Game.inventory.selected] = null
+		var slot: int = Game.inventory.slots.find(stack)
+		if slot != -1:
+			Game.inventory.slots[slot] = null
 	Game.inventory.changed.emit()
 
 

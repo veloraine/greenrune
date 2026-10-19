@@ -18,6 +18,7 @@ var crops: Dictionary[StringName, CropDef] = {}
 var vitals: VitalsDef = load("res://data/vitals.tres")
 var clock: ClockDef = load("res://data/clock.tres")
 var shipping: ShippingDef = load("res://data/shipping.tres")
+var sowing: SowingDef = load("res://data/sowing.tres")
 var stats: Stats
 var inventory: Inventory = Inventory.new()
 ## The shipping bin's contents, which can be taken back out until they sell.

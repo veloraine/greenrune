@@ -1,0 +1,8 @@
+[gd_resource type="Resource" script_class="SowingDef" format=3]
+
+[ext_resource type="Script" path="res://scripts/sowing_def.gd" id="1_sowing"]
+
+[resource]
+script = ExtResource("1_sowing")
+charge_hold_seconds = 0.6
+charge_size = 2

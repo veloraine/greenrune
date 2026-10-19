@@ -3,6 +3,8 @@ extends CharacterBody3D
 
 ## Emitted at the swing's impact frame.
 signal tool_used(stack: ItemStack, charge_level: int)
+## Emitted when Space is released with seeds. charge_level is 1 for a charged sow, else 0.
+signal sow_released(stack: ItemStack, charge_level: int)
 
 enum State { MOVE, CHARGE, SWING }
 
@@ -52,17 +54,16 @@ func _physics_process(delta: float) -> void:
 		Game.stats.add_xp(&"walking", Vector2(moved.x, moved.z).length() * Game.skills[&"walking"].xp_per_use)
 
 
-## The tool being used, or else the one in the selected hotbar slot. null if neither.
-func held_tool() -> ToolDef:
-	var stack: ItemStack = _stack if _state != State.MOVE else Game.inventory.slots[Game.inventory.selected]
-	return stack.item as ToolDef if stack else null
+## The stack being charged or swung, or else the selected hotbar slot's. null if neither.
+func held_stack() -> ItemStack:
+	return _stack if _state != State.MOVE else Game.inventory.slots[Game.inventory.selected]
 
 
 func is_swinging() -> bool:
 	return _state == State.SWING
 
 
-## True when not charging or swinging a tool.
+## True when not charging or swinging.
 func is_idle() -> bool:
 	return _state == State.MOVE
 
@@ -94,7 +95,9 @@ func tool_point(tool: ToolDef) -> Vector3:
 func charge_level() -> int:
 	if _state != State.CHARGE:
 		return 0
-	var tool: ToolDef = _stack.item
+	var tool: ToolDef = _stack.item as ToolDef
+	if tool == null:
+		return 1 if _charge_time >= Game.sowing.charge_hold_seconds else 0
 	var level: int = 0
 	for i in tool.charges.size():
 		if _charge_time >= tool.charges[i].hold_seconds:
@@ -124,7 +127,7 @@ func _move(delta: float) -> void:
 func _start_charge() -> bool:
 	_buffered = false
 	var stack: ItemStack = Game.inventory.slots[Game.inventory.selected]
-	if stack == null or not stack.item is ToolDef:
+	if stack == null or not (stack.item is ToolDef or Game.crops.has(stack.item.id)):
 		return false
 	_stack = stack
 	_state = State.CHARGE
@@ -134,7 +137,8 @@ func _start_charge() -> bool:
 	# Face exactly along the grid, so the tool lands on the targeted tile.
 	var f: Vector2i = facing()
 	rotation.y = atan2(-f.x, -f.y)
-	_equip(stack.item)
+	if stack.item is ToolDef:
+		_equip(stack.item)
 	if _anim.current_animation != &"Idle":
 		_anim.play(&"Idle", ANIM_BLEND)
 	return true
@@ -143,6 +147,13 @@ func _start_charge() -> bool:
 func _charge(delta: float) -> void:
 	_charge_time += delta
 	if Input.is_action_pressed("use_tool"):
+		return
+	if not _stack.item is ToolDef:
+		var level: int = charge_level()
+		var stack: ItemStack = _stack
+		_state = State.MOVE
+		_stack = null
+		sow_released.emit(stack, level)
 		return
 	var tool: ToolDef = _stack.item
 	_swing_level = charge_level()
