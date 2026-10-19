@@ -129,6 +129,8 @@ Details come from the community wiki unless marked otherwise. The official XSEED
 
 ### Tool, RP and HP rules (researched)
 - **Short on RP:** crafting with too little RP costs 1/4 of max HP, whatever the RP cost ([wikiwiki: 小ネタ][jp-tips] [community]). Medium confidence: one fan wiki, stated plainly.
+- **The HP cost scales with max HP:** players drink a high-level Formuade (超栄水) to drop max HP to 1, after which each short-RP craft costs only 1 HP ([royrune blog][jp-royrune], [sinoars blog][jp-sinoars] [community]). Medium-high confidence: two blogs and the wiki agree.
+- **Unknown: what happens to leftover RP** when a use costs more than the RP left. The wiki's wording is that HP is spent "instead of RP" (RPの代わりに), which hints RP stays as it is, but no source says so directly. Searched in English and Japanese (Fandom, wikiwiki, GameFAQs, blogs). Greenrune lets the leftover RP pay for that swing and empty to 0, then charges HP from the next swing on. That is the user's call.
 - **Fainting:** you wake at the clinic with 50% HP. A treatment fee comes out of the money you carry and can drop it to 0G. Friendship is not lost ([wikiwiki: 小ネタ][jp-tips], [Guidestrats: clinic][gs-clinic] [community]). Medium-high confidence: two sources agree. RP is not restored; you keep what you had. That comes from the user's own RF4 play, not a written source.
 - **4th charge stage:** costs 0 RP and gives no XP ([wikiwiki: 小ネタ][jp-tips]). Medium confidence.
 - **Skill XP per action, not per tile:** the hoe gives 3 XP per action, with charge bonuses of 30 / 80 / 100. The watering can gives 4 XP per action, with charge bonuses of 20 / 40 / 60 ([GameFAQs: skill XP][gf-xp] [community]). Medium confidence: memory-read values from one player, not cross-checked.
@@ -569,6 +571,8 @@ Applied to `docs/plan.md`, `SCOPE.md`, `NOT_IN_SCOPE.md` and `README.md` on 2026
 [wp-fae]: https://en.wikipedia.org/wiki/Fae_Farm
 [oc-rf4s]: https://opencritic.com/game/9052/rune-factory-4-special
 [deku]: https://www.dekudeals.com/items/rune-factory-4-special
+[jp-royrune]: https://royrune-mokosh.hatenablog.com/entry/2020/07/24/%E3%83%AB%E3%83%BC%E3%83%B3%E3%83%95%E3%82%A1%E3%82%AF%E3%83%88%E3%83%AA%E3%83%BC4%E3%83%BB4SP%E3%81%AB%E3%81%A6%E3%80%81%E7%B7%A8%E3%81%BF%E5%87%BA%E3%81%97%E3%81%9F%E3%83%AC%E3%83%99%E3%83%AB
+[jp-sinoars]: https://sinoars.hatenablog.com/entry/2020/01/29/124333
 [w-skills]: https://runefactory.fandom.com/wiki/Skills_%28RF4%29
 [w-farm]: https://runefactory.fandom.com/wiki/Farming_Mechanics_%28RF4%29
 [w-crops]: https://runefactory.fandom.com/wiki/Crops_%28RF4%29

@@ -45,10 +45,10 @@ func rp_cost(tool: ToolDef, charge_level: int) -> int:
 	return maxi(1, roundi(tool.charges[charge_level].rp_cost * (1.0 - cut)))
 
 
-## If RP can't cover the cost, a flat share of max HP is lost instead and RP is left alone.
+## RP pays while any is left, and a cost it can't fully cover empties it. At 0 RP a flat share of max HP is lost instead.
 func spend(cost: int) -> void:
-	if rp >= cost:
-		rp -= cost
+	if rp > 0:
+		rp = maxi(0, rp - cost)
 		changed.emit()
 		return
 	hp = maxi(0, hp - maxi(1, ceili(snappedf(_vitals.max_hp * _vitals.rp_short_hp_cost, 0.001))))
