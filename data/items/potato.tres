@@ -8,4 +8,3 @@ id = &"potato"
 display_name = "Potato"
 category = 2
 sell_price = 90
-max_stack = 99

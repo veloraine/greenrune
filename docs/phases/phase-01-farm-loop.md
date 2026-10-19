@@ -92,7 +92,7 @@ Every checked item must meet the [definition of done](../endgame.md#definition-o
 
 **Later, not needed for Step 7:**
 
-- [ ] Stacks of at most 9, like RF4: Greenrune stacks an item up to its `max_stack` (99) in the bag and the bin alike, so this is an inventory-wide change (see the [RF4 research](../rf4-research.md#shipping-and-selling-researched))
+- [x] Stacks of at most 9, like RF4: a bag or bin slot holds up to 9 of one item at one level, and tools don't stack (see the [RF4 research](../rf4-research.md#shipping-and-selling-researched)) (`max_stack` in each item's `.tres`, 9 by default and 1 for tools; console `add turnip 1 50` fills 6 slots; the bin's 60 slots cap a day's sale at 540 items, as in RF4; a save with a stack over the limit loads it capped in its slot with the rest added back to the same bag or bin, and only what doesn't fit is dropped, with a warning)
 - [ ] Fatigue and Cold from all-nighters, like RF4: staying up through 06:00 has a small chance to cause Fatigue (higher RP costs), and another all-nighter while Fatigued has a small chance to cause Cold (RP drains over time); a bedtime by 05:59 avoids both, and sleep cures them (see [RF4 research](../rf4-research.md#time-and-sleep-researched))
 
 ## Phase done when

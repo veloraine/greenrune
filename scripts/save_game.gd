@@ -63,8 +63,8 @@ static func read(tree: SceneTree) -> Error:
 	# JSON numbers come back as floats, hence the int() casts.
 	# A charge or swing holds a stack that is about to leave the inventory.
 	player.cancel_tool()
-	Game.inventory.replace_slots(_stacks_from_json(data.inventory))
-	Game.bin.replace_slots(_stacks_from_json(data.bin))
+	_load_stacks(Game.inventory, data.inventory)
+	_load_stacks(Game.bin, data.bin)
 	var plots: Dictionary[Vector2i, Field.Plot] = {}
 	for entry: Dictionary in data.field:
 		var plot := Field.Plot.new()
@@ -144,17 +144,27 @@ static func _stacks_to_json(inventory: Inventory) -> Array:
 	return entries
 
 
-static func _stacks_from_json(entries: Array) -> Array[ItemStack]:
+## A stack over its item's max_stack, from a save written when stacks were bigger, keeps its slot capped
+## and the rest is added back to the same bag or bin rather than clamped, so nothing is lost while there is room.
+static func _load_stacks(inventory: Inventory, entries: Array) -> void:
 	var slots: Array[ItemStack] = []
+	var overflow: Array[ItemStack] = []
 	for entry: Variant in entries:
 		var item: ItemDef = Game.items.get(StringName(entry.id)) if entry else null
 		if entry and item == null:
 			push_warning("Save has unknown item '%s'; dropping it" % entry.id)
-		var stack: ItemStack = ItemStack.new(item, int(entry.level), clampi(int(entry.count), 1, item.max_stack)) if item else null
+		var count: int = maxi(int(entry.count), 1) if item else 0
+		var stack: ItemStack = ItemStack.new(item, int(entry.level), mini(count, item.max_stack)) if item else null
 		if item is ToolDef and entry.has("water"):
 			stack.water = clampi(int(entry.water), 0, item.capacity)
+		if item and count > item.max_stack:
+			overflow.append(ItemStack.new(item, stack.level, count - item.max_stack))
 		slots.append(stack)
-	return slots
+	inventory.replace_slots(slots)
+	for extra in overflow:
+		var lost: int = inventory.add(extra.item, extra.level, extra.count)
+		if lost > 0:
+			push_warning("Save has %d more %s Lv%d than fits; dropping them" % [lost, extra.item.id, extra.level])
 
 
 static func _is_valid_stacks(entries: Variant, size: int) -> bool:
