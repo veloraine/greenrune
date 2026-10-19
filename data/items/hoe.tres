@@ -4,6 +4,7 @@
 [ext_resource type="Script" path="res://scripts/tool_charge.gd" id="2_charge"]
 [ext_resource type="PackedScene" path="res://scenes/tools/hoe.tscn" id="3_model"]
 [ext_resource type="AudioStream" path="res://assets/audio/kenney-impact/hoe_thud.tres" id="4_sound"]
+[ext_resource type="Texture2D" path="res://assets/icons/hoe.png" id="icon"]
 
 [sub_resource type="Resource" id="ToolCharge_0"]
 script = ExtResource("2_charge")
@@ -40,4 +41,5 @@ hit_stop = 0.05
 shake = 0.05
 id = &"hoe"
 display_name = "Hoe"
+icon = ExtResource("icon")
 max_stack = 1

@@ -10,12 +10,12 @@ extends Node3D
 @export var hitbox_material: Material
 
 const HITBOX_SECONDS: float = 0.3
-const CROP_HEIGHT: float = 0.35
+## How much of a tile's width a crop sprite fills, whatever its pixel size.
+const CROP_WIDTH: float = 0.8
 
 var _tiles: Dictionary[Vector2i, MeshInstance3D] = {}
 # One billboard per tile, made once and shown only while a crop grows there.
-# A placeholder Label3D until the stage sprites are painted.
-var _crops: Dictionary[Vector2i, Label3D] = {}
+var _crops: Dictionary[Vector2i, Sprite3D] = {}
 var _soil_materials: Dictionary[Field.Soil, Material] = {}
 # Reused quads for the target highlight and the debug hitbox, so nothing is allocated per frame.
 var _targets: Array[MeshInstance3D] = []
@@ -43,10 +43,11 @@ func _ready() -> void:
 			tile.position = _cell_center(cell)
 			add_child(tile)
 			_tiles[cell] = tile
-			var crop := Label3D.new()
+			var crop := Sprite3D.new()
 			crop.billboard = BaseMaterial3D.BILLBOARD_ENABLED
-			crop.pixel_size = 0.003
-			crop.position = _cell_center(cell) + Vector3(0, CROP_HEIGHT, 0)
+			crop.texture_filter = BaseMaterial3D.TEXTURE_FILTER_NEAREST
+			crop.alpha_cut = SpriteBase3D.ALPHA_CUT_DISCARD
+			crop.position = _cell_center(cell)
 			add_child(crop)
 			_crops[cell] = crop
 			_on_soil_changed(cell)
@@ -108,4 +109,8 @@ func _on_soil_changed(cell: Vector2i) -> void:
 	var crop: Field.Crop = Game.field.crop(cell)
 	_crops[cell].visible = crop != null
 	if crop:
-		_crops[cell].text = "%s\n%d/%d" % [crop.def.harvest.display_name, crop.stage() + 1, crop.def.stage_days.size() + 1]
+		var sprite: Sprite3D = _crops[cell]
+		sprite.texture = crop.def.stage_textures[crop.stage()]
+		sprite.pixel_size = tile_size * CROP_WIDTH / sprite.texture.get_width()
+		# Lifts the sprite by half its height so its bottom edge, not its middle, sits on the soil.
+		sprite.offset.y = sprite.texture.get_height() / 2.0

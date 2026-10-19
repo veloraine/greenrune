@@ -36,6 +36,7 @@ theme_override_styles/panel = SubResource("StyleBoxFlat_slot")
 script = ExtResource("1_slot")
 
 [node name="Icon" type="TextureRect" parent="."]
+texture_filter = 1
 layout_mode = 2
 mouse_filter = 2
 expand_mode = 1
