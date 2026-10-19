@@ -22,6 +22,10 @@ static func write(tree: SceneTree) -> Error:
 	var xp: Dictionary = {}
 	for id in Game.skills:
 		xp[id] = Game.stats.xp(id)
+	var ailments: Array = []
+	for ailment in AilmentsDef.Ailment.values():
+		if Game.stats.has_ailment(ailment):
+			ailments.append(AilmentsDef.Ailment.find_key(ailment).to_lower())
 	var data: Dictionary = {
 		"version": VERSION,
 		"day": Game.day,
@@ -31,6 +35,7 @@ static func write(tree: SceneTree) -> Error:
 		"rp": Game.stats.rp,
 		"hp": Game.stats.hp,
 		"xp": xp,
+		"ailments": ailments,
 		"inventory": _stacks_to_json(Game.inventory),
 		"bin": _stacks_to_json(Game.bin),
 		"field": field,
@@ -84,7 +89,14 @@ static func read(tree: SceneTree) -> Error:
 			xp[StringName(id)] = data.xp[id]
 		else:
 			push_warning("Save has unknown skill '%s'; dropping it" % id)
-	Game.stats.restore(xp, int(data.rp), int(data.hp))
+	var ailments: Dictionary[AilmentsDef.Ailment, bool] = {}
+	for name: String in data.ailments:
+		var ailment: Variant = AilmentsDef.Ailment.get(name.to_upper())
+		if ailment == null:
+			push_warning("Save has unknown ailment '%s'; dropping it" % name)
+		else:
+			ailments[ailment] = true
+	Game.stats.restore(xp, int(data.rp), int(data.hp), ailments)
 	Game.day = int(data.day)
 	Game.minute = data.minute
 	Game.gold = int(data.gold)
@@ -102,6 +114,7 @@ static func _defaults() -> Dictionary:
 		"rp": Game.vitals.base_max_rp,
 		"hp": Game.vitals.max_hp,
 		"xp": {},
+		"ailments": [],
 		"bin": [],
 		"field": [],
 	}
@@ -119,6 +132,9 @@ static func _is_valid(data: Dictionary) -> bool:
 		return false
 	var xp: Variant = data.get("xp")
 	if not (xp is Dictionary and xp.values().all(_is_number)):
+		return false
+	var ailments: Variant = data.get("ailments")
+	if not (ailments is Array and ailments.all(func(name: Variant) -> bool: return name is String)):
 		return false
 	if not (_is_valid_stacks(data.get("inventory"), Inventory.SIZE) and _is_valid_stacks(data.get("bin"), Game.shipping.bin_size)):
 		return false

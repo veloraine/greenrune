@@ -19,6 +19,7 @@ var vitals: VitalsDef = load("res://data/vitals.tres")
 var clock: ClockDef = load("res://data/clock.tres")
 var shipping: ShippingDef = load("res://data/shipping.tres")
 var sowing: SowingDef = load("res://data/sowing.tres")
+var ailments: AilmentsDef = load("res://data/ailments.tres")
 var stats: Stats
 var inventory: Inventory = Inventory.new()
 ## The shipping bin's contents, which can be taken back out until they sell.
@@ -49,7 +50,7 @@ func _ready() -> void:
 		if file.ends_with(".tres"):
 			var crop: CropDef = load(CROPS_DIR + file)
 			crops[crop.seed_item.id] = crop
-	stats = Stats.new(vitals, skills)
+	stats = Stats.new(vitals, skills, ailments)
 
 
 func _process(delta: float) -> void:
@@ -60,8 +61,12 @@ func _process(delta: float) -> void:
 	# Only the clock running past the hour sells, so a load or a console time jump past it doesn't.
 	if before < shipping.sell_hour * 60.0 and minute >= shipping.sell_hour * 60.0:
 		_ship()
-	# Like RF4, staying up all night costs nothing: the next morning simply starts.
+	if stats.has_ailment(AilmentsDef.Ailment.COLD):
+		# One drop per mark passed, so a long frame doesn't swallow drops.
+		for i in floori(minute / ailments.cold_drain_minutes) - floori(before / ailments.cold_drain_minutes):
+			stats.drain_cold()
 	if minute >= (24 + clock.wake_hour) * 60.0:
+		_stay_up()
 		day_tick()
 
 
@@ -74,6 +79,15 @@ func day_tick() -> void:
 	field.grow_crops()
 	field.dry()
 	day_started.emit()
+
+
+## Like RF4, an all-nighter may cause Fatigue, and one while Fatigued may add Cold. Nothing else is lost.
+func _stay_up() -> void:
+	if not stats.has_ailment(AilmentsDef.Ailment.FATIGUE):
+		if randf() < ailments.fatigue_chance:
+			stats.set_ailment(AilmentsDef.Ailment.FATIGUE, true)
+	elif randf() < ailments.cold_chance:
+		stats.set_ailment(AilmentsDef.Ailment.COLD, true)
 
 
 ## Sells everything in the bin, rounded down per item, and empties it.

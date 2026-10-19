@@ -11,6 +11,7 @@ func _ready() -> void:
 	modulate.a = 0.0
 	Game.stats.leveled_up.connect(_on_leveled_up)
 	Game.stats.fainted.connect(_on_fainted)
+	Game.stats.ailment_changed.connect(_on_ailment_changed)
 	Game.yawned.connect(_on_yawned)
 	Game.shipped.connect(_on_shipped)
 
@@ -21,6 +22,10 @@ func _on_leveled_up(skill: SkillDef, level: int) -> void:
 
 func _on_fainted() -> void:
 	_show(Game.vitals.faint_message)
+
+
+func _on_ailment_changed(ailment: AilmentsDef.Ailment, active: bool) -> void:
+	_show((Game.ailments.caught_message if active else Game.ailments.cured_message) % Game.ailments.names[ailment])
 
 
 func _on_yawned() -> void:

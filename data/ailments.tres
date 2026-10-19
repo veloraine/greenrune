@@ -1,0 +1,17 @@
+[gd_resource type="Resource" script_class="AilmentsDef" format=3]
+
+[ext_resource type="Script" path="res://scripts/ailments_def.gd" id="1_ailments"]
+
+[resource]
+script = ExtResource("1_ailments")
+fatigue_chance = 0.2
+cold_chance = 0.2
+fatigue_rp_cost_multiplier = 2.0
+cold_drain_minutes = 5
+cold_drain_share = 0.01
+names = Dictionary[int, String]({
+0: "Fatigue",
+1: "Cold"
+})
+caught_message = "%s!"
+cured_message = "%s cured"

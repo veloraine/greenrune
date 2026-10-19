@@ -1,22 +1,27 @@
 class_name Stats
 extends RefCounted
 
-## RP, HP or max RP changed.
+## RP, HP, max RP or an ailment changed.
 signal changed
 signal leveled_up(skill: SkillDef, level: int)
 signal fainted
+signal ailment_changed(ailment: AilmentsDef.Ailment, active: bool)
 
 var rp: int
 var hp: int
 
 var _vitals: VitalsDef
 var _skills: Dictionary[StringName, SkillDef]
+var _ailments_def: AilmentsDef
 var _xp: Dictionary[StringName, float] = {}
+## The active ailments, as a set.
+var _ailments: Dictionary[AilmentsDef.Ailment, bool] = {}
 
 
-func _init(vitals: VitalsDef, skills: Dictionary[StringName, SkillDef]) -> void:
+func _init(vitals: VitalsDef, skills: Dictionary[StringName, SkillDef], ailments: AilmentsDef) -> void:
 	_vitals = vitals
 	_skills = skills
+	_ailments_def = ailments
 	rp = max_rp()
 	hp = vitals.max_hp
 
@@ -42,7 +47,9 @@ func level(id: StringName) -> int:
 
 func rp_cost(tool: ToolDef, charge_level: int) -> int:
 	var cut: float = _skills[tool.skill].rp_cost_cut_per_level * (level(tool.skill) - 1)
-	return maxi(1, roundi(tool.charges[charge_level].rp_cost * (1.0 - cut)))
+	var cost: int = maxi(1, roundi(tool.charges[charge_level].rp_cost * (1.0 - cut)))
+	# Multiplied after rounding, so a Fatigued use costs exactly the multiple of a rested one.
+	return roundi(cost * _ailments_def.fatigue_rp_cost_multiplier) if has_ailment(AilmentsDef.Ailment.FATIGUE) else cost
 
 
 ## RP pays while it covers the cost. A cost it can't fully cover empties it and loses a small share of max HP;
@@ -60,6 +67,27 @@ func spend(cost: int) -> void:
 		fainted.emit()
 
 
+## Cold's drop: a share of max RP, rounded up. Unlike spend(), it stops at 0 RP and never touches HP.
+func drain_cold() -> void:
+	rp = maxi(0, rp - ceili(snappedf(max_rp() * _ailments_def.cold_drain_share, 0.001)))
+	changed.emit()
+
+
+func has_ailment(ailment: AilmentsDef.Ailment) -> bool:
+	return _ailments.has(ailment)
+
+
+func set_ailment(ailment: AilmentsDef.Ailment, active: bool) -> void:
+	if has_ailment(ailment) == active:
+		return
+	if active:
+		_ailments[ailment] = true
+	else:
+		_ailments.erase(ailment)
+	ailment_changed.emit(ailment, active)
+	changed.emit()
+
+
 func add_xp(id: StringName, amount: float) -> void:
 	var before: int = level(id)
 	_xp[id] = xp(id) + amount
@@ -69,9 +97,11 @@ func add_xp(id: StringName, amount: float) -> void:
 		changed.emit()
 
 
-## Replaces skill XP, RP and HP, as a load does. No level-up fires. RP and HP are capped at their max, and HP is at least 1.
-func restore(p_xp: Dictionary[StringName, float], p_rp: int, p_hp: int) -> void:
+## Replaces skill XP, RP, HP and ailments, as a load does. No level-up or ailment popup fires.
+## RP and HP are capped at their max, and HP is at least 1.
+func restore(p_xp: Dictionary[StringName, float], p_rp: int, p_hp: int, p_ailments: Dictionary[AilmentsDef.Ailment, bool]) -> void:
 	_xp = p_xp
+	_ailments = p_ailments
 	rp = clampi(p_rp, 0, max_rp())
 	hp = clampi(p_hp, 1, _vitals.max_hp)
 	changed.emit()

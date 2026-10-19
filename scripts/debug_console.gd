@@ -1,6 +1,6 @@
 extends VBoxContainer
 
-const HELP: String = "add <item> [level] [count] | inv | save | load | rp <n> | hp <n> | xp <skill> <amount> | skills | time [hh:mm, 25:30 is 01:30 that night] | day [n], runs the DayTick n times"
+const HELP: String = "add <item> [level] [count] | inv | save | load | rp <n> | hp <n> | xp <skill> <amount> | skills | time [hh:mm, 25:30 is 01:30 that night] | day [n], runs the DayTick n times | ailment [fatigue|cold], toggles it"
 
 var _was_paused: bool = false
 
@@ -81,6 +81,12 @@ func _run(args: PackedStringArray) -> String:
 			for i in int(args[1]) if args.size() > 1 else 1:
 				Game.day_tick()
 			return _run(["time"])
+		"ailment":
+			var ailment: Variant = AilmentsDef.Ailment.get(args[1].to_upper()) if args.size() > 1 else null
+			if ailment == null:
+				return "Ailments: fatigue, cold"
+			Game.stats.set_ailment(ailment, not Game.stats.has_ailment(ailment))
+			return "%s %s" % [Game.ailments.names[ailment], "on" if Game.stats.has_ailment(ailment) else "off"]
 	return HELP
 
 

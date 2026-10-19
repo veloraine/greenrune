@@ -110,11 +110,13 @@ func _on_fainted() -> void:
 	_player.global_position = _wake_point.global_position
 
 
-## The XP comes first, so a sleeping level-up's extra max RP is refilled too.
+## The XP comes first, so a sleeping level-up's extra max RP is refilled too. Like RF4, any sleep cures every ailment.
 func _sleep() -> void:
 	if Game.minute < Game.clock.bedtime_hour * 60.0:
 		Game.stats.add_xp(&"sleeping", Game.skills[&"sleeping"].xp_per_use)
 	Game.stats.rest(Game.vitals.sleep_rp_restore, Game.vitals.sleep_hp_restore)
+	for ailment in AilmentsDef.Ailment.values():
+		Game.stats.set_ailment(ailment, false)
 	Game.day_tick()
 
 
