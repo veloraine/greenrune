@@ -48,7 +48,7 @@ Every checked item must meet the [definition of done](../endgame.md#definition-o
 - [x] HP 0 → faint, wake with half HP and a gold penalty; RP stays as it was, like RF4 (`faint_wake_hp`) (the player wakes at `WakePoint` beside the bed indoors, the same day with the clock still running; the faint does not run the `DayTick`, the user's call)
 - [x] `SkillDef` data: id, name, XP curve (`data/skills/`; the curve is `level_xp`, the total XP for each level)
 - [x] 4–6 skills: tilling, watering, reaping, walking, sleeping (+1 optional) (reaping is data only until the sickle arrives in Step 5; sleeping levels from Step 5)
-- [x] XP per use; level-up popup (walking earns XP per metre walked; a tool swing earns `xp_per_use` plus its charge level's `xp_bonus` once, not per tile, and only if it changed the field (soil or crop) on at least one tile; a swing that changes nothing gives no XP and costs no RP, but a watering can still loses the water it pours)
+- [x] XP per use; level-up popup (walking earns XP per metre walked; a tool swing earns `xp_per_use` plus its charge level's `xp_bonus` once, not per tile, and only if it changed the field (soil or crop) on at least one tile; a swing that changes nothing gives no XP and costs no RP, and a watering can keeps its water)
 - [x] Each level lowers that skill's RP cost and raises max RP (`rp_cost_cut_per_level` and `max_rp_per_level` on each `SkillDef`)
 
 **Done when:** at level 1, normal farming empties RP by evening; at tilling level 5 a till visibly costs less.

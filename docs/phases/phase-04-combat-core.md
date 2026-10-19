@@ -11,6 +11,7 @@ Every checked item must meet the [definition of done](../endgame.md#definition-o
 
 - [ ] `WeaponDef` (extends `ToolDef`): attack, attack speed, combo length
 - [ ] `Hurtbox` component; tool hitboxes now also hit hurtboxes
+- [ ] A weapon swing pays RP and earns XP only when it hits something, through the same pay-on-effect rule as the tools, like RF4: an action that does nothing costs nothing; magic is the exception and pays even on a miss
 - [ ] Damage formula as data (attack vs defense, crit chance)
 - [ ] Short sword: 3-hit combo
 - [ ] Hit feedback: hit-stop (~50 ms), flash, knockback, sound, damage numbers

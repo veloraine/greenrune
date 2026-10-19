@@ -72,8 +72,6 @@ func _on_tool_used(stack: ItemStack, charge_level: int) -> void:
 			return
 		if stack.water == 0:
 			return
-		stack.water -= 1
-		Game.inventory.changed.emit()
 	var field_changed: bool = false
 	for cell in _cells:
 		var crop: Field.Crop = Game.field.crop(cell)
@@ -88,13 +86,22 @@ func _on_tool_used(stack: ItemStack, charge_level: int) -> void:
 			field_changed = true
 			if seed_level > 0:
 				Game.inventory.add(crop.def.seed_item, seed_level, 1)
-	# Like RF4, a swing that changes nothing costs no RP and gives no XP.
 	if field_changed:
-		# Priced before the XP, so a swing that levels up still pays the old cost.
-		var cost: int = Game.stats.rp_cost(tool, charge_level)
-		Game.stats.add_xp(tool.skill, Game.skills[tool.skill].xp_per_use + tool.charges[charge_level].xp_bonus)
-		Game.stats.spend(cost)
+		_pay(stack, charge_level)
 	_pop(point, tool)
+
+
+## Everything a tool use costs and earns. RF4's rule: only an action that did something pays,
+## so call this only when the use changed something.
+func _pay(stack: ItemStack, charge_level: int) -> void:
+	var tool: ToolDef = stack.item
+	# Priced before the XP, so a swing that levels up still pays the old cost.
+	var cost: int = Game.stats.rp_cost(tool, charge_level)
+	Game.stats.add_xp(tool.skill, Game.skills[tool.skill].xp_per_use + tool.charges[charge_level].xp_bonus)
+	Game.stats.spend(cost)
+	if tool.capacity > 0:
+		stack.water -= 1
+		Game.inventory.changed.emit()
 
 
 func _on_fainted() -> void:
