@@ -69,6 +69,14 @@ func add_xp(id: StringName, amount: float) -> void:
 		changed.emit()
 
 
+## Replaces skill XP, RP and HP, as a load does. No level-up fires. RP and HP are capped at their max, and HP is at least 1.
+func restore(p_xp: Dictionary[StringName, float], p_rp: int, p_hp: int) -> void:
+	_xp = p_xp
+	rp = clampi(p_rp, 0, max_rp())
+	hp = clampi(p_hp, 1, _vitals.max_hp)
+	changed.emit()
+
+
 ## Sets HP to this fraction of its max. RP is left as it is.
 func recover(hp_fraction: float) -> void:
 	hp = maxi(1, roundi(_vitals.max_hp * hp_fraction))

@@ -76,7 +76,7 @@ Every checked item must meet the [definition of done](../endgame.md#definition-o
 - [ ] Shipping bin: sold at 06:00, gold added
 - [ ] Shop NPC: talk → "sell all" menu
 - [ ] Price scales with item level (data-tuned)
-- [ ] Save v2 adds: tiles (tilled, watered), crops (seed id, level, days), RP, HP, skill XP, time (`Game.minute`), watering-can water; v1 saves still load
+- [x] Save v2 adds: tiles (tilled, watered), crops (seed id, level, days), RP, HP, skill XP, time (`Game.minute`), watering-can water; v1 saves still load (console `save` / `load`; a value missing from the file loads as a new game has it, so a v1 save wakes at 06:00 with full RP and HP, no skill XP, an empty field and a full can; an unknown item, crop or skill is dropped with a warning; HP loads as at least 1)
   - Load the field in place (one bulk replace that emits `changed`), not by swapping `Game.field`: `FarmGrid` stays connected to the old object.
   - A load mid-swing must reset the player, or the swing spends water from a stack that is no longer in the inventory.
 

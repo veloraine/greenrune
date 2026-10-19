@@ -67,6 +67,15 @@ func is_idle() -> bool:
 	return _state == State.MOVE
 
 
+## Drops any charge or swing, and any buffered press, back to idle.
+func cancel_tool() -> void:
+	_state = State.MOVE
+	_stack = null
+	_buffered = false
+	if _hand_tool:
+		_hand_tool.visible = false
+
+
 ## The grid direction the player faces, snapped to the nearest of four.
 func facing() -> Vector2i:
 	var forward: Vector3 = -global_basis.z

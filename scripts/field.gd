@@ -52,6 +52,22 @@ func crop(cell: Vector2i) -> Crop:
 	return plot.crop if plot else null
 
 
+## Every tilled cell's Plot.
+func plots() -> Dictionary[Vector2i, Plot]:
+	return _plots
+
+
+## Replaces every plot at once, as a load does, and emits changed for each cell that had or has one.
+func replace_plots(new_plots: Dictionary[Vector2i, Plot]) -> void:
+	var old: Dictionary[Vector2i, Plot] = _plots
+	_plots = new_plots
+	for cell in old:
+		changed.emit(cell)
+	for cell in new_plots:
+		if not old.has(cell):
+			changed.emit(cell)
+
+
 ## Returns whether the cell changed.
 func apply(effect: ToolDef.Effect, cell: Vector2i) -> bool:
 	var plot: Plot = _plots.get(cell)
