@@ -44,7 +44,7 @@ Every checked item must meet the [definition of done](../endgame.md#definition-o
 ## Step 4 — RP, HP, skills (weeks 8–9)
 
 - [x] RP and HP bars in the HUD (bottom left, with the numbers; base values in `data/vitals.tres`; RP, HP and skill XP are saved from Step 6)
-- [x] Every tool use spends RP; a swing that RP can't fully cover empties RP to 0, and at 0 RP a swing costs a flat 25% of max HP instead, rounded up (`rp_short_hp_cost`; RF4's rule for crafting short of RP; emptying RP first is the user's call, since RF4's sources don't say what happens to leftover RP; refilling the can and swinging it dry are free)
+- [x] Every tool use spends RP; a swing that RP can't fully cover empties RP to 0 and costs 5% of max HP (`rp_leftover_hp_cost`), and at 0 RP a swing costs a flat 25% of max HP instead (`rp_short_hp_cost`; both rounded up; 25% is RF4's rule for crafting short of RP; the 5% leftover rule is the user's call, since RF4's sources don't say what happens to leftover RP; refilling the can and swinging it dry are free)
 - [x] HP 0 → faint, wake next morning with half HP and a gold penalty; RP stays as it was, like RF4 (`faint_wake_hp`) (from Step 5 the faint runs the `DayTick` and wakes the player at `WakePoint` beside the bed indoors)
 - [x] `SkillDef` data: id, name, XP curve (`data/skills/`; the curve is `level_xp`, the total XP for each level)
 - [x] 4–6 skills: tilling, watering, reaping, walking, sleeping (+1 optional) (reaping is data only until the sickle arrives in Step 5; sleeping levels from Step 5)

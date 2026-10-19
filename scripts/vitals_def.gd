@@ -7,6 +7,8 @@ extends Resource
 @export var max_hp: int = 0
 ## Share of max HP a tool use costs at 0 RP, rounded up.
 @export_range(0.0, 1.0) var rp_short_hp_cost: float = 0.0
+## Share of max HP lost, rounded up, when some RP is left but less than a tool use costs. That RP is emptied too.
+@export_range(0.0, 1.0) var rp_leftover_hp_cost: float = 0.0
 ## Gold lost on a faint. Gold never drops below 0.
 @export var faint_gold_penalty: int = 0
 ## Fraction of max HP the player wakes with after a faint.
