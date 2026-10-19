@@ -94,7 +94,6 @@ func _on_tool_used(stack: ItemStack, charge_level: int) -> void:
 func _on_fainted() -> void:
 	Game.gold = maxi(0, Game.gold - Game.vitals.faint_gold_penalty)
 	Game.stats.recover(Game.vitals.faint_wake_hp)
-	Game.day_tick()
 	_player.global_position = _wake_point.global_position
 
 

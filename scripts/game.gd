@@ -56,7 +56,7 @@ func _process(delta: float) -> void:
 		day_tick()
 
 
-## The DayTick: the one pipeline that starts each day at the wake hour, after a sleep, a faint or an all-nighter.
+## The DayTick: the one pipeline that starts each day at the wake hour, after a sleep or an all-nighter.
 ## Steps run in this order.
 func day_tick() -> void:
 	day += 1

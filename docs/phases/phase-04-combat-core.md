@@ -21,7 +21,7 @@ Every checked item must meet the [definition of done](../endgame.md#definition-o
 ## Step 2 — Player in combat (weeks 5–7)
 
 - [ ] Invulnerability frames after being hit
-- [ ] Defeat → wake at home next morning, lose a share of gold
+- [ ] Defeat → the Phase 1 faint: wake at home the same day with half HP, lose a share of gold
 - [ ] Defense skill gains XP when hit
 - [ ] Weapon skill for the short sword
 
