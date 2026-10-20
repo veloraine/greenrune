@@ -1,7 +1,7 @@
 extends DirectionalLight3D
 
 ## The sun rises in the east at sunrise_hour and sets in the west at sunset_hour.
-## Dark by 18:00 like the user's own RF4 play; the other hours and the colours are a design default.
+## These hours and the colours below are a design default: no RF4 source gives its lighting phases.
 @export_range(0.0, 24.0) var sunrise_hour: float = 0.0
 @export_range(0.0, 24.0) var sunset_hour: float = 0.0
 ## How far the sun's path leans south. At 0 the noon sun is straight overhead.
