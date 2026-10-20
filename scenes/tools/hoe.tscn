@@ -1,11 +1,11 @@
-[gd_scene format=3]
+[gd_scene format=3 uid="uid://bxr5jq71igvb2"]
 
-[ext_resource type="PackedScene" path="res://assets/characters/tools/hoe.glb" id="1_model"]
+[ext_resource type="PackedScene" uid="uid://bsby2obn24asp" path="res://assets/characters/tools/hoe.glb" id="1_model"]
 
-[node name="Hoe" type="Node3D"]
+[node name="Hoe" type="Node3D" unique_id=734854738]
 
-[node name="Grip" type="Node3D" parent="."]
-transform = Transform3D(-0.96345973, 0.24998127, 0.09620171, 0.07871644, 0.60754716, -0.7903734, -0.25602564, -0.7539203, -0.6050248, 0, 0, 0)
+[node name="Grip" type="Node3D" parent="." unique_id=415430904]
+transform = Transform3D(-0.9635419, 0.24978787, 0.09587977, 0.07893973, 0.6078022, -0.79015493, -0.2556471, -0.7537788, -0.6053611, 0, 0, 0)
 
-[node name="Model" parent="Grip" instance=ExtResource("1_model")]
+[node name="Model" parent="Grip" unique_id=1094509309 instance=ExtResource("1_model")]
 transform = Transform3D(5.8, 0, 0, 0, 5.8, 0, 0, 0, 5.8, 0, -0.35, 0)

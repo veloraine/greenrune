@@ -1,14 +1,13 @@
-[gd_resource type="Resource" script_class="ToolDef" format=3]
+[gd_resource type="Resource" script_class="ToolDef" format=3 uid="uid://d1awp4qjgaylf"]
 
-[ext_resource type="Script" path="res://scripts/tool_def.gd" id="1_tool"]
-[ext_resource type="Script" path="res://scripts/tool_charge.gd" id="2_charge"]
-[ext_resource type="PackedScene" path="res://scenes/tools/hoe.tscn" id="3_model"]
+[ext_resource type="Script" uid="uid://ns0lkui2s7vn" path="res://scripts/tool_def.gd" id="1_tool"]
+[ext_resource type="Script" uid="uid://djmulgstgn2ti" path="res://scripts/tool_charge.gd" id="2_charge"]
+[ext_resource type="PackedScene" uid="uid://bxr5jq71igvb2" path="res://scenes/tools/hoe.tscn" id="3_model"]
 [ext_resource type="AudioStream" path="res://assets/audio/kenney-impact/hoe_thud.tres" id="4_sound"]
-[ext_resource type="Texture2D" path="res://assets/icons/hoe.png" id="icon"]
+[ext_resource type="Texture2D" uid="uid://n2ivjk5q2t26" path="res://assets/icons/hoe.png" id="icon"]
 
 [sub_resource type="Resource" id="ToolCharge_0"]
 script = ExtResource("2_charge")
-hold_seconds = 0.0
 rp_cost = 5
 
 [sub_resource type="Resource" id="ToolCharge_1"]
@@ -27,7 +26,6 @@ size = 4
 
 [resource]
 script = ExtResource("1_tool")
-effect = 0
 skill = &"tilling"
 charges = Array[ExtResource("2_charge")]([SubResource("ToolCharge_0"), SubResource("ToolCharge_1"), SubResource("ToolCharge_2")])
 hand_model = ExtResource("3_model")

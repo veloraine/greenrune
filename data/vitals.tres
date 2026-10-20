@@ -1,11 +1,11 @@
-[gd_resource type="Resource" script_class="VitalsDef" format=3]
+[gd_resource type="Resource" script_class="VitalsDef" format=3 uid="uid://y4o24xfy62gw"]
 
-[ext_resource type="Script" path="res://scripts/vitals_def.gd" id="1_vitals"]
+[ext_resource type="Script" uid="uid://bk0irskudftsw" path="res://scripts/vitals_def.gd" id="1_vitals"]
 
 [resource]
 script = ExtResource("1_vitals")
-base_max_rp = 300
-max_hp = 50
+base_max_rp = 100
+max_hp = 200
 rp_short_hp_cost = 0.25
 rp_leftover_hp_cost = 0.05
 faint_gold_penalty = 100
