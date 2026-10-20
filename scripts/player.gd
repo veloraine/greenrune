@@ -8,7 +8,7 @@ signal sow_released(stack: ItemStack, charge_level: int)
 
 enum State { MOVE, CHARGE, SWING }
 
-@export_range(1.0, 10.0) var speed: float = 6.0
+@export_range(1.0, 10.0) var speed: float = 8.0
 ## Real seconds after the impact before the player can move or swing again.
 @export_range(0.0, 0.5) var swing_follow_through: float = 0.15
 

@@ -11,7 +11,7 @@ fov = 35.0
 
 [sub_resource type="Resource" id="Resource_outdoor"]
 script = ExtResource("2_framing")
-pitch_degrees = 55.0
+pitch_degrees = 50.0
 arm_length = 25.0
 fov = 35.0
 
