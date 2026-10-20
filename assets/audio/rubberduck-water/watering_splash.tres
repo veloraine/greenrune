@@ -1,0 +1,14 @@
+[gd_resource type="AudioStreamRandomizer" format=3]
+
+[ext_resource type="AudioStream" path="res://assets/audio/rubberduck-water/splash_06.ogg" id="1_splash0"]
+[ext_resource type="AudioStream" path="res://assets/audio/rubberduck-water/splash_09.ogg" id="2_splash1"]
+[ext_resource type="AudioStream" path="res://assets/audio/rubberduck-water/splash_10.ogg" id="3_splash2"]
+[ext_resource type="AudioStream" path="res://assets/audio/rubberduck-water/splash_15.ogg" id="4_splash3"]
+
+[resource]
+random_pitch = 1.1
+streams_count = 4
+stream_0/stream = ExtResource("1_splash0")
+stream_1/stream = ExtResource("2_splash1")
+stream_2/stream = ExtResource("3_splash2")
+stream_3/stream = ExtResource("4_splash3")

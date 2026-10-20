@@ -37,7 +37,7 @@ Every checked item must meet the [definition of done](../endgame.md#definition-o
 - [x] Swing: animation → hitbox active frames → effect on every tile hit
 - [x] Hoe tills; watering can waters (with a water count, refilled at a pond or well) (15 uses; the pond is east of the field)
 - [x] Hold to charge: wider area, higher RP cost (tap 1 tile, 0.6 s the 2×2 around the player, 1.2 s the 4×4 around the player, like Rune Factory 4; a bigger level waits for tool upgrades at the forge in Phase 6; the cost is data now and is spent from Step 4)
-- [ ] "Pop" feedback on every hit: sound, particle, tiny camera shake (hoe done; the watering can still needs a splash sound)
+- [x] "Pop" feedback on every hit: sound, particle, tiny camera shake (a thud for the hoe, a splash for the watering can, a slice for the sickle; only the hoe sets hit-stop and shake so far)
 
 **Done when:** you till and water 20 tiles, charged and uncharged, and every swing shows its hitbox in debug view.
 
@@ -66,7 +66,7 @@ Every checked item must meet the [definition of done](../endgame.md#definition-o
 - [x] `DayTick`: one ordered pipeline at 06:00 (crops grow → soil dries → future hooks) (`Game.day_tick()`: day + 1 and the wake hour, then `Field.grow_crops()`, empty until crops arrive, then `Field.dry()`, then the `Game.day_started` signal; sleep and an all-nighter run it)
 - [x] Sun: rotating `DirectionalLight3D`, gradient sky (`scripts/sun.gd`; sunrise 05:00, sunset 20:00; light, ambient and sky colours follow gradients on the `Sun` node in `farm.tscn`, kept on the node so they can be tuned by eye in the inspector, an exception to keeping numbers in `data/`; a design default, since no RF4 source gives the lighting phases)
 - [x] Harvest: crop level = seed level (F on a ripe crop in front puts `harvest_count` of it in the bag at the crop's level, and the soil stays tilled; RF4 lifts the crop overhead first, which waits for a carry state; a crop stays put unless all of it fits, and a sickled ripe crop stays put when its seed has no room)
-- [x] Sickle reaping: returns seeds; chance of +1 level (data-tuned) (`data/items/sickle.tres`, a `ToolDef` with the hoe's charges and RP; like RF4, a ripe crop gives no harvest but one seed, a level higher at `reap_level_up_chance`, 0.5; a sprouted unripe crop is destroyed with no seed; an unsprouted seed is untouched; XP goes to reaping once per swing that changes a crop; no hand model yet; RF4's sickle-tier cap on seed level waits for tool upgrades in Phase 6)
+- [x] Sickle reaping: returns seeds; chance of +1 level (data-tuned) (`data/items/sickle.tres`, a `ToolDef` with the hoe's charges and RP; like RF4, a ripe crop gives no harvest but one seed, a level higher at `reap_level_up_chance`, 0.5; a sprouted unripe crop is destroyed with no seed; an unsprouted seed is untouched; XP goes to reaping once per swing that changes a crop; held in hand as `scenes/tools/sickle.tscn`; RF4's sickle-tier cap on seed level waits for tool upgrades in Phase 6)
 - [x] 2 crops: turnip (fast), potato (slow) (RF4's numbers: turnip 3 days, 2 per crop, 30G; potato 7 days, 3 per crop, 90G; an unwatered day grows a crop by `dry_growth`, half a day, like the Japanese wiki's 0.5x; RF4's level and yield loss for a dry day and withering are left out; console `day [n]` runs the `DayTick` to skip days)
 
 **Done when:** a planted turnip grows through its 3 stages over 3 watered sleeps; reaping a ripe crop sometimes returns higher-level seeds.

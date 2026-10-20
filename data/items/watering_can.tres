@@ -3,6 +3,7 @@
 [ext_resource type="Script" path="res://scripts/tool_def.gd" id="1_tool"]
 [ext_resource type="Script" path="res://scripts/tool_charge.gd" id="2_charge"]
 [ext_resource type="PackedScene" path="res://scenes/tools/watering_can.tscn" id="3_model"]
+[ext_resource type="AudioStream" path="res://assets/audio/rubberduck-water/watering_splash.tres" id="4_sound"]
 [ext_resource type="Texture2D" path="res://assets/icons/watering_can.png" id="icon"]
 
 [sub_resource type="Resource" id="ToolCharge_0"]
@@ -35,6 +36,7 @@ swing_animation = &"Use_Item"
 swing_speed = 2.0
 impact_time = 0.8
 reach = 1.0
+impact_sound = ExtResource("4_sound")
 dust_color = Color(0.55, 0.78, 1, 1)
 id = &"watering_can"
 display_name = "Watering Can"

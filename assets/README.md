@@ -27,7 +27,8 @@ assets/
 
 - Source: [Poly Pizza](https://poly.pizza), each CC0 per its model page:
   [Tool Hoe](https://poly.pizza/m/YFNA1jgfjG) by Kenney (`hoe.glb`),
-  [Watering Can](https://poly.pizza/m/V8J1TC441f) by Isa Lousberg (`watering_can.glb` and its extracted texture)
+  [Watering Can](https://poly.pizza/m/V8J1TC441f) by Isa Lousberg (`watering_can.glb` and its extracted texture),
+  [Sickle](https://poly.pizza/m/tQOrJKM3pz) by Pichuliru (`sickle.glb`)
 - Location: `characters/tools/`
 - Used for: the tools held in the player's hand. `scenes/tools/` sizes each one for `handslot_r`.
 - Ours: the `*_cel.tres` materials, mapped in each `.glb.import`.
@@ -88,6 +89,20 @@ assets/
 - License: CC0, see `audio/kenney-impact/License.txt`
 - Location: `audio/kenney-impact/` (only the 5 `impactSoft_heavy` files; the pack has 130)
 - Used for: the hoe thud in the Week 8 feel test
+
+### Kenney RPG Audio
+
+- Source: <https://kenney.nl/assets/rpg-audio>
+- License: CC0, see `audio/kenney-rpg-audio/License.txt`
+- Location: `audio/kenney-rpg-audio/` (only `knifeSlice.ogg` and `knifeSlice2.ogg`; the pack has 51)
+- Used for: the sickle's slice
+
+### 40 CC0 water / splash / slime SFX
+
+- Source: [40 CC0 water / splash / slime SFX](https://opengameart.org/content/40-cc0-water-splash-slime-sfx) by rubberduck
+- License: CC0, per the OpenGameArt page (the zip has no license file)
+- Location: `audio/rubberduck-water/` (only `splash_06`, `splash_09`, `splash_10` and `splash_15`, the four shortest splashes; the pack has 40)
+- Used for: the watering can's splash
 
 Add more from CC0 packs like [Kenney audio](https://kenney.nl/assets?q=audio) or [freesound.org](https://freesound.org/).
 
