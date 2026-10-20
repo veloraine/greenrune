@@ -1,0 +1,94 @@
+[remap]
+
+importer="scene"
+importer_version=1
+type="PackedScene"
+uid="uid://cceemcsoaqf33"
+path="res://.godot/imported/House_1.fbx-565799230e54b90412324f61f43f8d21.scn"
+
+[deps]
+
+source_file="res://assets/environment/quaternius-village/House_1.fbx"
+dest_files=["res://.godot/imported/House_1.fbx-565799230e54b90412324f61f43f8d21.scn"]
+
+[params]
+
+nodes/root_type=""
+nodes/root_name=""
+nodes/root_script=null
+mesh_library/use_node_names_as_mesh_names=false
+array_mesh/deduplicate_surfaces=true
+nodes/apply_root_scale=true
+nodes/root_scale=3.0
+nodes/import_as_skeleton_bones=false
+nodes/use_name_suffixes=true
+nodes/use_node_type_suffixes=true
+meshes/ensure_tangents=true
+meshes/generate_lods=true
+meshes/create_shadow_meshes=true
+meshes/light_baking=1
+meshes/lightmap_texel_size=0.2
+meshes/force_disable_compression=false
+skins/use_named_skins=true
+animation/import=true
+animation/fps=30
+animation/trimming=true
+animation/remove_immutable_tracks=true
+animation/import_rest_as_RESET=false
+import_script/path=""
+materials/extract=0
+materials/extract_format=0
+materials/extract_path=""
+_subresources={
+"materials": {
+"Plaster": {
+"use_external/enabled": true,
+"use_external/fallback_path": "res://assets/environment/quaternius-village/plaster_cel.tres",
+"use_external/path": "res://assets/environment/quaternius-village/plaster_cel.tres"
+},
+"RoofTiles": {
+"use_external/enabled": true,
+"use_external/fallback_path": "res://assets/environment/quaternius-village/roof_tiles_cel.tres",
+"use_external/path": "res://assets/environment/quaternius-village/roof_tiles_cel.tres"
+},
+"Stone": {
+"use_external/enabled": true,
+"use_external/fallback_path": "res://assets/environment/quaternius-village/stone_cel.tres",
+"use_external/path": "res://assets/environment/quaternius-village/stone_cel.tres"
+},
+"Stone_Dark": {
+"use_external/enabled": true,
+"use_external/fallback_path": "res://assets/environment/quaternius-village/stone_dark_cel.tres",
+"use_external/path": "res://assets/environment/quaternius-village/stone_dark_cel.tres"
+},
+"Stone_Light": {
+"use_external/enabled": true,
+"use_external/fallback_path": "res://assets/environment/quaternius-village/stone_light_cel.tres",
+"use_external/path": "res://assets/environment/quaternius-village/stone_light_cel.tres"
+},
+"Windows": {
+"use_external/enabled": true,
+"use_external/fallback_path": "res://assets/environment/quaternius-village/windows_cel.tres",
+"use_external/path": "res://assets/environment/quaternius-village/windows_cel.tres"
+},
+"Wood": {
+"use_external/enabled": true,
+"use_external/fallback_path": "res://assets/environment/quaternius-village/wood_cel.tres",
+"use_external/path": "res://assets/environment/quaternius-village/wood_cel.tres"
+},
+"Wood_Light": {
+"use_external/enabled": true,
+"use_external/fallback_path": "res://assets/environment/quaternius-village/wood_light_cel.tres",
+"use_external/path": "res://assets/environment/quaternius-village/wood_light_cel.tres"
+},
+"Wood_Side": {
+"use_external/enabled": true,
+"use_external/fallback_path": "res://assets/environment/quaternius-village/wood_side_cel.tres",
+"use_external/path": "res://assets/environment/quaternius-village/wood_side_cel.tres"
+}
+}
+}
+fbx/importer=0
+fbx/allow_geometry_helper_nodes=false
+fbx/embedded_image_handling=1
+fbx/naming_version=2

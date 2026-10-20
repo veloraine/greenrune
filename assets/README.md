@@ -8,7 +8,7 @@ This folder holds downloaded asset packs. Each pack retains its original license
 assets/
 ├── characters/         KayKit Adventurers, tool models
 ├── crops/              Crop growth stage models, one folder per crop
-├── environment/        Quaternius nature, farm props
+├── environment/        Quaternius nature, farm props, village
 ├── icons/              Item icons, shared by the inventory UI and world drops
 ├── shaders/            Toon/cel shader files
 └── audio/              CC0 audio
@@ -55,6 +55,16 @@ assets/
 - Location: `environment/quaternius-farm/`
 - Used for: the farm house, field fences, bed and shipping bin. `scenes/props/` wraps each in a `StaticBody3D` with a collider.
 - Ours: the `*_cel.tres` materials, mapped in each `.fbx.import` like the nature pack.
+
+### Quaternius Medieval Village Pack
+
+- Source: [LowPoly Medieval Village Pack](https://opengameart.org/content/lowpoly-medieval-village-pack) by quaternius (the Dec 2020 zip), the same pack as <https://quaternius.com/packs/medievalvillage.html>
+- License: CC0, see `environment/quaternius-village/License.txt` (from the zip, identical to the farm pack's)
+- Location: `environment/quaternius-village/` (only 19 FBX models; the pack has 44)
+- Files: buildings `Inn`, `House_1` to `House_4`, `Blacksmith`; props `MarketStand_1`, `MarketStand_2`, `Bench_1`, `Well`, `Gazebo`, `Barrel`, `Crate`, `Cart`, `Fence`, `Path_Square`, `Path_Straight`, `Door_Round`, `Window_1`
+- Used for: the Phase 2 town
+- Scale: each `.fbx.import` sets `nodes/root_scale=3.0`, so `House_3` covers about the farm house's footprint and the fence stands about as tall as the farm fence
+- Ours: the `*_cel.tres` materials, one per pack color, mapped in each `.fbx.import`. The pack's `Beige` and `Red` share `plaster_cel.tres` and `roof_tiles_red_cel.tres`, because their colors match `Plaster` and `RoofTiles_Red`.
 
 ### LowPoly Crops Pack
 

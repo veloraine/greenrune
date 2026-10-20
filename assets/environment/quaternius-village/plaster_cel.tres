@@ -1,0 +1,10 @@
+[gd_resource type="ShaderMaterial" format=3]
+
+[ext_resource type="Shader" path="res://assets/shaders/cel/cel-shader-base.gdshader" id="1_cel"]
+[ext_resource type="Material" path="res://assets/shaders/cel/outline_material.tres" id="2_outline"]
+
+[resource]
+render_priority = 0
+next_pass = ExtResource("2_outline")
+shader = ExtResource("1_cel")
+shader_parameter/color = Color(0.6208, 0.6046, 0.4656, 1)
