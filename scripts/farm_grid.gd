@@ -44,7 +44,6 @@ func _ready() -> void:
 			add_child(tile)
 			_tiles[cell] = tile
 			var crop := Sprite3D.new()
-			crop.billboard = BaseMaterial3D.BILLBOARD_ENABLED
 			crop.texture_filter = BaseMaterial3D.TEXTURE_FILTER_NEAREST
 			crop.alpha_cut = SpriteBase3D.ALPHA_CUT_DISCARD
 			crop.position = _cell_center(cell)
@@ -112,5 +111,10 @@ func _on_soil_changed(cell: Vector2i) -> void:
 		var sprite: Sprite3D = _crops[cell]
 		sprite.texture = crop.def.stage_textures[crop.stage()]
 		sprite.pixel_size = tile_size * CROP_WIDTH / sprite.texture.get_width()
-		# Lifts the sprite by half its height so its bottom edge, not its middle, sits on the soil.
-		sprite.offset.y = sprite.texture.get_height() / 2.0
+		# Seeds are drawn from above, so they lie flat just over the tile's top face (0.02).
+		# Later stages stand on that face on their texture's bottom row, lifted by half the texture's height.
+		var flat: bool = crop.stage() == 0
+		sprite.billboard = BaseMaterial3D.BILLBOARD_DISABLED if flat else BaseMaterial3D.BILLBOARD_ENABLED
+		sprite.axis = Vector3.AXIS_Y if flat else Vector3.AXIS_Z
+		sprite.offset.y = 0.0 if flat else sprite.texture.get_height() / 2.0
+		sprite.position.y = _cell_center(cell).y + (0.015 if flat else 0.01)
