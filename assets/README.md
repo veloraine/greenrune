@@ -6,9 +6,9 @@ This folder holds downloaded asset packs. Each pack retains its original license
 
 ```
 assets/
-├── characters/         KayKit Adventurers, Mixamo retargeted animations
+├── characters/         KayKit Adventurers, tool models
 ├── crops/              Crop growth stage models, one folder per crop
-├── environment/        KayKit Dungeon, Quaternius nature/buildings
+├── environment/        Quaternius nature, farm props
 ├── icons/              Item icons, shared by the inventory UI and world drops
 ├── shaders/            Toon/cel shader files
 └── audio/              CC0 audio
@@ -22,6 +22,7 @@ assets/
 - License: per KayKit terms (typically CC0 or low-cost commercial)
 - Location: `characters/kaykit-adventurers/`
 - Used for: player + NPC chibi character models, pre-rigged for Mixamo
+- Animations: built into each GLB, 76 clips on one 41-joint skeleton that all 5 bodies share
 
 ### Tool models
 
@@ -34,12 +35,6 @@ assets/
 - Ours: the `*_cel.tres` materials, mapped in each `.glb.import`.
 
 ## Environment packs
-
-### KayKit Dungeon Pack
-
-- Source: <https://kaylousberg.com/game-assets>
-- Location: `environment/kaykit-dungeon/`
-- Used for: buildings, doors, fences, props
 
 ### Quaternius Ultimate Nature
 
@@ -69,15 +64,6 @@ assets/
 - Files: the pack has no turnip or potato, so the turnip uses `Beet_1`, `Beet_3` and `Beet_4`, and the potato uses `Lettuce_1`, `Lettuce_3` and `Lettuce_4`, renamed `stage_0.fbx` to `stage_2.fbx`
 - Stages: each pack crop grows through `_1` (sprout) to `_4` (grown). We use `_1` for the seed stage, `_3` for the middle stage and `_4` for the ripe crop. `_2`, `_Crop` (the picked produce) and `_Harvested` are unused.
 - Ours: the `*_cel.tres` materials, with the pack's DarkGreen and DarkRed colors, mapped in each `.fbx.import`. `scripts/farm_grid.gd` sizes each crop so its ripe model fills 0.8 of a tile.
-
-## Animations
-
-### Mixamo
-
-- Source: <https://www.mixamo.com> (free, Adobe account required)
-- Location: `characters/mixamo/<character_name>/`
-- Used for: walk, idle, attack, sit, etc. — retargeted to KayKit characters
-- Workflow: <https://antzgames.github.io/godot/demo/tutorial/Mixamo/>
 
 ## Shaders
 

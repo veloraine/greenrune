@@ -12,7 +12,7 @@ Every checked item must meet the [definition of done](../endgame.md#definition-o
 - [ ] Town from asset packs: shop, inn, square, 3–5 houses, path to the farm
 - [ ] Farm ↔ town exits with a fade; spawn points per entrance
 - [ ] Baked navmesh covering every walkable area
-- [ ] Building interiors as separate scenes, or doors that hide NPCs inside
+- [ ] Building interiors as separate scenes, or doors that hide NPCs inside. Interiors stay simple box rooms with a few Quaternius furniture models until the user's own Blender interiors replace them.
 - [ ] Buildings and trees you can walk behind fade or dither when they hide the player (the farm avoids this by placing them at the north edge and outside the bounds)
 
 **Done when:** you walk farm → town → every interior → farm with no stuck spots, and the navmesh debug view covers every walkable area.
@@ -31,7 +31,7 @@ Every checked item must meet the [definition of done](../endgame.md#definition-o
 
 ## Step 3 — Dialogue with line selection (weeks 8–11)
 
-- [ ] Install Dialogic 2; portrait frame and text box styled
+- [ ] Custom dialogue box: portrait, name, typewriter text, press interact to advance. Portraits are placeholders rendered from each NPC's own model. Dialogic 2 waits until choices or cutscenes are in scope: it is alpha with breaking changes, and Phase 2 has no branching.
 - [ ] Talk interaction (face the NPC, press interact)
 - [ ] `LineDef` data: NPC, conditions (time window, season, weather, min/max friendship, flags), priority, text
 - [ ] Line selector: highest-priority line whose conditions match; no repeat on the same day

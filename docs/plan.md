@@ -166,7 +166,7 @@ Do tutorials end-to-end without skipping. Do NOT start the real project yet. The
 - A 3D action RPG tutorial series — see [Tutorials & resources](#tutorials--resources) section for current recommendations.
 - **Exit criterion:** you can explain `Node3D`, `CharacterBody3D`, `MeshInstance3D`, GLTF import, raycasts, and the basics of a `NavigationAgent3D`.
 
-**Asset pipeline (~1 week):** import KayKit GLB characters and Mixamo animations with the Antz workflow. No Blender needed.
+**Asset pipeline (~1 week):** import the KayKit GLB characters. Their animations come built in, so Mixamo and the Antz workflow are not needed. No Blender needed.
 
 **Toon shader (~1 weekend):**
 
@@ -216,7 +216,7 @@ Restart Claude Code. The Godot MCP tools should appear in your available tools. 
 
 Smallest possible playable loop. **One 3D farm scene, no town yet.**
 
-- **Player character:** KayKit Adventurer chibi model + Mixamo walk/idle animations.
+- **Player character:** KayKit Adventurer chibi model + its built-in walk/idle animations.
 - **Camera:** fixed semi-top-down (~45° angle, follows player), similar to RF4. Implement as a `Camera3D` attached to a `SpringArm3D`.
 - **Farm scene:** terrain (small flat MeshInstance or HeightMap), Quaternius/KayKit barn + fences + trees as props.
 - **Tools:** hoe (till — modifies a tile state), watering can, sickle, seeds, harvest. Tile state is a 2D grid managed in code, but visuals are 3D.
@@ -238,10 +238,10 @@ Smallest possible playable loop. **One 3D farm scene, no town yet.**
 Now add the social layer in 3D.
 
 - **Town scene:** second 3D scene built from Quaternius/KayKit buildings. Seamless transition from farm (probably scene-switch with fade rather than streaming for simplicity).
-- **3–5 NPCs:** each = a KayKit model with a different texture/color + Mixamo animations. Every NPC is named; no nameless shop clerks. Daily state-machine schedules (home → work → tavern → sleep).
+- **3–5 NPCs:** each reuses one of the 5 KayKit Adventurers bodies (Barbarian, Knight, Mage, Rogue, Rogue_Hooded), retextured. The animations come built into those GLBs: 76 clips on one 41-joint skeleton that all 5 share. Every NPC is named; no nameless shop clerks. Daily state-machine schedules (home → work → tavern → sleep).
 - **Pathfinding:** Godot's `NavigationAgent3D` + baked navmesh on the town scene.
-- **Dialogue:** [Dialogic 2](https://github.com/dialogic-godot/dialogic) plugin. Use 2D portrait art for dialogue boxes — for placeholder portraits, you can commission cheap art on Fiverr later, or use AI-generated placeholders (single static images are fine; AI is bad at animated frames but okay at single portraits).
-- **Line selection layer:** Dialogic 2 handles display and branching, not *which* line to say. Build a small "pick the best-matching line" layer keyed on time, season, weather, friendship and recent events. RF4's writer: if routines change but lines don't, "the village will feel lifeless."
+- **Dialogue:** a small custom dialogue box with a portrait, the speaker's name and typewriter text; press interact to advance. Phase 2 has no branching, so [Dialogic 2](https://github.com/dialogic-godot/dialogic) (alpha, with breaking changes between releases) waits until choices or cutscenes are in scope. Placeholder portraits are rendered from each NPC's own model. Later, replace them with 2D portrait art: commission cheap art on Fiverr, or use AI-generated placeholders (single static images are fine; AI is bad at animated frames but okay at single portraits).
+- **Line selection layer:** the dialogue box handles display, not *which* line to say. Build a small "pick the best-matching line" layer keyed on time, season, weather, friendship and recent events. RF4's writer: if routines change but lines don't, "the village will feel lifeless."
 - **Friendship/affection points** per NPC: daily talk, one counted gift per day, birthdays double the gift value.
 - **Gift system** with per-NPC likes/dislikes/hates. Crop level should affect gift value.
 - **Proper shop:** buy seeds. Like RF4, shops don't buy; selling stays with the shipping bin until your own store in a later phase.
@@ -321,6 +321,8 @@ A curated, prioritized stack. Don't go searching for "Godot tutorial" yourself �
 
 ### Mixamo → Godot pipeline (Phase 0/1)
 
+Not needed so far: the KayKit Adventurers GLBs ship their own animations. Use these only if a new animation is ever needed.
+
 1. **[Antz – "From Mixamo to Godot: An Easier Approach"](https://antzgames.github.io/godot/demo/tutorial/Mixamo/)** — current recommended workflow for Godot 4.3+. Handles track merging and texture quirks. No Blender required.
 2. **[KingTornado – Mixamo to Godot video](https://www.youtube.com/watch?v=CM_T8sRgZFI)** — visual companion.
 3. **KayKit-specific reference:** [doctor-g/KayKitAnimationInGodot](https://github.com/doctor-g/KayKitAnimationInGodot) — sample repo with the inherited-scene + bone-attachment pattern.
@@ -335,7 +337,7 @@ A curated, prioritized stack. Don't go searching for "Godot tutorial" yourself �
 
 ### Dialogue + NPCs (Phase 2)
 
-1. **[Dialogic 2 Official Docs](https://docs.dialogic.pro/getting-started)** — requires Godot 4.4+. Start here.
+1. **[Dialogic 2 Official Docs](https://docs.dialogic.pro/getting-started)** — requires Godot 4.4+. Deferred: Phase 2 uses a custom dialogue box. Read this when choices or cutscenes arrive.
 2. **[Branno – "Create a Complete Dialogue System in Godot 4"](https://www.youtube.com/watch?v=Tmy1tzhDLl4)** — free, 38 min. End-to-end Dialogic 2 walkthrough.
 3. **For NPC schedules/pathfinding** (no dedicated tutorial — use these refs):
    - [Godot docs: NavigationAgent3D + Navmesh](https://docs.godotengine.org/en/stable/tutorials/navigation/index.html)

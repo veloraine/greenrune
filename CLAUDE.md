@@ -36,7 +36,7 @@ Every checklist item must meet the definition of done in docs/endgame.md.
 
 # 3D specifics
 - Models use GLB format (binary glTF 2.0).
-- Mixamo animations imported via the Antz workflow (see docs/plan.md).
+- Animations come built into the KayKit Adventurers GLBs (76 clips, one 41-joint skeleton shared by all 5 bodies). Use Mixamo via the Antz workflow only if a new animation is ever needed.
 - KayKit characters retextured for variety, not custom-modeled.
 - Toon shader is a community cel shader applied via ShaderMaterial.
 - Fixed semi-top-down camera using Camera3D on a SpringArm3D.
@@ -53,7 +53,7 @@ Every checklist item must meet the definition of done in docs/endgame.md.
 # When in doubt
 - Verify any Godot API call against https://docs.godotengine.org/en/stable/
 - If you write code referencing a method, confirm it exists in Godot 4 docs first.
-- Prefer the Antz Mixamo→Godot guide and KayKit conventions for character/animation work.
+- Prefer KayKit conventions and its built-in animations for character/animation work; the Antz Mixamo→Godot guide only for a new animation.
 - For shaders, prefer dropping in the Godot Shaders community cel shader over writing custom.
 
 # Godot MCP server (opt-in, Phase 1+)
