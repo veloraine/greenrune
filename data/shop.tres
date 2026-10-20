@@ -1,0 +1,11 @@
+[gd_resource type="Resource" script_class="ShopDef" format=3]
+
+[ext_resource type="Script" path="res://scripts/shop_def.gd" id="1_def"]
+[ext_resource type="Script" path="res://scripts/item_def.gd" id="2_item"]
+[ext_resource type="Resource" path="res://data/items/turnip_seed.tres" id="3_turnip"]
+[ext_resource type="Resource" path="res://data/items/potato_seed.tres" id="4_potato"]
+
+[resource]
+script = ExtResource("1_def")
+keeper_name = "Marlo"
+stock = Array[ExtResource("2_item")]([ExtResource("3_turnip"), ExtResource("4_potato")])

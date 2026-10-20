@@ -10,3 +10,4 @@ display_name = "Potato Seeds"
 icon = ExtResource("icon")
 category = 1
 sell_price = 8
+buy_price = 80

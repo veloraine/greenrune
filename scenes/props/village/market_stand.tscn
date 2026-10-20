@@ -1,0 +1,23 @@
+[gd_scene format=3]
+
+[ext_resource type="PackedScene" path="res://assets/environment/quaternius-village/MarketStand_1.fbx" id="1_model"]
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_1"]
+size = Vector3(2.7, 1.4, 3.3)
+
+[node name="MarketStand" type="StaticBody3D"]
+collision_layer = 8
+collision_mask = 0
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.7, 0)
+shape = SubResource("BoxShape3D_1")
+
+[node name="NavigationObstacle3D" type="NavigationObstacle3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0)
+height = 1.4
+vertices = PackedVector3Array(-1.35, 0, -1.65, 1.35, 0, -1.65, 1.35, 0, 1.65, -1.35, 0, 1.65)
+affect_navigation_mesh = true
+avoidance_enabled = false
+
+[node name="Model" parent="." instance=ExtResource("1_model")]

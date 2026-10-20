@@ -10,7 +10,7 @@ var _tween: Tween
 func _ready() -> void:
 	modulate.a = 0.0
 	Game.stats.leveled_up.connect(_on_leveled_up)
-	Game.stats.fainted.connect(_on_fainted)
+	Game.woke_from_faint.connect(_on_woke_from_faint)
 	Game.stats.ailment_changed.connect(_on_ailment_changed)
 	Game.yawned.connect(_on_yawned)
 	Game.shipped.connect(_on_shipped)
@@ -20,7 +20,7 @@ func _on_leveled_up(skill: SkillDef, level: int) -> void:
 	_show("%s Lv %d!" % [skill.display_name, level])
 
 
-func _on_fainted() -> void:
+func _on_woke_from_faint() -> void:
 	_show(Game.vitals.faint_message)
 
 

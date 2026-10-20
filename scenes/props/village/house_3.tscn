@@ -1,0 +1,23 @@
+[gd_scene format=3]
+
+[ext_resource type="PackedScene" path="res://assets/environment/quaternius-village/House_3.fbx" id="1_model"]
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_1"]
+size = Vector3(4.7, 5, 5.2)
+
+[node name="House_3" type="StaticBody3D"]
+collision_layer = 8
+collision_mask = 0
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2.5, 0.05)
+shape = SubResource("BoxShape3D_1")
+
+[node name="NavigationObstacle3D" type="NavigationObstacle3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0.05)
+height = 5
+vertices = PackedVector3Array(-2.35, 0, -2.6, 2.35, 0, -2.6, 2.35, 0, 2.6, -2.35, 0, 2.6)
+affect_navigation_mesh = true
+avoidance_enabled = false
+
+[node name="Model" parent="." instance=ExtResource("1_model")]

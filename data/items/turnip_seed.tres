@@ -10,3 +10,4 @@ display_name = "Turnip Seeds"
 icon = ExtResource("icon")
 category = 1
 sell_price = 2
+buy_price = 10

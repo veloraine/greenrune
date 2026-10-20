@@ -1,0 +1,7 @@
+[gd_resource type="Resource" script_class="TravelDef" format=3]
+
+[ext_resource type="Script" path="res://scripts/travel_def.gd" id="1_travel"]
+
+[resource]
+script = ExtResource("1_travel")
+fade_seconds = 0.3

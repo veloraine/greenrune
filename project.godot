@@ -18,6 +18,7 @@ config/features=PackedStringArray("4.7")
 
 Game="*res://scripts/game.gd"
 HitStop="*res://scripts/hit_stop.gd"
+Travel="*res://scenes/travel.tscn"
 
 [input]
 

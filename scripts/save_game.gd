@@ -8,7 +8,8 @@ const PATH: String = "user://save.json"
 
 static func write(tree: SceneTree) -> Error:
 	var player: Node3D = tree.get_first_node_in_group(&"player")
-	if player == null:
+	var area: Variant = Areas.SCENES.find_key(tree.current_scene.scene_file_path)
+	if player == null or area == null:
 		return ERR_UNCONFIGURED
 	var field: Array = []
 	var plots: Dictionary[Vector2i, Field.Plot] = Game.field.plots()
@@ -31,6 +32,7 @@ static func write(tree: SceneTree) -> Error:
 		"day": Game.day,
 		"minute": Game.minute,
 		"gold": Game.gold,
+		"area": Areas.Id.find_key(area).to_lower(),
 		"player_position": [player.global_position.x, player.global_position.y, player.global_position.z],
 		"rp": Game.stats.rp,
 		"hp": Game.stats.hp,
@@ -101,7 +103,7 @@ static func read(tree: SceneTree) -> Error:
 	Game.minute = data.minute
 	Game.gold = int(data.gold)
 	var p: Array = data.player_position
-	player.global_position = Vector3(p[0], p[1], p[2])
+	Travel.place(Areas.Id[data.area.to_upper()], Vector3(p[0], p[1], p[2]))
 	return OK
 
 
@@ -117,6 +119,7 @@ static func _defaults() -> Dictionary:
 		"ailments": [],
 		"bin": [],
 		"field": [],
+		"area": "farm",
 	}
 
 
@@ -126,6 +129,9 @@ static func _is_valid(data: Dictionary) -> bool:
 			return false
 	# Outside one waking day, the clock would run a DayTick on the next frame.
 	if data.minute < Game.clock.wake_hour * 60.0 or data.minute >= (24 + Game.clock.wake_hour) * 60.0:
+		return false
+	var area: Variant = data.get("area")
+	if not (area is String and Areas.Id.has(area.to_upper())):
 		return false
 	var p: Variant = data.get("player_position")
 	if not (p is Array and p.size() == 3 and p.all(_is_number)):

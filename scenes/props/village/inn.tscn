@@ -1,0 +1,23 @@
+[gd_scene format=3]
+
+[ext_resource type="PackedScene" path="res://assets/environment/quaternius-village/Inn.fbx" id="1_model"]
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_1"]
+size = Vector3(8.4, 6, 7.8)
+
+[node name="Inn" type="StaticBody3D"]
+collision_layer = 8
+collision_mask = 0
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 3, 0)
+shape = SubResource("BoxShape3D_1")
+
+[node name="NavigationObstacle3D" type="NavigationObstacle3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0)
+height = 6
+vertices = PackedVector3Array(-4.2, 0, -3.9, 4.2, 0, -3.9, 4.2, 0, 3.9, -4.2, 0, 3.9)
+affect_navigation_mesh = true
+avoidance_enabled = false
+
+[node name="Model" parent="." instance=ExtResource("1_model")]

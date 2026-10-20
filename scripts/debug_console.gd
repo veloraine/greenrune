@@ -35,6 +35,12 @@ func _input(event: InputEvent) -> void:
 		get_tree().paused = _was_paused and get_tree().paused
 
 
+# A load into another area frees the open console with its scene, along with whatever paused the game.
+func _exit_tree() -> void:
+	if visible:
+		get_tree().paused = false
+
+
 func _on_text_submitted(text: String) -> void:
 	_line.clear()
 	_log.text = _run(text.split(" ", false))

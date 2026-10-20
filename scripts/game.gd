@@ -6,6 +6,8 @@ signal day_started
 signal yawned
 ## Emitted when the bin's contents sell, with the gold they made.
 signal shipped(gold: int)
+## Emitted once the player is back home after a faint.
+signal woke_from_faint
 
 const ITEMS_DIR: String = "res://data/items/"
 const SKILLS_DIR: String = "res://data/skills/"
@@ -54,6 +56,7 @@ func _ready() -> void:
 				continue
 			crops[crop.seed_item.id] = crop
 	stats = Stats.new(vitals, skills, ailments)
+	stats.fainted.connect(_on_fainted)
 
 
 func _process(delta: float) -> void:
@@ -91,6 +94,14 @@ func _stay_up() -> void:
 			stats.set_ailment(AilmentsDef.Ailment.FATIGUE, true)
 	elif randf() < ailments.cold_chance:
 		stats.set_ailment(AilmentsDef.Ailment.COLD, true)
+
+
+## A faint costs gold and wakes the player at home, from whichever area they fell in.
+func _on_fainted() -> void:
+	gold = maxi(0, gold - vitals.faint_gold_penalty)
+	stats.recover(vitals.faint_wake_hp)
+	await Travel.go(Areas.Id.FARM, ^"HouseInterior/WakePoint")
+	woke_from_faint.emit()
 
 
 ## Sells everything in the bin, rounded down per item, and empties it.

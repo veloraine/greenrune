@@ -163,6 +163,7 @@ Details come from the community wiki unless marked otherwise. The official XSEED
 ### Crops (researched)
 - **Sowing:** seeds are a stack, one seed per plot. A tap sows the tilled plot you face, and a charged sow covers one 2x2 section of the field. Seeds can't go on untilled soil ([GameFAQs: walkthrough][gf-walk], [Fandom: Farming Mechanics][w-farm] [community]). High confidence. There is no 3x3 around the player. The RP bar stays flat while planting ([YouTube: Day 9 farming][yt-day9]), so Greenrune makes sowing free.
 - **Turnip and potato:** the turnip takes 3 days, yields 2 and sells for 30G at level 1, from a 10G seed. The potato takes 7 days, yields 3 and sells for 90G, from an 80G seed. Neither regrows ([Fandom: Crops][w-crops], [Fandom: Turnip][w-turnip], [Fandom: Potato][w-potato]). High confidence. No source gives the number of visual stages or the days in each, so Greenrune's 3 stages are a design default.
+- **Seed prices:** the shop sells Turnip Seeds for 10G and Potato Seeds for 80G. They sell back through the bin for 2G and 8G ([Fandom: Turnip Seed][w-turnip-seed], [Fandom: Potato Seed][w-potato-seed] [community]). High confidence: the seed pages match the crop pages. Greenrune's placeholder shop uses these prices.
 - **Water:** sources conflict. The Japanese wiki says an unwatered day still grows at 0.5x, and lowers the crop's level and yield ([wikiwiki: 農作業][jp-farm]). Fandom's Farming page says growth "may be slowed", and its Crops page says no growth at all ([Fandom: Farming Mechanics][w-farm], [Fandom: Crops][w-crops]). Greenrune grows an unwatered crop at 0.5x and leaves out the level and yield loss. A crop can wither only after it changes colour at 06:00 and then goes a day unwatered ([Fandom: Farming Mechanics][w-farm]). Medium confidence.
 - **Season factor:** in season is 1.5x in every source. Out of season is 0.75x on Fandom's Farming page and 0.5x on the Japanese wiki ([wikiwiki: 農作業][jp-farm]).
 - **Harvest by hand:** the player lifts the item overhead, then puts it in the Rucksack or throws it ([GameFAQs: walkthrough][gf-walk]). That crops work this way is inferred: the source describes held items in general.
@@ -639,6 +640,8 @@ Applied to `docs/plan.md`, `SCOPE.md`, `NOT_IN_SCOPE.md` and `README.md` on 2026
 [gf-walk]: https://web.archive.org/web/20240117214229/https://gamefaqs.gamespot.com/3ds/635388-rune-factory-4/faqs/68010
 [w-turnip]: https://runefactory.fandom.com/wiki/Turnip
 [w-potato]: https://runefactory.fandom.com/wiki/Potato
+[w-turnip-seed]: https://runefactory.fandom.com/wiki/Turnip_Seed
+[w-potato-seed]: https://runefactory.fandom.com/wiki/Potato_Seed
 [jp-farm]: https://wikiwiki.jp/rf4bu/%E8%BE%B2%E4%BD%9C%E6%A5%AD
 [jp-ship]: https://wikiwiki.jp/rf4bu/%E5%87%BA%E8%8D%B7%E7%AE%B1
 [jp-furn]: https://wikiwiki.jp/rf4bu/%E5%AE%B6%E5%85%B7

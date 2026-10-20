@@ -1,0 +1,80 @@
+[gd_scene format=3]
+
+[ext_resource type="PackedScene" uid="uid://dejiudhenku6i" path="res://assets/characters/kaykit-adventurers/Knight.glb" id="1_knight"]
+[ext_resource type="Material" path="res://assets/characters/kaykit-adventurers/knight_cel.tres" id="2_cel"]
+
+[sub_resource type="CapsuleShape3D" id="CapsuleShape3D_body"]
+radius = 0.4
+height = 2.2
+
+[sub_resource type="SphereShape3D" id="SphereShape3D_reach"]
+radius = 1.5
+
+[node name="Shopkeeper" type="StaticBody3D"]
+collision_layer = 8
+collision_mask = 0
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.1, 0)
+shape = SubResource("CapsuleShape3D_body")
+
+[node name="Reach" type="Area3D" parent="."]
+collision_layer = 0
+collision_mask = 2
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Reach"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.1, 0)
+shape = SubResource("SphereShape3D_reach")
+
+[node name="Model" parent="." instance=ExtResource("1_knight")]
+transform = Transform3D(-1, 0, 0, 0, 1, 0, 0, 0, -1, 0, 0, 0)
+
+[node name="AnimationPlayer" parent="Model"]
+autoplay = "Idle"
+
+[node name="1H_Sword_Offhand" parent="Model/Rig/Skeleton3D/handslot_l"]
+visible = false
+
+[node name="Badge_Shield" parent="Model/Rig/Skeleton3D/handslot_l"]
+visible = false
+
+[node name="Rectangle_Shield" parent="Model/Rig/Skeleton3D/handslot_l"]
+visible = false
+
+[node name="Round_Shield" parent="Model/Rig/Skeleton3D/handslot_l"]
+visible = false
+
+[node name="Spike_Shield" parent="Model/Rig/Skeleton3D/handslot_l"]
+visible = false
+
+[node name="1H_Sword" parent="Model/Rig/Skeleton3D/handslot_r"]
+visible = false
+
+[node name="2H_Sword" parent="Model/Rig/Skeleton3D/handslot_r"]
+visible = false
+
+[node name="Knight_Helmet" parent="Model/Rig/Skeleton3D/head"]
+visible = false
+
+[node name="Knight_Cape" parent="Model/Rig/Skeleton3D/chest"]
+visible = false
+
+[node name="Knight_ArmLeft" parent="Model/Rig/Skeleton3D"]
+material_override = ExtResource("2_cel")
+
+[node name="Knight_ArmRight" parent="Model/Rig/Skeleton3D"]
+material_override = ExtResource("2_cel")
+
+[node name="Knight_Body" parent="Model/Rig/Skeleton3D"]
+material_override = ExtResource("2_cel")
+
+[node name="Knight_Head" parent="Model/Rig/Skeleton3D"]
+material_override = ExtResource("2_cel")
+
+[node name="Knight_LegLeft" parent="Model/Rig/Skeleton3D"]
+material_override = ExtResource("2_cel")
+
+[node name="Knight_LegRight" parent="Model/Rig/Skeleton3D"]
+material_override = ExtResource("2_cel")
+
+[editable path="Model"]

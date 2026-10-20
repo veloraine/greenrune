@@ -12,10 +12,12 @@ Every checked item must meet the [definition of done](../endgame.md#definition-o
 - [ ] Town from asset packs: shop, inn, square, 3–5 houses, path to the farm
 - [ ] Farm ↔ town exits with a fade; spawn points per entrance
 - [ ] Baked navmesh covering every walkable area
-- [ ] Building interiors as separate scenes, or doors that hide NPCs inside. Interiors stay simple box rooms with a few Quaternius furniture models until the user's own Blender interiors replace them.
-- [ ] Buildings and trees you can walk behind fade or dither when they hide the player (the farm avoids this by placing them at the north edge and outside the bounds)
+- [ ] Building interiors as separate scenes, or doors that hide NPCs inside. Interiors stay simple box rooms with a few Quaternius furniture models until the user's own Blender interiors replace them. Deferred: the user builds the interiors in Blender first.
+- [ ] Buildings and trees you can walk behind fade or dither when they hide the player (the farm avoids this by placing them at the north edge and outside the bounds). Deferred until the user has rearranged the town.
 
 **Done when:** you walk farm → town → every interior → farm with no stuck spots, and the navmesh debug view covers every walkable area.
+
+**Status:** `scenes/town.tscn` is a placeholder for the user to rearrange in the editor: ground and bounds, a square and a short road to the farm exit, 2 houses, and a market stand as the shop spot. Farm ↔ town exits fade, the player keeps their facing, and saves store the area. After moving anything in the town, select `NavigationRegion3D` and click **Bake NavigationMesh** in the 3D toolbar. Interiors and see-through buildings are deferred, as noted above.
 
 ## Step 2 — NPC base and schedules (weeks 4–7)
 
@@ -26,6 +28,8 @@ Every checked item must meet the [definition of done](../endgame.md#definition-o
 - [ ] Off-screen catch-up: after sleep or a scene change, place each NPC where its schedule says
 - [ ] 3 NPCs on schedules (the shop owner is one of them)
 - [ ] Shop opens only while its owner is at the counter
+
+An early piece of Steps 2 and 5 is in place: a placeholder shopkeeper (KayKit Knight, name in `data/shop.tres`) idles at the market stand. Facing him and pressing interact opens a shop that sells the stock in `data/shop.tres` at each item's `buy_price`. He has no `NPCDef`, schedule, dialogue or walking yet.
 
 **Done when:** 3 NPCs follow their schedules for a full day, and leaving and re-entering town puts each one where it should be.
 

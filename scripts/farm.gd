@@ -11,7 +11,6 @@ var _water_query := PhysicsPointQueryParameters3D.new()
 @onready var _field: FarmGrid = $Field
 @onready var _feedback: ToolFeedback = $ToolFeedback
 @onready var _camera_rig: FollowCamera = $CameraRig
-@onready var _wake_point: Marker3D = $HouseInterior/WakePoint
 @onready var _bed: Area3D = $HouseInterior/Bed/Reach
 @onready var _sleep_prompt: SleepPrompt = $HUD/SleepPrompt
 @onready var _bin: Area3D = $ShippingBin/Reach
@@ -21,7 +20,6 @@ var _water_query := PhysicsPointQueryParameters3D.new()
 func _ready() -> void:
 	_player.tool_used.connect(_on_tool_used)
 	_player.sow_released.connect(_sow)
-	Game.stats.fainted.connect(_on_fainted)
 	_sleep_prompt.confirmed.connect(_sleep)
 	$HouseDoor.body_entered.connect(_go_through_door.bind($HouseInterior/Entrance))
 	$HouseInterior/Door.body_entered.connect(_go_through_door.bind($HouseEntrance))
@@ -102,12 +100,6 @@ func _pay(stack: ItemStack, charge_level: int) -> void:
 	if tool.capacity > 0:
 		stack.water -= 1
 		Game.inventory.changed.emit()
-
-
-func _on_fainted() -> void:
-	Game.gold = maxi(0, Game.gold - Game.vitals.faint_gold_penalty)
-	Game.stats.recover(Game.vitals.faint_wake_hp)
-	_player.global_position = _wake_point.global_position
 
 
 ## The XP comes first, so a sleeping level-up's extra max RP is refilled too. Like RF4, any sleep cures every ailment.
