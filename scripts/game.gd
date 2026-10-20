@@ -49,8 +49,8 @@ func _ready() -> void:
 	for file in ResourceLoader.list_directory(CROPS_DIR):
 		if file.ends_with(".tres"):
 			var crop: CropDef = load(CROPS_DIR + file)
-			if crop.stage_textures.size() != crop.stage_days.size() + 1 or crop.stage_textures.has(null):
-				push_error("Crop %s needs one texture per stage (%d); skipping it" % [file, crop.stage_days.size() + 1])
+			if crop.stage_models.size() != crop.stage_days.size() + 1 or crop.stage_models.has(null):
+				push_error("Crop %s needs one model per stage (%d); skipping it" % [file, crop.stage_days.size() + 1])
 				continue
 			crops[crop.seed_item.id] = crop
 	stats = Stats.new(vitals, skills, ailments)

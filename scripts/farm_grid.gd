@@ -10,12 +10,14 @@ extends Node3D
 @export var hitbox_material: Material
 
 const HITBOX_SECONDS: float = 0.3
-## How much of a tile's width a crop sprite fills, whatever its pixel size.
+## How much of a tile's width a ripe crop fills. Earlier stages keep their size relative to it.
 const CROP_WIDTH: float = 0.8
 
 var _tiles: Dictionary[Vector2i, MeshInstance3D] = {}
-# One billboard per tile, made once and shown only while a crop grows there.
-var _crops: Dictionary[Vector2i, Sprite3D] = {}
+# One slot per tile on its top face, holding the model of the stage that grows there.
+var _crops: Dictionary[Vector2i, Node3D] = {}
+var _shown: Dictionary[Vector2i, PackedScene] = {}
+var _bounds: Dictionary[PackedScene, AABB] = {}
 var _soil_materials: Dictionary[Field.Soil, Material] = {}
 # Reused quads for the target highlight and the debug hitbox, so nothing is allocated per frame.
 var _targets: Array[MeshInstance3D] = []
@@ -43,12 +45,10 @@ func _ready() -> void:
 			tile.position = _cell_center(cell)
 			add_child(tile)
 			_tiles[cell] = tile
-			var crop := Sprite3D.new()
-			crop.texture_filter = BaseMaterial3D.TEXTURE_FILTER_NEAREST
-			crop.alpha_cut = SpriteBase3D.ALPHA_CUT_DISCARD
-			crop.position = _cell_center(cell)
-			add_child(crop)
-			_crops[cell] = crop
+			var slot := Node3D.new()
+			slot.position = _cell_center(cell) + Vector3(0, 0.01, 0)
+			add_child(slot)
+			_crops[cell] = slot
 			_on_soil_changed(cell)
 	Game.field.changed.connect(_on_soil_changed)
 
@@ -106,15 +106,37 @@ func _on_soil_changed(cell: Vector2i) -> void:
 		return
 	_tiles[cell].material_override = _soil_materials[Game.field.soil(cell)]
 	var crop: Field.Crop = Game.field.crop(cell)
-	_crops[cell].visible = crop != null
-	if crop:
-		var sprite: Sprite3D = _crops[cell]
-		sprite.texture = crop.def.stage_textures[crop.stage()]
-		sprite.pixel_size = tile_size * CROP_WIDTH / sprite.texture.get_width()
-		# Seeds are drawn from above, so they lie flat just over the tile's top face (0.02).
-		# Later stages stand on that face on their texture's bottom row, lifted by half the texture's height.
-		var flat: bool = crop.stage() == 0
-		sprite.billboard = BaseMaterial3D.BILLBOARD_DISABLED if flat else BaseMaterial3D.BILLBOARD_ENABLED
-		sprite.axis = Vector3.AXIS_Y if flat else Vector3.AXIS_Z
-		sprite.offset.y = 0.0 if flat else sprite.texture.get_height() / 2.0
-		sprite.position.y = _cell_center(cell).y + (0.015 if flat else 0.01)
+	var model: PackedScene = crop.def.stage_models[crop.stage()] if crop else null
+	if _shown.get(cell) == model:
+		return
+	_shown[cell] = model
+	var slot: Node3D = _crops[cell]
+	for old in slot.get_children():
+		old.free()
+	if model:
+		var ripe: AABB = _bounds_of(crop.def.stage_models[-1])
+		slot.scale = Vector3.ONE * tile_size * CROP_WIDTH / maxf(ripe.size.x, ripe.size.z)
+		var instance: Node3D = model.instantiate()
+		instance.position.y -= _bounds_of(model).position.y
+		slot.add_child(instance)
+
+
+func _bounds_of(scene: PackedScene) -> AABB:
+	if not _bounds.has(scene):
+		var model: Node3D = scene.instantiate()
+		_bounds[scene] = _mesh_bounds(model, Transform3D.IDENTITY)
+		model.free()
+	return _bounds[scene]
+
+
+func _mesh_bounds(node: Node3D, parent: Transform3D) -> AABB:
+	var xf: Transform3D = parent * node.transform
+	var box := AABB()
+	if node is MeshInstance3D:
+		box = xf * (node as MeshInstance3D).mesh.get_aabb()
+	for child in node.get_children():
+		if child is Node3D:
+			var inner: AABB = _mesh_bounds(child, xf)
+			if inner.size != Vector3.ZERO:
+				box = inner if box.size == Vector3.ZERO else box.merge(inner)
+	return box

@@ -21,7 +21,7 @@ Every checked item must meet the [definition of done](../endgame.md#definition-o
 - [ ] `CropDef` gets a list of good seasons
 - [ ] Growth 1.5x in season, 0.75x out of season (values in data); no crop death
 - [ ] Crops wither after N days unwatered
-- [ ] 6 new crops, 8 in total (2 per season), each with sprites
+- [ ] 6 new crops, 8 in total (2 per season), each with a 3D model per stage
 - [ ] Seed stock in the shop changes per season
 
 **Done when:** the same crop planted in and out of season ripens at the expected different speeds.

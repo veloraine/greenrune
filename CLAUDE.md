@@ -46,8 +46,8 @@ Every checklist item must meet the definition of done in docs/endgame.md.
 - Inventory icons, hotbar, shop UI, tooltips, recipes, quest items: 2D Texture2D in Control nodes. NEVER put a 3D mesh in an inventory slot.
 - Dropped/floating items on the ground (pre-pickup): 2D billboard Sprite3D (always-face-camera), reusing the same icon asset as the inventory.
 - FX, "+N" pickup popups, sparkles, dust, distant filler grass: Sprite3D or sprite-textured GPUParticles3D.
-- Crop growth stages: Sprite3D billboards (RF4-style), not per-stage 3D models.
 - Things that occupy real space (player, NPCs, trees, buildings, terrain, props): 3D models, toon-shaded.
+- Crop growth stages: low-poly 3D models, toon-shaded (like Farnia Village), one model file per stage. Not Sprite3D billboards.
 - Each item has ONE icon asset that serves both the inventory UI and the world-drop billboard. Don't author separate art for each.
 
 # When in doubt

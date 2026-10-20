@@ -7,7 +7,7 @@ This folder holds downloaded asset packs. Each pack retains its original license
 ```
 assets/
 ├── characters/         KayKit Adventurers, Mixamo retargeted animations
-├── crops/              Crop growth stage sprites, one folder per crop
+├── crops/              Crop growth stage models, one folder per crop
 ├── environment/        KayKit Dungeon, Quaternius nature/buildings
 ├── icons/              Item icons, shared by the inventory UI and world drops
 ├── shaders/            Toon/cel shader files
@@ -60,6 +60,15 @@ assets/
 - Location: `environment/quaternius-farm/`
 - Used for: the farm house, field fences, bed and shipping bin. `scenes/props/` wraps each in a `StaticBody3D` with a collider.
 - Ours: the `*_cel.tres` materials, mapped in each `.fbx.import` like the nature pack.
+
+### LowPoly Crops Pack
+
+- Source: [LowPoly Crops Pack](https://opengameart.org/content/lowpoly-crops-pack) by quaternius
+- License: CC0, per the OpenGameArt page (the zip has no license file)
+- Location: `crops/turnip/`, `crops/potato/` (only 6 FBX models; the pack has 102)
+- Files: the pack has no turnip or potato, so the turnip uses `Beet_1`, `Beet_3` and `Beet_4`, and the potato uses `Lettuce_1`, `Lettuce_3` and `Lettuce_4`, renamed `stage_0.fbx` to `stage_2.fbx`
+- Stages: each pack crop grows through `_1` (sprout) to `_4` (grown). We use `_1` for the seed stage, `_3` for the middle stage and `_4` for the ripe crop. `_2`, `_Crop` (the picked produce) and `_Harvested` are unused.
+- Ours: the `*_cel.tres` materials, with the pack's DarkGreen and DarkRed colors, mapped in each `.fbx.import`. `scripts/farm_grid.gd` sizes each crop so its ripe model fills 0.8 of a tile.
 
 ## Animations
 
@@ -114,8 +123,8 @@ All of these are placeholders, to be replaced with our own art. Each PNG is one 
 
 - Source: [Farming crops 16x16](https://opengameart.org/content/farming-crops-16x16) by josehzz
 - License: CC0
-- Files: `crops/turnip/`, `crops/potato/`, `icons/turnip.png`, `icons/potato.png`, `icons/turnip_seed.png`, `icons/potato_seed.png`, cut from `Crop_Spritesheet.png`
-- Frames: each stage folder has the sheet's planted seeds (`stage_0`), middle sprout (`stage_1`) and ripe crop (`stage_2`). The crop icons are the sheet's portraits. The seed icons are the first sprout frame, because the pack has no seed bags.
+- Files: `icons/turnip.png`, `icons/potato.png`, `icons/turnip_seed.png`, `icons/potato_seed.png`, cut from `Crop_Spritesheet.png`
+- Frames: the crop icons are the sheet's portraits. The seed icons are the first sprout frame, because the pack has no seed bags.
 
 ### The Sprite Stuff
 

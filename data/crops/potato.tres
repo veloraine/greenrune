@@ -3,16 +3,16 @@
 [ext_resource type="Script" path="res://scripts/crop_def.gd" id="1_crop"]
 [ext_resource type="Resource" path="res://data/items/potato_seed.tres" id="2_seed"]
 [ext_resource type="Resource" path="res://data/items/potato.tres" id="3_harvest"]
-[ext_resource type="Texture2D" path="res://assets/crops/potato/stage_0.png" id="stage_0"]
-[ext_resource type="Texture2D" path="res://assets/crops/potato/stage_1.png" id="stage_1"]
-[ext_resource type="Texture2D" path="res://assets/crops/potato/stage_2.png" id="stage_2"]
+[ext_resource type="PackedScene" path="res://assets/crops/potato/stage_0.fbx" id="stage_0"]
+[ext_resource type="PackedScene" path="res://assets/crops/potato/stage_1.fbx" id="stage_1"]
+[ext_resource type="PackedScene" path="res://assets/crops/potato/stage_2.fbx" id="stage_2"]
 
 [resource]
 script = ExtResource("1_crop")
 seed_item = ExtResource("2_seed")
 harvest = ExtResource("3_harvest")
 stage_days = Array[int]([3, 4])
-stage_textures = Array[Texture2D]([ExtResource("stage_0"), ExtResource("stage_1"), ExtResource("stage_2")])
+stage_models = Array[PackedScene]([ExtResource("stage_0"), ExtResource("stage_1"), ExtResource("stage_2")])
 harvest_count = 3
 dry_growth = 0.5
 reap_level_up_chance = 0.5

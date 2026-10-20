@@ -108,7 +108,7 @@ Budget ~1 weekend in Phase 0 to get a toon shader you're happy with running on a
 
 **Optional later:** if you ever want inventory icons that match 3D models more literally (Minecraft-style), render the 3D model once via a `SubViewport` in Godot (or in Blender) to a `Texture2D` and use that as the icon. Keeps the workflow 3D-first but UI still cheap. Don't do this in Phase 1 — paint icons directly.
 
-### Hybrid 2D/3D — Sprite3D for crops, props, and effects
+### Hybrid 2D/3D — Sprite3D for props and effects
 
 **Look closely at RF4 and you'll notice many "3D" elements are actually 2D sprites billboarded in 3D space.** Crop growth stages, pickup pop-ups ("+1 Turnip"), sparkle particles, distant grass, some held tools at rest — all flat 2D sprites that always face the camera. This is a deliberate hybrid technique, not a limitation.
 
@@ -126,7 +126,7 @@ Budget ~1 weekend in Phase 0 to get a toon shader you're happy with running on a
 |---|---|---|
 | Dropped item on ground (pre-pickup) | **Yes — recommended** | Overkill |
 | Pickup pop-up effects ("+1") | Yes | Overkill |
-| Crop growth stages | **Yes — recommended** | Optional |
+| Crop growth stages | No | **Yes — chosen**: low-poly, toon-shaded, one model file per stage, like Farnia Village |
 | Small ground plants, flowers, mushrooms | Yes | Overkill |
 | Particles (dust, sparkles, leaves) | Yes (or `GPUParticles3D` with sprite texture) | — |
 | Trees | No | Yes (trees benefit from depth) |
@@ -134,7 +134,7 @@ Budget ~1 weekend in Phase 0 to get a toon shader you're happy with running on a
 | Player + NPCs | No | Yes (animation matters) |
 | Held tools (in active use) | Maybe | Maybe — both work |
 
-**Why this matters for your timeline:** the original Phase 1 plan said "3 growth-stage 3D models per crop." Using `Sprite3D` for crops saves you significant Blender time and reduces the asset cohesion risk (your crops won't accidentally drift in style from the rest of the world if they're flat painted sprites).
+**Crops are the exception to RF4:** growth stages are low-poly 3D models (like Farnia Village), not billboards. The Quaternius LowPoly Crops Pack supplies them, so there's no Blender time, and they share the cel shader with the rest of the world.
 
 **Style cohesion warning:** if you go hybrid, pick a consistent pixel-art or painted-sprite style and stick to it. Mixing photoreal sprite textures with toon-shaded 3D will look bad. Sprout Lands-style chunky pixel art reads well next to KayKit chibi 3D — they share visual "weight."
 
@@ -223,7 +223,7 @@ Smallest possible playable loop. **One 3D farm scene, no town yet.**
 - **Tools are combat-shaped:** every tool use is a swing with a hitbox, an RP cost and skill XP. Phase 4 weapons then become more items on the same pipeline (RF4 already lets weapons do farm work) instead of a bolt-on rewrite.
 - **RP bar:** one Rune Points bar that every tool action spends. Empty RP drains HP instead. Refill by sleeping (and later food). This gives the day its budget.
 - **Skills that level by use:** 4–6 to start, tied to Phase 1 actions (e.g. tilling, watering, reaping, walking, sleeping). Each level lowers that skill's RP cost and raises max RP. RF4 has 38; don't go near that.
-- **Crops:** 2 types (e.g. turnip fast, potato slow), each with 3 growth stages. **Recommended: use `Sprite3D` billboards with painted/pixel-art textures** — see "Hybrid 2D/3D" above. This is much faster than modeling 3D crops and visually matches RF's actual approach. Alternative: Quaternius vegetation 3D meshes if you want pure 3D.
+- **Crops:** 2 types (e.g. turnip fast, potato slow), each with 3 growth stages. Each stage is a low-poly 3D model from the Quaternius LowPoly Crops Pack, toon-shaded, one model file per stage — see "Hybrid 2D/3D" above.
 - **Crop and seed levels (1–10):** harvests carry a level; reaping a grown crop with the sickle returns seeds, sometimes a level higher. This is RF4's long-term farm goal with no extra content.
 - **Data-driven items:** one Godot `Resource` per item definition (or a CSV) from day one. Hard-coded items are the classic RF-clone killer.
 - **Inventory + hotbar:** 2D UI (`Control` nodes) overlaid on the 3D world. Start with 8 slots. Each stack is an item *instance* (item id + level), not a bare count.
