@@ -1,8 +1,8 @@
 # Greenrune — Endgame plan (road to 1.0)
 
-The whole project on one page: what Greenrune 1.0 is, what gets built in which phase, and links to each phase's detailed plan in [phases/](phases/). [plan.md](plan.md) stays the detailed guide for Phases 0–3 (tools, tutorials, setup). The reasoning behind every choice is in [rf4-research.md](rf4-research.md).
+The whole project on one page: what Greenrune 1.0 is, what gets built in which phase, and links to each phase's detailed plan in [phases/](phases/). [plan.md](plan.md) stays the detailed guide for Phases 0–3 (tools, tutorials, setup). The reasoning behind every choice is in [rf4-research.md](rf4-research.md). What to work on next, and the current todo list, is in [roadmap.md](roadmap.md).
 
-All content targets and time estimates below are planning estimates, not sourced facts. RF4 numbers are from the research (mostly the community wiki).
+All content targets below are planning estimates, not sourced facts. How phases are paced is in [plan.md › Phased roadmap](plan.md#phased-roadmap). RF4 numbers are from the research (mostly the community wiki).
 
 ## What "done" means
 
@@ -60,38 +60,17 @@ flowchart LR
     P10 --> M3([M3: Greenrune 1.0])
 ```
 
-- **M1, Cozy slice:** free on itch.io. It is a Story of Seasons-like game, and should be labelled honestly. This is Phase 3.5 [Path A in plan.md](plan.md#phase-35--stop-and-re-evaluate). If you stop here, you have shipped a game.
+- **M1, Cozy slice:** free on itch.io. It is a Story of Seasons-like game, and should be labelled honestly. This is the polish-and-ship choice in [After Phase 3](plan.md#phase-35--stop-and-re-evaluate). If you stop here, you have shipped a game.
 - **M2, RF-like demo:** combat, taming, forging and one or two dungeons work together. This is the first build that is genuinely an RF-like. Public demo or store page.
 - **M3, 1.0:** everything in the scope table above.
-
-## Time budget (at ~8 hrs/week)
-
-| Phase | Estimate | Running total |
-|---|---|---|
-| [0 Learn](../PHASE_0_CHECKLIST.md) | 1.5–2 months | 1.5–2 months |
-| [1 Farm loop](phases/phase-01-farm-loop.md) | 3–4 months | 4.5–6 months |
-| [2 Town & NPCs](phases/phase-02-town-npcs.md) | 4–5 months | 8.5–11 months |
-| [3 Seasons, cooking, orders](phases/phase-03-seasons-cooking-orders.md) | 2–3 months | 10.5–14 months |
-| [M1 Cozy slice](phases/m1-cozy-slice.md) | 1–2 months | **~1–1.3 years** |
-| [4 Combat core](phases/phase-04-combat-core.md) | 6–8 months | 17.5–24 months |
-| [5 Taming & barn](phases/phase-05-taming.md) | 3–5 months | 20.5–29 months |
-| [6 Forge & craft](phases/phase-06-forge-craft.md) | 3–5 months | 23.5–34 months |
-| [7 Dungeons & bosses](phases/phase-07-dungeons.md) | 6–9 months | 29.5–43 months |
-| [M2 RF-like demo](phases/m2-rf-like-demo.md) | ~1 month | **~2.5–3.7 years** |
-| [8 Town life depth](phases/phase-08-town-life.md) | 4–6 months | 34.5–50 months |
-| [9 Story & late game](phases/phase-09-story-late-game.md) | 4–6 months | 38.5–56 months |
-| [10 Polish & launch (M3)](phases/phase-10-polish-launch.md) | 3–4 months | **~3.5–5 years** |
-
-**Reality check:** 3.5–5 years at 8 hrs/week is about 1,450–2,100 hours. Stardew Valley's 4.5 years at reported 10–12-hour days is roughly 11,700–16,400 hours. Greenrune 1.0 is a sixth of that effort or less, which is why the scope table is small. Phases 4–7 are where RF clones die, and the estimates there are optimistic: even a funded studio got RF5's 3D combat feel and performance wrong.
 
 ## Rules for every phase
 
 1. **Fun gate (Hashimoto's rule).** Before starting a phase, cut every item that doesn't pass "will it make the game fun?"
-2. **Overrun rule.** If a phase passes 150% of its estimate, cut its lowest checklist item and ship the phase.
-3. **Data, not code.** Items, recipes, crops, monsters, gift tastes, requests and dialogue lines live in `Resource` files or CSV, never in scripts.
-4. **Bump the save version** whenever a phase adds saved state, and keep loading old saves.
-5. **Every phase ends in a playable build** you'd send to a friend.
-6. **Each new system must feed another.** If it doesn't consume another system's output or produce another system's input, it waits.
+2. **Data, not code.** Items, recipes, crops, monsters, gift tastes, requests and dialogue lines live in `Resource` files or CSV, never in scripts.
+3. **Bump the save version** whenever a phase adds saved state, and keep loading old saves.
+4. **Every phase ends in a playable build** you'd send to a friend.
+5. **Each new system must feed another.** If it doesn't consume another system's output or produce another system's input, it waits.
 
 ---
 
@@ -106,13 +85,13 @@ A checklist item is done only when all of these hold:
 5. You can explain every line of its code without AI.
 6. It is committed to git with a message that says what was done.
 
-A step is done when every item is checked and its **Done when** test passes. A phase is done when every step is done and every line under **Phase done when** is checked.
+A sub-phase is complete when every item in its checklist is checked and every outcome under its **Phase X.Y is complete when** shows in the running game. A phase is complete when every sub-phase is complete and every outcome under **Phase X is complete when** shows. Phases 4–10 and the milestones list steps and one checklist until they start; each is complete when that checklist is checked and every outcome under its **is complete when** shows.
 
 ## Phase plans
 
-Each file has the phase's goal, steps with a checklist and a **Done when** test, and a final **Phase done when** list.
+Each file has the phase's goal and a **Phase X is complete when** list. Phases 1–3 split into sub-phases, each with Goal, **Phase X.Y is complete when**, Steps, Checklist, Out of scope and Reference. Phases 4–10 and the milestones list steps and one checklist until they start.
 
-| Plan | Goal | Done when (short) |
+| Plan | Goal | Complete when (short) |
 |---|---|---|
 | [Phase 0 — Learn](../PHASE_0_CHECKLIST.md) | Skills for Phase 1 | `baseline_scene.tscn` looks RF4-ish, you understand every node, the feel test is done |
 | [Phase 1 — Farm loop](phases/phase-01-farm-loop.md) | Smallest RF-style day | 5 days played across a save/reload; RP runs out; a skill and a seed level up |

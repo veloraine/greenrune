@@ -1,73 +1,35 @@
 # Phase 5 — Taming & barn
 
 **Goal:** combat pays off on the farm. Tamed monsters produce goods and do farm chores.
-**Estimate:** 3–5 months (~13–22 weeks).
+
+**Phase 5 is complete when:**
+- 3 tamed monsters water and harvest a full field for 7 in-game days while you are in the field area.
+- Monster produce cooks into at least one dish.
+- A chore monster at 0 HP stops working until it rests in the barn, so chores need rotating.
+- Barn and monsters survive save → quit → load.
+
 **Starts when:** [Phase 4](phase-04-combat-core.md) is done.
-**Background:** [research › Monster taming and barns](../rf4-research.md#monster-taming-and-barns).
 
-Every checked item must meet the [definition of done](../endgame.md#definition-of-done).
+**Steps:**
+1. **Barn.** A "Build barn" Order; a barn scene with a few monster slots; a tamed monster record (species, name, level, HP, friendship, produce state).
+2. **Taming.** Give a held item to a wild monster ([Phase 1.3](phase-01-farm-loop.md#phase-13--hands-and-carrying)'s hold from the bag); odds from data (species base, liked item, brushed bonus, level gap, repeat-species penalty); a heart burst or a skull; a brush item that raises the odds; a taming skill that levels by use; the tamed monster goes to the barn and can be renamed.
+3. **Care and produce.** Daily brushing and talking raise monster friendship; a feed bin for fodder; produce per species (milk, eggs, wool-equivalents) based on friendship; produce used in at least 2 recipes.
+4. **Farm chores.** Assign a monster to a field and a chore (water, harvest or clear debris); chore AI walks the farm grid and uses the player's tile actions; chores cost monster HP and resting in the barn restores it; harvested crops go to the shipping bin or storage; a minimum friendship to accept chores.
+5. **Field companion.** One barn monster follows you into the field; companion AI follows, attacks your target and retreats at low HP; barn monsters get 50% of your combat XP.
+6. **Expansion, save v6, playtest.** Barn expansion Orders for more slots; save v6 adds the barn, tamed monsters and chores; a 7-day playtest using chores while fighting.
 
-## Step 1 — Barn (weeks 1–3)
+**Checklist:**
+- [ ] Buying the barn Order puts an empty barn with monster slots on the farm
+- [ ] Every non-boss species from Phase 4 can be tamed; a success shows a heart burst and a failure a skull
+- [ ] Brushing a monster first raises its taming odds by the amount in data
+- [ ] A tamed monster appears in the barn and can be renamed
+- [ ] A monster brushed and talked to every day produces every day
+- [ ] 3 assigned monsters water and harvest a full field with you off the farm
+- [ ] A monster below the minimum friendship refuses a chore
+- [ ] A companion follows you into the field, attacks your target, retreats at low HP and levels up from a cleared gate
+- [ ] A bought barn expansion adds slots
+- [ ] A v5 save loads into v6
 
-- [ ] "Build barn" Order
-- [ ] Barn scene with a few monster slots
-- [ ] Tamed monster record: species, name, level, HP, friendship, produce state
+**Out of scope for this phase:** taming bosses, dungeons, crafted gear.
 
-**Done when:** buying the Order puts a working, empty barn on the farm.
-
-## Step 2 — Taming (weeks 4–6)
-
-- [ ] Give the held item to a wild monster
-- [ ] Odds from data: species base, liked item, brushed bonus, level gap, repeat-species penalty
-- [ ] Heart burst (tamed) or skull (failed)
-- [ ] Brush item: brushing first raises the odds
-- [ ] Taming skill (levels by use)
-- [ ] Tamed monster goes to the barn and can be renamed
-
-**Done when:** every non-boss species from Phase 4 can be tamed, and a failed attempt shows the skull.
-
-## Step 3 — Care and produce (weeks 7–9)
-
-- [ ] Daily brush and talk raise monster friendship
-- [ ] Feed bin for fodder
-- [ ] Produce per species (milk, eggs, wool-equivalents) based on friendship
-- [ ] Produce used in at least 2 recipes
-
-**Done when:** a well-cared-for monster produces every day, and its produce cooks into a dish.
-
-## Step 4 — Farm chores (weeks 10–13)
-
-- [ ] Assign a monster to a field and a chore: water, harvest or clear debris
-- [ ] Chore AI walks the farm grid and uses the same tile actions as the player
-- [ ] Chores cost monster HP; resting in the barn restores it
-- [ ] Harvested crops go to the shipping bin or storage
-- [ ] Minimum friendship to accept chores
-
-**Done when:** 3 assigned monsters water and harvest a full field with you off the farm.
-
-## Step 5 — Field companion (weeks 14–15)
-
-- [ ] One barn monster follows you into the field
-- [ ] Companion AI: follow, attack your target, retreat at low HP
-- [ ] Barn monsters get 50% of your combat XP
-
-**Done when:** a companion helps clear a gate and levels up from it.
-
-## Step 6 — Expansion, save v6, playtest (weeks 16–18)
-
-- [ ] Barn expansion Orders (more slots)
-- [ ] Save v6 adds barn, tamed monsters, chores; v5 saves still load
-- [ ] 7-day playtest using chores while fighting
-
-**Done when:** a v5 save loads into v6, and the 7-day run has no bugs left open.
-
-## Phase done when
-
-- [ ] Tamed monsters water and harvest for 7 in-game days while you fight
-- [ ] Monster produce feeds at least one recipe
-- [ ] Chore monsters need rotating because of HP cost
-- [ ] Barn and monsters survive save → quit → load
-
-## Not in this phase
-
-Taming bosses, dungeons, crafted gear.
+**Reference:** [research › Monster taming and barns](../rf4-research.md#monster-taming-and-barns); monsters on farm duty clear debris at 07:00 and harvest at 15:00 ([RF4 and Farnia research › Game plan](../rf4-farnia-research.md#1-game-plan-how-rf4-paces-its-opening)).

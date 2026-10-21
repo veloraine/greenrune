@@ -4,15 +4,15 @@
 
 ## Visual target
 
-Chibi low-poly 3D characters with toon/cel shading in a stylized 3D world, viewed from a fixed semi-top-down camera. Dialogue uses 2D anime-style portraits over the 3D world. **Target reference: RF4 / RF3 Special** — both render simple 3D worlds (flat ground, low-poly buildings, placed props) with chibi toon-shaded characters. The expensive-looking part of that aesthetic comes free from KayKit + Mixamo; the world is intentionally simple.
+Chibi low-poly 3D characters with toon/cel shading in a stylized 3D world, viewed from a fixed semi-top-down camera. Dialogue uses 2D anime-style portraits over the 3D world. **Target reference: RF4 / RF3 Special** — both render simple 3D worlds (flat ground, low-poly buildings, placed props) with chibi toon-shaded characters. The expensive-looking part of that aesthetic comes free from KayKit's rigged bodies and clips; the world is intentionally simple.
 
-**Hard commitment: asset packs only.** No custom humanoid modeling, no custom building modeling, until Phase 4+ at earliest. KayKit Adventurers + KayKit Dungeon + Quaternius Ultimate Nature + Mixamo + a single toon shader is the entire art toolkit for Phases 0–3.
+**Asset packs are the base; Blender fills the farm's gaps.** KayKit Adventurers, KayKit Dungeon, the Quaternius packs and a single toon shader are the art toolkit for Phases 1–3. From Phase 1, Blender is used to edit pack models and to make crops, terrain, soil, debris and small props. In Blender, Claude builds the base (blockout, proportions, origin on the tile grid, export) with Python scripts or by editing pack GLBs, and the user does the final shaping, texturing and polish ([CLAUDE.md](../CLAUDE.md)). Every Blender model shares one palette texture (atlas), not vertex colour. Characters get one custom adult base body in [Phase 2.0](phases/phase-02-town-npcs.md#phase-20--character-base), built on the KayKit Adventurers skeleton so its 76 clips still play, with swappable head, hair, outfit and accessory parts. House interiors and props are allowed from Phase 2. Custom buildings wait for Phase 4+.
 
 ## Ground rules (read these first)
 
-1. **You are learning Godot AND Blender AND building a game at the same time.** That's three skill curves at once. Multiply your time estimates by ~2x; this is normal for a first 3D hobby project.
+1. **You are learning Godot AND Blender AND building a game at the same time.** That's three skill curves at once. The plan has no deadlines for that reason: each sub-phase is worked until it is polished, then the next one starts.
 2. **Combat, monsters, dungeons, marriage, magic — all deferred.** Not "skipped forever," just not now. The moment you let these creep in early, the project dies. RP and use-based skills are *not* combat systems: in RF4 they are the farming energy bar and progression first, so they start in Phase 1.
-3. **Assets first, custom modeling later (if ever).** You will use **KayKit**, **Quaternius**, **Mixamo**, and **Kenney 3D** for the entire first year. Only model things in Blender that you can't find in a free pack. Even commercial indies do this.
+3. **Assets first, Blender for the gaps.** **KayKit**, **Quaternius** and **Kenney 3D** are the base. Blender edits pack models and makes what no pack has for the farm: crop stages, field ground, soil, debris, small props. From Phase 2 it also builds the Phase 2.0 character base and its parts, house interiors and props. Buildings stay pack-only until Phase 4+. Even commercial indies work this way.
 4. **AI assists, you understand.** Never paste code you can't explain in plain English. AI is great at GDScript boilerplate, shaders, and state machines, but it will confidently invent Godot APIs that don't exist. Verify against the [Godot 4 docs](https://docs.godotengine.org/en/stable/).
 5. **Done > perfect.** Every phase ends in a playable build you'd send to a friend, even if it's ugly.
 
@@ -31,9 +31,9 @@ What makes RF4 work, per [rf4-research.md](rf4-research.md). Check every feature
 ## Engine & tooling decision
 
 - **Engine: Godot 4 (latest stable)** — free, MIT license, 3D got dramatically better in v4, GDScript is Python-like and very AI-friendly.
-- **3D modeling/animation: Blender (latest LTS)** — free, industry-standard. Used minimally; mostly for editing existing assets and small props.
+- **3D modeling/animation: Blender (latest LTS)** — free, industry-standard. From Phase 1, for editing pack models and making crops, terrain, soil, debris and small props. The export pipeline is in [rf4-farnia-research.md › Blender pipeline](rf4-farnia-research.md#blender-pipeline) and is set up in [Phase 1.1](phases/phase-01-farm-loop.md#phase-11--the-field).
 - **Asset pipeline: GLTF/GLB** — the modern standard, fully supported by both Blender and Godot.
-- **Auto-rigging/animation: [Mixamo](https://www.mixamo.com)** — free from Adobe. Upload a model, get walk/idle/attack/sit animations. Eliminates ~80% of beginner animation pain.
+- **Animation: the KayKit Adventurers clips** — 76 clips on one 41-joint skeleton. The Phase 2.0 base body keeps that skeleton and its bone names, so the clips still play. [Mixamo](https://www.mixamo.com) (via the Antz workflow below) only if a new animation is ever needed.
 - **Language: GDScript** (not C#). Lower friction for a first game, more tutorials, AI handles it well. (You can switch to C# in Godot later if AI assistance on GDScript ever frustrates you — C# has more training data.)
 - **Version control: Git from day one** with [Git LFS](https://git-lfs.com/) for `.blend`, `.glb`, and texture files (binary assets bloat normal Git fast).
 - **AI assistant: Claude Code**, run in the project folder. Project rules live in [CLAUDE.md](../CLAUDE.md) and [.claude/rules/](../.claude/rules/). Godot's built-in editor handles scenes, scripts, running, and debugging. See the [Claude Code + Godot workflow](#claude-code--godot-workflow) section below.
@@ -75,15 +75,15 @@ The fix: a strong CLAUDE.md + always cross-checking unfamiliar APIs against [doc
 
 ## Art strategy — free pre-rigged 3D asset packs
 
-**You are NOT modeling humans from scratch.** Beginner-rigged humanoids fail in ways that look amateur. Use these instead:
+**You are NOT modeling or rigging humans from scratch.** Beginner-rigged humanoids fail in ways that look amateur. Greenrune's one custom character, the [Phase 2.0](phases/phase-02-town-npcs.md#phase-20--character-base) adult base body, is a KayKit Adventurers body reshaped in Blender (longer legs and torso, a smaller head) on the same 41-joint skeleton and bone names, so its 76 clips still play. Variety comes from swappable parts: a head with a painted anime face texture, a hair mesh on the head bone, an outfit mostly painted on the body texture with a few mesh pieces, accessories on bones, and colours from the shared palette. Child and elderly bodies use the same skeleton and arrive with the first NPC that needs one. The packs below are the source for everything else:
 
-- **[KayKit](https://kaylousberg.com/game-assets)** — free chibi RPG character + dungeon packs, already rigged, GLB format. **This is your primary character source.**
+- **[KayKit](https://kaylousberg.com/game-assets)** — free chibi RPG character + dungeon packs, already rigged, GLB format. **The Adventurers skeleton and clips are the base of every Greenrune character.**
 - **[Quaternius](https://quaternius.com/)** — huge free low-poly library: nature, farm, animals, buildings, props. CC0 license.
-- **[Mixamo](https://www.mixamo.com)** — free auto-rigging + thousands of animations. Combine with KayKit characters for walk/idle/attack/sit/etc.
+- **[Mixamo](https://www.mixamo.com)** — free auto-rigging + thousands of animations. Only if a clip the KayKit set lacks is ever needed.
 - **[Kenney 3D](https://kenney.nl/assets?q=3d)** — same trusted Kenney quality, 3D variants. CC0.
 - **[Synty POLYGON packs](https://syntystore.com/)** ($15–40, optional later) — production-grade. Used by many shipped indies if you want to invest later.
 
-**Style cohesion rule:** Pick ONE primary character pack (KayKit) and ONE primary environment pack (Quaternius or KayKit Dungeon) and stick to them. Mixing chibi proportions with realistic proportions is the #1 visual sin and instantly looks amateur.
+**Style cohesion rule:** One character base (the Phase 2.0 body on the KayKit skeleton) and ONE primary environment pack (Quaternius or KayKit Dungeon). Mixing chibi proportions with realistic proportions is the #1 visual sin and instantly looks amateur. The target look is about 2.2–2.7 heads tall, painted anime eyes, solid hair with a colour gradient and soft cel shading, with an outline only if a side-by-side test favours it ([rf4-farnia-research.md › Character style](rf4-farnia-research.md#5-character-style-farnia-village-vs-blue-archive--stella-sora-chibi)).
 
 **Toon shader:** You'll need a cel-shading shader for the RF-style look. Options:
 
@@ -134,27 +134,25 @@ Budget ~1 weekend in Phase 0 to get a toon shader you're happy with running on a
 | Player + NPCs | No | Yes (animation matters) |
 | Held tools (in active use) | Maybe | Maybe — both work |
 
-**Crops are the exception to RF4:** growth stages are low-poly 3D models (like Farnia Village), not billboards. The Quaternius LowPoly Crops Pack supplies them, so there's no Blender time, and they share the cel shader with the rest of the world.
+**Crops are the exception to RF4:** growth stages are low-poly 3D models (like Farnia Village), not billboards. The Quaternius LowPoly Crops Pack is the starting point. In [Phase 1.4](phases/phase-01-farm-loop.md#phase-14--crops) the stages are adjusted or rebuilt in Blender (Claude blocks out the base, the user polishes), one model per stage, sharing the cel shader with the rest of the world.
 
 **Style cohesion warning:** if you go hybrid, pick a consistent pixel-art or painted-sprite style and stick to it. Mixing photoreal sprite textures with toon-shaded 3D will look bad. Sprout Lands-style chunky pixel art reads well next to KayKit chibi 3D — they share visual "weight."
 
 ## Phased roadmap
 
-Timelines below assume ~8 hrs/week **and** the asset-packs-only commitment from the Visual target section. Custom Blender modeling would add 30–50% to these numbers; the plan is designed to avoid that.
+**Polish first, no schedule.** Each phase is split into focused sub-phases, worked one at a time until polished: the field alone first (size, blocks, debris, soil, camera), then tool feel, and so on. A sub-phase ends when its "complete when" outcomes show in the running game, not when a week runs out. Phases 1–3 have sub-phase files in [phases/](phases/). [roadmap.md](roadmap.md) is the ordered todo list: what to work on next and what counts as done. Phases 4–10 and the milestones list steps and a phase checklist for now, and each gets sub-phases in the same format when it starts. Every checked item meets the [definition of done](endgame.md#definition-of-done).
 
 ```mermaid
 flowchart TD
-    P0[Phase 0: Learn Godot 3D + toon pipeline - 6 to 8 weeks] --> P1[Phase 1: Farming prototype 3D - 2 to 3 months]
-    P1 --> P2[Phase 2: Town and NPCs - 3 to 4 months]
-    P2 --> P3[Phase 3: Calendar, seasons, cooking, orders - 2 to 3 months]
+    P0[Phase 0: Learn Godot 3D + toon pipeline - done] --> P1[Phase 1: Farm loop, 1.1 to 1.6]
+    P1 --> P2[Phase 2: Town and NPCs, 2.0 to 2.5]
+    P2 --> P3[Phase 3: Seasons, cooking, orders, 3.1 to 3.6]
     P3 --> Decide{Re-evaluate}
     Decide --> Polish[Polish and ship vertical slice]
     Decide --> Combat[Phase 4: Combat and dungeons - later]
 ```
 
 For everything after the slice (Phases 4–10, milestones, scope targets for 1.0), see [endgame.md](endgame.md).
-
-**Total to playable vertical slice: ~12–15 months** (asset-packs-only). If you start custom-modeling humanoids or buildings, expect 16–20+ months instead.
 
 ### Phase 0 — Learn Godot 3D + toon pipeline (6–8 weeks, ~8 hrs/week)
 
@@ -176,7 +174,7 @@ Do tutorials end-to-end without skipping. Do NOT start the real project yet. The
 
 **Feel test (~1 weekend):** a throwaway scene where one hoe swing hits a tile with sound, particles and a tiny camera shake. It checks the riskiest assumption in the plan (that tool use can feel good in Godot 3D) before Phase 1 builds on it.
 
-**Blender is not in Phase 0.** The asset-packs-only commitment means you won't model anything until Phase 4+. Learn the Blender → Godot export roundtrip the first time you actually need a custom prop (see [Blender for game devs](#blender-for-game-devs-when-you-first-need-a-custom-prop)).
+**Blender is not in Phase 0.** It starts in Phase 1, with the export setup at the start of [Phase 1.1](phases/phase-01-farm-loop.md#phase-11--the-field) (see [Blender for game devs](#blender-for-game-devs-when-you-first-need-a-custom-prop)).
 
 ### Phase 1 prerequisites — Godot MCP setup (do at the START of Phase 1)
 
@@ -212,48 +210,54 @@ Restart Claude Code. The Godot MCP tools should appear in your available tools. 
 
 **Risk to watch:** with MCP, AI can do too much for you. If you find yourself asking AI to "build the inventory scene for me" instead of "explain how I should structure the inventory scene," step back. MCP makes the lazy path easier — discipline yourself to use it for *augmentation*, not replacement.
 
-### Phase 1 — Farming prototype, 3D (3–4 months)
+### Phase 1 — Farming prototype, 3D
 
-Smallest possible playable loop. **One 3D farm scene, no town yet.**
+Smallest possible playable loop. **One 3D farm scene, no town yet.** Steps 1–6 built every system below; sub-phases 1.1–1.6 in [phase-01-farm-loop.md](phases/phase-01-farm-loop.md) polish it.
 
 - **Player character:** KayKit Adventurer chibi model + its built-in walk/idle animations.
 - **Camera:** fixed semi-top-down (~45° angle, follows player), similar to RF4. Implement as a `Camera3D` attached to a `SpringArm3D`.
-- **Farm scene:** terrain (small flat MeshInstance or HeightMap), Quaternius/KayKit barn + fences + trees as props.
+- **Farm scene:** terrain (small flat MeshInstance or HeightMap), Quaternius/KayKit barn + fences + trees as props. The field is 9×12 plots in twelve 3×3 blocks, and starts covered in weeds, stones and branches that the hands clear. RF4's first field is 6×12 in 2×2 sections; Greenrune uses Farnia's 3×3.
 - **Tools:** hoe (till — modifies a tile state), watering can, sickle, seeds, harvest. Tile state is a 2D grid managed in code, but visuals are 3D.
+- **Charge by tool tier, Farnia's 3×3 gated like RF4:** cheap (starter) tools tap one plot and don't charge; a bronze tool charges to the 3×3 block holding the player's tile; silver and higher add blocks in a line along the facing direction *(default)*. Every charged area is centred on the player and snapped to blocks; the tap hits the plot in front.
+- **Hands:** a carry state lifts, throws and stores debris and harvested crops, as RF4 does.
 - **Tools are combat-shaped:** every tool use is a swing with a hitbox, an RP cost and skill XP. Phase 4 weapons then become more items on the same pipeline (RF4 already lets weapons do farm work) instead of a bolt-on rewrite.
 - **RP bar:** one Rune Points bar that every tool action spends. Empty RP drains HP instead. Refill by sleeping (and later food). This gives the day its budget.
 - **Skills that level by use:** 4–6 to start, tied to Phase 1 actions (e.g. tilling, watering, reaping, walking, sleeping). Each level lowers that skill's RP cost and raises max RP. RF4 has 38; don't go near that.
-- **Crops:** 2 types (e.g. turnip fast, potato slow), each with 3 growth stages. Each stage is a low-poly 3D model from the Quaternius LowPoly Crops Pack, toon-shaded, one model file per stage — see "Hybrid 2D/3D" above.
+- **Crops:** 2 types (e.g. turnip fast, potato slow), each with 3 growth stages. Each stage is a low-poly 3D model, starting from the Quaternius LowPoly Crops Pack and adjusted in Blender, toon-shaded, one model file per stage — see "Hybrid 2D/3D" above.
 - **Crop and seed levels (1–10):** harvests carry a level; reaping a grown crop with the sickle returns seeds, sometimes a level higher. This is RF4's long-term farm goal with no extra content.
 - **Data-driven items:** one Godot `Resource` per item definition (or a CSV) from day one. Hard-coded items are the classic RF-clone killer.
 - **Inventory + hotbar:** 2D UI (`Control` nodes) overlaid on the 3D world. Start with 8 slots. Each stack is an item *instance* (item id + level), not a bare count.
 - **Day cycle:** sleep-to-next-day. Use a `DirectionalLight3D` rotating around to fake sun position. Skybox can be a simple gradient. Crops grow and soil dries at the 06:00 wake-up tick; build one ordered end-of-day pipeline now, since crops, NPCs, requests and monsters will all hook into it.
-- **Save/load:** implement in week 2–3, NOT later. Refactoring saves into a finished project is hell. Save tile states, inventory (item id + level per stack), RP, skill XP, time, gold.
+- **Save/load:** implement early, NOT later. Refactoring saves into a finished project is hell. Save tile states, inventory (item id + level per stack), RP, skill XP, time, gold.
 - **Shipping bin:** like RF4, a container you fill and empty freely; everything in it sells at 08:00, priced by item level. RF4 shops buy nothing, so there is no "sell all" shop NPC (see the [RF4 research](rf4-research.md#shipping-and-selling-researched)).
 
-**Exit criterion:** play 5 in-game days, save, quit, reload, continue farming. RP runs out by evening, at least one skill levels up, and a reaped seed comes back a level higher. It's ugly and minimal but the 3D loop works.
+**Exit criterion:** play 5 in-game days, save, quit, reload, continue farming. RP runs out between 15:00 and 18:00, at least one skill levels up, and a reaped seed comes back a level higher. It's ugly and minimal but the 3D loop works.
 
-### Phase 2 — Town & NPCs (4–5 months)
+### Phase 2 — Town & NPCs
 
-Now add the social layer in 3D.
+Now add the social layer in 3D. Sub-phases 2.0–2.5 are in [phase-02-town-npcs.md](phases/phase-02-town-npcs.md).
 
 - **Town scene:** second 3D scene built from Quaternius/KayKit buildings. Seamless transition from farm (probably scene-switch with fade rather than streaming for simplicity).
-- **3–5 NPCs:** each reuses one of the 5 KayKit Adventurers bodies (Barbarian, Knight, Mage, Rogue, Rogue_Hooded), retextured. The animations come built into those GLBs: 76 clips on one 41-joint skeleton that all 5 share. Every NPC is named; no nameless shop clerks. Daily state-machine schedules (home → work → tavern → sleep).
+- **Character base (Phase 2.0):** one adult base body on the KayKit Adventurers 41-joint skeleton, keeping its bone names so the 76 clips still play, with swappable head, hair, outfit and accessory parts. The player switches to it first.
+- **3–5 NPCs:** each is the Phase 2.0 base body with its own parts and palette colours. Every NPC is named; no nameless shop clerks. Daily state-machine schedules (home → work → tavern → sleep).
 - **Pathfinding:** Godot's `NavigationAgent3D` + baked navmesh on the town scene.
 - **Dialogue:** a small custom dialogue box with a portrait, the speaker's name and typewriter text; press interact to advance. Phase 2 has no branching, so [Dialogic 2](https://github.com/dialogic-godot/dialogic) (alpha, with breaking changes between releases) waits until choices or cutscenes are in scope. Placeholder portraits are rendered from each NPC's own model. Later, replace them with 2D portrait art: commission cheap art on Fiverr, or use AI-generated placeholders (single static images are fine; AI is bad at animated frames but okay at single portraits).
 - **Line selection layer:** the dialogue box handles display, not *which* line to say. Build a small "pick the best-matching line" layer keyed on time, season, weather, friendship and recent events. RF4's writer: if routines change but lines don't, "the village will feel lifeless."
 - **Friendship/affection points** per NPC: daily talk, one counted gift per day, birthdays double the gift value.
 - **Gift system** with per-NPC likes/dislikes/hates. Crop level should affect gift value.
 - **Proper shop:** buy seeds. Like RF4, shops don't buy; selling stays with the shipping bin until your own store in a later phase.
+- **Request box:** one small request a day from day 2, whose rewards hand out the sickle and new seed stock, as RF4's does. Pulled forward from Phase 8.
 
-**Budget warning:** this phase is content-bound, not code-bound. Most of the 4–5 months is writing lines, not building systems.
+**Budget warning:** this phase is content-bound, not code-bound. Most of the work is writing lines, not building systems.
 
 **Exit criterion:** max friendship with one NPC over ~14 in-game days through dialogue and gifts, and that NPC says different things in the morning than in the evening. Watching a chibi character walk a navmesh-pathed daily routine in your toon-shaded town is the moment this feels "real."
 
-### Phase 3 — Calendar, seasons & town progression (~2–3 months)
+### Phase 3 — Calendar, seasons & town progression
+
+Sub-phases 3.1–3.6 are in [phase-03-seasons-cooking-orders.md](phases/phase-03-seasons-cooking-orders.md).
 
 - **4 seasons, 30 days each** (RF4's calendar; 28 days is the Stardew / Story of Seasons convention).
-- **Seasonal growth multipliers, no crop death:** in-season crops grow 1.5x, out-of-season 0.75x (RF4's model). Simpler to build and test than dying crops. Unwatered crops can still wither.
+- **Seasonal growth multipliers, no crop death at a season change:** in-season crops grow 1.5x, out-of-season 0.5x *(default, the wikiwiki datamine)*. Each crop uses RF4's seasons: the turnip is a Summer and Fall crop, neutral in Spring. Unwatered crops can still wither by RF4's rule, built in Phase 1.4: a colour change at 06:00, then death if unwatered that day.
 - **Visual season swap:** terrain texture, tree variants (Quaternius has seasonal tree variants), skybox tint. This is the moment your 3D investment really pays off — autumn looks tangibly different from spring, not just a palette swap.
 - **Cooking:** the first "make things from crops" system. Dishes restore RP, make good gifts and serve as festival entries; this is what makes crop levels matter before combat exists.
 - **Orders menu (town points):** earn points from shipping and festivals; spend them to unlock a shop, a festival or a farm expansion. RF4's Prince Points; mostly data plus one menu.
@@ -262,12 +266,14 @@ Now add the social layer in 3D.
 
 **Exit criterion:** play through a full in-game year and the loop still feels good.
 
-### Phase 3.5 — STOP and re-evaluate
+<a id="phase-35--stop-and-re-evaluate"></a>
 
-After ~12–15 months you'll have a finished, playable cozy 3D farming-and-town game with a distinctive chibi toon-shaded look. **This is a real accomplishment for a first 3D game.** Now choose:
+### After Phase 3 — STOP and re-evaluate
+
+After Phase 3 you'll have a finished, playable cozy 3D farming-and-town game with a distinctive chibi toon-shaded look. **This is a real accomplishment for a first 3D game.** Now choose:
 
 - **Path A (recommended for first project):** Polish, add 2–3 more NPCs, polish portraits, ship it on itch.io as your first finished game. Then start a second project with combat from day one knowing what you now know. Be honest about the label: without combat, dungeons and taming this is a Story of Seasons-like, not an RF-like. That is a fine first game.
-- **Path B:** Add combat, dungeons, monsters — Phase 4. Add another ~18–24 months, and treat that as optimistic (3D combat is harder than 2D, and even a funded studio got RF5's 3D feel and performance wrong). This is where most hobby RF clones die. Only choose this if Phases 0–3 felt sustainable. If you do, invert RF4's weak spots:
+- **Path B:** Add combat, dungeons, monsters — Phase 4. This is the biggest stretch of the project (3D combat is harder than 2D, and even a funded studio got RF5's 3D feel and performance wrong). This is where most hobby RF clones die. Only choose this if Phases 0–3 felt sustainable. If you do, invert RF4's weak spots:
   - Make **monster taming** the first combat payoff — tamed monsters doing farm chores ties combat back to the farm.
   - Keep dungeons few and short; RF4's lever-puzzle dungeons are its most-criticized system.
   - No health-sponge bosses.
@@ -277,12 +283,12 @@ After ~12–15 months you'll have a finished, playable cozy 3D farming-and-town 
 
 - **Good uses:** GDScript boilerplate (inventory data classes, save serialization, state machines), explaining unfamiliar Godot/Blender concepts, **writing toon shaders** (AI is genuinely useful here), code review, generating dialogue text and NPC personalities, debugging stack traces.
 - **Decent uses:** generating **single static 2D portrait images** for NPCs as placeholders. Pick a consistent style prompt and reuse it.
-- **Dangerous uses:** asking AI to architect whole systems before you understand them; trusting AI-generated Godot API names without checking docs; AI-generating **animated** sprite frames or 3D models (currently bad at consistency); AI claiming a Blender keyboard shortcut exists when it doesn't.
+- **Dangerous uses:** asking AI to architect whole systems before you understand them; trusting AI-generated Godot API names without checking docs; AI-generating **animated** sprite frames or finished 3D models (currently bad at consistency; Claude builds only the Blender base, and you polish it); AI claiming a Blender keyboard shortcut exists when it doesn't.
 - **Workflow:** read a tutorial → try yourself → get stuck → ask AI → understand the fix → move on. Don't skip step 2.
 
 ## Risks to actively manage
 
-- **The Blender rabbit hole** — every hour you spend in Blender that isn't strictly needed is an hour not spent on the game. If a free asset exists, use it. Custom modeling is a "nice to have" Phase 4+ activity.
+- **The Blender rabbit hole** — every hour you spend in Blender that isn't strictly needed is an hour not spent on the game. If a free asset exists, use it. In Phases 1–3, Blender work is limited to what a sub-phase names (terrain, soil, debris, crop stages, small farm props, the Phase 2.0 character base and its parts, house interiors); buildings wait for Phase 4+.
 - **Save system debt** — implement early, version your save format from v1. Store item instances (id + level) and NPC state from the start.
 - **Hard-coded items** — keep every item, recipe and gift taste in data, never in scripts.
 - **Writing volume** — dialogue, not code, is the bottleneck for an RF-like town. Budget writing time explicitly.
@@ -290,7 +296,7 @@ After ~12–15 months you'll have a finished, playable cozy 3D farming-and-town 
 - **Scope creep** — keep a `NOT_IN_SCOPE.md` next to your TODO. When you get a "wouldn't it be cool if…" thought, write it there, not into the code.
 - **Asset cohesion drift** — if you ever spend a session looking for art instead of coding, stop and go back to your one chosen pack combo. Inconsistent styles instantly look amateur.
 - **3D performance traps** — beginners often overload scenes with high-poly meshes and dynamic lights. Stay low-poly, bake lighting where possible, profile early.
-- **Burnout** — 8 hrs/week sustained for 2 years beats 30 hrs/week for 3 months then quitting. Pace.
+- **Burnout** — a steady pace you can sustain beats a sprint that ends in quitting. Pace.
 - **AI overreliance** — if you can't read your own code without AI explaining it, slow down.
 
 ## Tutorials & resources
@@ -311,7 +317,7 @@ A curated, prioritized stack. Don't go searching for "Godot tutorial" yourself �
 3. **[Blender → Godot 4 export workflow](https://www.youtube.com/watch?v=4blCo5BpgWM)** + **[GLTF settings tutorial](https://www.youtube.com/watch?v=_eIAl_HZWXM)** — free. Get the export/import roundtrip solid.
 4. **Reference:** [Godot docs – Exporting 3D scenes](https://docs.godotengine.org/en/stable/tutorials/assets_pipeline/exporting_3d_scenes.html).
 
-**Pipeline cheat sheet:** Export as `.glb` (binary), enable "Embed Images," set roughness/metallic to "non-color," texture interpolation "closest" for low-poly crispness.
+**Pipeline cheat sheet:** Export as `.glb` (binary), enable "Embed Images," set roughness/metallic to "non-color," texture interpolation "closest" for low-poly crispness. The full settings for this repo (axes, origin on the tile grid, cel-shader materials, the shared palette texture, polycount) are in [rf4-farnia-research.md › Blender pipeline](rf4-farnia-research.md#blender-pipeline).
 
 ### Toon shader (Phase 0)
 

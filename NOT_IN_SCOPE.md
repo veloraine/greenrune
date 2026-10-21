@@ -12,10 +12,11 @@ The presence of an idea here means it will be considered AFTER the current phase
 - Monsters and monster taming
 - Boss fights
 - Crafting / forging (with stat inheritance — needs combat to matter)
+- Axe and hammer, and the stumps and rocks only they clear (Phase 4 Step 5; RF4 hands them out as farm tools, so this is a deliberate deferral)
 
 ## Deferred to Phase 2+ (after farm prototype is solid)
 
-- Town scene
+- Town scene beyond the placeholder (a placeholder town with a seed shop exists since commit 125c5e7; [Phase 2.1](docs/phases/phase-02-town-npcs.md#phase-21--home-farm-and-town-as-one-place) lays out the real one)
 - NPCs (Phase 1 sells through the shipping bin; RF4 shops buy nothing)
 - Dialogue system (Dialogic 2 integration)
 - Friendship / affection system
@@ -48,9 +49,9 @@ The presence of an idea here means it will be considered AFTER the current phase
 
 ## Asset-related deferrals
 
-- Custom humanoid modeling (use KayKit retextures instead)
-- Custom building modeling (use Quaternius / KayKit Dungeon)
-- Custom rigging (use Mixamo)
+- Custom humanoid modeling beyond the Phase 2.0 base body (one adult body on the KayKit Adventurers skeleton with swappable parts; child and elderly bodies come when the first such NPC needs one; see [Phase 2.0](docs/phases/phase-02-town-npcs.md#phase-20--character-base))
+- Custom building modeling (use Quaternius / KayKit Dungeon); house interiors and props are not buildings and are allowed from Phase 2
+- Custom rigging: every humanoid stays on the KayKit Adventurers 41-joint skeleton and its 76 clips; Mixamo (Antz workflow) only if a new animation is ever needed
 - Original music (use CC0 packs until Phase 4+)
 
 ## How to add to this list

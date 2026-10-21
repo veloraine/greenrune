@@ -1,13 +1,13 @@
 # Project context
 This is Greenrune (working title) — a solo hobby Rune Factory-inspired farming/town life sim built in Godot 4 stable.
 The target aesthetic is RF4 / RF3 Special: chibi 3D toon-shaded characters on a tile-designed 3D world.
-We use free pre-rigged asset packs (KayKit, Quaternius, Mixamo) and a community toon shader.
-No custom humanoid or building modeling until at least Phase 4.
+We use free asset packs (KayKit, Quaternius) as the base, edited or extended in Blender, and a community toon shader.
+Custom humanoids start in Phase 2.0: one adult base body built on the KayKit Adventurers skeleton (same bone names, so its animations still play), with swappable head, hair, outfit and accessory parts; child and elderly bodies come when the first such NPC needs one. No custom building modeling until at least Phase 4 (house interiors and props are not buildings).
 
 Repo folder is still named `runefactory-clone` as a placeholder; may be renamed to `greenrune` later. This does not affect any code paths.
 
 # Phase status
-Currently in Phase 1 (farm loop). See docs/phases/phase-01-farm-loop.md.
+Currently in Phase 1 (farm loop). Agents: read docs/roadmap.md first; it names the current sub-phase, what done means, and the next todo. Details live in docs/phases/.
 Phase 0 (learning Godot 3D and the toon-shader pipeline) is done. See PHASE_0_CHECKLIST.md.
 Combat, dungeons, monsters, marriage, magic, fishing, mining, crafting/forging, and taming are OUT OF SCOPE until Phase 4+. Cooking arrives in Phase 3. RP and use-based skills are farming systems and start in Phase 1. See NOT_IN_SCOPE.md.
 Every checklist item must meet the definition of done in docs/endgame.md.
@@ -37,7 +37,7 @@ Every checklist item must meet the definition of done in docs/endgame.md.
 # 3D specifics
 - Models use GLB format (binary glTF 2.0).
 - Animations come built into the KayKit Adventurers GLBs (76 clips, one 41-joint skeleton shared by all 5 bodies). Use Mixamo via the Antz workflow only if a new animation is ever needed.
-- KayKit characters retextured for variety, not custom-modeled.
+- Characters: KayKit retextured until Phase 2.0, then the custom base body and its swappable parts (see Project context).
 - Toon shader is a community cel shader applied via ShaderMaterial.
 - Fixed semi-top-down camera using Camera3D on a SpringArm3D.
 
@@ -62,7 +62,7 @@ Every checklist item must meet the definition of done in docs/endgame.md.
 - Not used during Phase 0 (tutorials phase) on purpose; manual practice is the point.
 
 # AI assistant behavior in this repo
-- Don't generate animated sprite frames or 3D models — placeholder text or asset-pack references only.
+- 3D models: Claude may build the base structure in Blender (blockout, proportions, origin on the tile grid, export settings) via Blender Python scripts or by editing asset-pack GLBs; the user does the final shaping, texturing and polish. Don't generate animated sprite frames.
 - Don't suggest combat, monster, or dungeon code until the user explicitly enters Phase 4.
 - If asked to "add fishing/mining/etc.", remind the user it's in NOT_IN_SCOPE.md and offer to add it to a future-features list instead.
 - When explaining concepts, assume the user is a first-time gamedev with prior coding experience.

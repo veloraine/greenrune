@@ -1,79 +1,37 @@
 # Phase 6 — Forge & craft
 
 **Goal:** gear progression runs on crafting, not on character level, with inherited effects (RF4's most-praised system), kept understandable.
-**Estimate:** 3–5 months (~13–22 weeks).
+
+**Phase 6 is complete when:**
+- A crafted weapon with an inherited effect deals more damage than the best shop weapon of its tier.
+- Every stat in a gear tooltip names its source: base, material or upgrade.
+- A gold hoe charges to a larger block-snapped area than a bronze hoe (3×9 against 3×3 *(default)*).
+- Gear, upgrades and their history survive save → quit → load.
+
 **Starts when:** [Phase 5](phase-05-taming.md) is done.
-**Background:** [research › Crafting, forging, cooking, chemistry and upgrades](../rf4-research.md#crafting-forging-cooking-chemistry-and-upgrades).
 
-Every checked item must meet the [definition of done](../endgame.md#definition-of-done).
+**Steps:**
+1. **Material data.** Material classes as data (ore, cloth, bone, …); each material has a level, a rarity and an upgrade effect (stat bonus); existing monster drops and produce get a class.
+2. **Stations and recipes.** A forge (weapons, tools) and a crafting table (armor, accessories), each unlocked by an Order; `RecipeDef` gains a station field and cooking recipes keep working; recipe slots accept a specific item or a material class; recipes are learned from recipe items; unknown recipes can be tried at a higher RP cost, and failure gives a junk item.
+3. **Gear.** Equipment slots (weapon, armor, headgear, accessory); gear items are single instances, not stacks; stats summed from gear and shown in a status screen; ~6 weapons (3 per class) and ~8 armor pieces as recipes.
+4. **Inheritance and upgrades.** Up to 3 extra materials when crafting pass their effects to the item; inherited items get a marked name colour; forge upgrades add 1 material each, up to 5; repeating a material gives half the effect; each gear instance stores its upgrade history; save v7 adds gear instances and history.
+5. **Tool upgrades.** Tool tiers crafted at the forge, bronze → silver → gold → platinum, with the charge areas set in [Phase 1.2](phase-01-farm-loop.md#phase-12--tool-feel); the shop's bronze tools ([Phase 2.3](phase-02-town-npcs.md#phase-23--the-shop)) stay on sale; higher tiers charge larger areas for less RP; the sickle's tier caps the reaped seed level (RF4: Cheap 3, Bronze 4, Silver 6, Gold 8, Platinum 10).
+6. **Crafting UI and skills.** Forging and crafting skills that level by use and lower RP cost; result stats previewed before you confirm; menu text at least 24 px at 1080p *(default)*, at most 2 screens deep.
+7. **Balance and playtest.** Compare shop and crafted weapons in a table; tune material effects and recipe costs.
 
-## Step 1 — Material data (weeks 1–2)
+**Checklist:**
+- [ ] Every material item shows its class and effect in its tooltip
+- [ ] A known recipe and an unknown one both craft, and the unknown one costs more RP; a failed attempt gives a junk item
+- [ ] A slot that takes a material class accepts any item of that class
+- [ ] Equipping each piece changes the status screen by exactly its listed stats
+- [ ] A sword crafted with 3 extra materials and 2 upgrades shows each effect in its tooltip, and a repeated material shows half its effect
+- [ ] An inherited item's name shows in the marked colour
+- [ ] Each tool tier can be forged, and a higher tier costs less RP per charge than the one below
+- [ ] A silver sickle reaps seeds above the bronze sickle's level cap
+- [ ] The crafting screen previews result stats before you confirm, with text at least 24 px at 1080p *(default)* and no menu deeper than 2 screens
+- [ ] A tester crafts an upgraded weapon without asking you anything
+- [ ] A v6 save loads into v7
 
-- [ ] Material classes as data (ore, cloth, bone, …)
-- [ ] Each material: level, rarity, upgrade effect (stat bonus)
-- [ ] Existing monster drops and produce assigned a class
+**Out of scope for this phase:** multiplier materials (2x/8x) and stat-inverting materials (Phase 9), chemistry, shields.
 
-**Done when:** every material item has a class and an effect in data.
-
-## Step 2 — Stations and recipes (weeks 3–5)
-
-- [ ] Forge (weapons, tools) and crafting table (armor, accessories), each unlocked by an Order
-- [ ] `RecipeDef` gains a station field; cooking recipes keep working
-- [ ] Recipe slots accept a specific item or a material class
-- [ ] Recipes learned from recipe items
-- [ ] Unknown recipes can be tried at a higher RP cost; failure gives a junk item
-
-**Done when:** a known recipe and an unknown one both craft, and the unknown one costs more RP.
-
-## Step 3 — Gear (weeks 6–8)
-
-- [ ] Equipment slots: weapon, armor, headgear, accessory
-- [ ] Gear items are single instances (not stacks)
-- [ ] Stats summed from gear and shown in a status screen
-- [ ] ~6 weapons (3 per class) and ~8 armor pieces as recipes
-
-**Done when:** equipping each piece changes the status screen by exactly its listed stats.
-
-## Step 4 — Inheritance and upgrades (weeks 9–12)
-
-- [ ] Up to 3 extra materials when crafting pass their effects to the item
-- [ ] Inherited items get a marked name colour
-- [ ] Upgrade at the forge: +1 material per upgrade, up to 5 upgrades
-- [ ] Repeating the same material gives half the effect
-- [ ] Each gear instance stores its upgrade history
-- [ ] Save v7 adds gear instances and history; v6 saves still load
-
-**Done when:** a sword crafted with 3 extra materials and 2 upgrades shows each effect in its tooltip, and a v6 save loads into v7.
-
-## Step 5 — Tool upgrades (weeks 13–14)
-
-- [ ] Tool tiers crafted at the forge
-- [ ] Higher tiers: larger charged area, lower RP cost
-
-**Done when:** an upgraded hoe tills a larger area for less RP than the starter hoe.
-
-## Step 6 — Crafting UI and skills (weeks 15–17)
-
-- [ ] Forging and crafting skills (level by use, lower RP cost)
-- [ ] Result stats previewed before you confirm
-- [ ] Big text, at most 2 screens deep
-
-**Done when:** a tester crafts an upgraded weapon without help.
-
-## Step 7 — Balance and playtest (weeks 18–20)
-
-- [ ] Shop weapons vs crafted weapons compared in a table
-- [ ] Tune material effects and recipe costs
-
-**Done when:** the balance table shows the target below.
-
-## Phase done when
-
-- [ ] A crafted weapon with an inherited effect beats the best shop weapon of its tier
-- [ ] The tooltip explains where every stat comes from
-- [ ] Gear, upgrades and history survive save → quit → load
-- [ ] Every recipe and material lives in `data/`
-
-## Not in this phase
-
-Multiplier materials (2x/8x) and stat-inverting materials (Phase 9), chemistry, shields.
+**Reference:** [research › Crafting, forging, cooking, chemistry and upgrades](../rf4-research.md#crafting-forging-cooking-chemistry-and-upgrades); tool tiers and the sickle-tier seed cap ([RF4 and Farnia research › Tools, areas and charge](../rf4-farnia-research.md#tools-areas-and-charge)).
