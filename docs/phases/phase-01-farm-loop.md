@@ -196,17 +196,17 @@ Steps 1–6 built every Phase 1 system. They stay here as the record of what exi
 12. Tune swing speed, impact time, hit-stop and shake per `ToolDef`; the can and sickle get their own values (only the hoe has hit-stop and shake now).
 
 **Checklist:**
-- [ ] A cheap tool never enters a charge state, however long the button is held
-- [ ] A bronze charge covers exactly the 3×3 block holding the player's tile; a silver charge that block and the next one ahead; no charge straddles a block boundary
-- [ ] A line that runs off the field skips the off-field plots and changes the rest
+- [x] A cheap tool never enters a charge state, however long the button is held
+- [x] A bronze charge covers exactly the 3×3 block holding the player's tile; a silver charge that block and the next one ahead; no charge straddles a block boundary
+- [x] A line that runs off the field skips the off-field plots and changes the rest
 - [ ] The hoe swing shows both hands on the shaft from the gameplay camera
 - [ ] The hoe head's sideways drift from the facing line stays under N cm through the swing *(default; set from the prototype)*
-- [ ] Every swing that changes a plot plays its sound and particle on the impact frame
-- [ ] Hit-stop 50 ms *(default, from the Phase 0 feel test)* on hoe hits; the can has none
+- [x] Every swing that changes a plot plays its sound and particle on the impact frame
+- [x] Hit-stop 50 ms *(default, from the Phase 0 feel test)* on hoe hits; the can has none
 - [x] Each charge level has a distinct marker size and sound
 - [x] The target marker is visible on every soil state and over debris
 - [x] The water gauge drops one step per plot watered, does not change on a swing that waters nothing, and a charge with too little water waters only that many plots
-- [ ] Tool tiers, charge areas, hold times, RP costs and can capacities live in `data/`
+- [x] Tool tiers, charge areas, hold times, RP costs and can capacities live in `data/`
 - [ ] Twenty taps in a row at 60 fps with no dropped sound
 
 **Out of scope for this phase:** forging and upgrading tools (Phase 6), the sickle-tier cap on reaped seed level (Phase 6), selling bronze tools (2.3), axe and hammer (Phase 4), combat use of tools, new tool models.

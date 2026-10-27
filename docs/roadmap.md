@@ -127,8 +127,8 @@ What changes in the current code, in build order. Each item names the sub-phase 
 - [x] 7. Target marker on the tap plot and an outline of the charge area while held.
 - [x] 8. Per-level charge cues: marker grows, tool glows, rising tone; early release uses the last level reached.
 - [x] 9. HUD water gauge and refill sound.
-- [ ] 10. Water as you walk.
+- [x] 10. Water as you walk.
 - [x] 11. RP feedback: popup or bar flash on spend; a dull "no effect" sound for a swing that changes nothing.
-- [ ] 12. Tune swing speed, impact time, hit-stop and shake per `ToolDef`.
+- [x] 12. Tune swing speed, impact time, hit-stop and shake per `ToolDef`.
 
 **Checklist:** as in the [phase file](phases/phase-01-farm-loop.md#phase-12--tool-feel), except the two swing items (both hands on the shaft; sideways drift), which move with Steps 4–5.
