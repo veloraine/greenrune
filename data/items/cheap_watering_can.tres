@@ -22,7 +22,6 @@ swing_animation = &"Use_Item"
 swing_speed = 3.0
 impact_time = 0.8
 reach = 1.0
-walk_speed = 2.4
 impact_sound = ExtResource("4_sound")
 dust_color = Color(0.55, 0.78, 1, 1)
 id = &"cheap_watering_can"

@@ -19,6 +19,10 @@ const TURN_SPEED: float = 10.0
 const ANIM_BLEND: float = 0.2
 ## Speed at which Running_A's planted foot moves backward, measured at floor height (4.0 to 4.4).
 const RUN_ANIM_SPEED: float = 4.0
+## Walking_A's planted-foot speed, measured the same way (about 0.5 to 1.4 through a step).
+const WALK_ANIM_SPEED: float = 0.8
+## The bones the leg walk drives over a charge or swing pose. The hips stay with the pose.
+const LEG_BONES: Array[String] = ["upperleg.l", "lowerleg.l", "foot.l", "toes.l", "upperleg.r", "lowerleg.r", "foot.r", "toes.r"]
 
 var _state: State = State.MOVE
 ## The stack being charged or swung, fixed even if the hotbar selection changes mid-swing.
@@ -33,6 +37,8 @@ var _hand_tool: Node3D
 var _hand_tool_def: ToolDef
 var _hand_meshes: Array[MeshInstance3D] = []
 var _glow := StandardMaterial3D.new()
+## Plays only Walking_A's leg tracks, after the main player, so the legs step while the arms hold the tool.
+var _legs := AnimationPlayer.new()
 
 @onready var _anim: AnimationPlayer = $Model/AnimationPlayer
 @onready var _hand: Node3D = $Model/Rig/Skeleton3D/handslot_r
@@ -42,6 +48,15 @@ func _ready() -> void:
 	_glow.shading_mode = BaseMaterial3D.SHADING_MODE_UNSHADED
 	_glow.transparency = BaseMaterial3D.TRANSPARENCY_ALPHA
 	_glow.blend_mode = BaseMaterial3D.BLEND_MODE_ADD
+	var walk: Animation = _anim.get_animation(&"Walking_A").duplicate()
+	for track in range(walk.get_track_count() - 1, -1, -1):
+		if not LEG_BONES.has(String(walk.track_get_path(track).get_concatenated_subnames())):
+			walk.remove_track(track)
+	var library := AnimationLibrary.new()
+	library.add_animation(&"walk", walk)
+	_legs.add_animation_library(&"", library)
+	# A later sibling of the main AnimationPlayer, so it poses the legs after it each frame.
+	$Model.add_child(_legs)
 
 
 func _physics_process(delta: float) -> void:
@@ -51,7 +66,7 @@ func _physics_process(delta: float) -> void:
 		State.CHARGE:
 			_charge(delta)
 		State.SWING:
-			_swing(delta)
+			_swing()
 
 	if is_on_floor():
 		velocity.y = 0.0
@@ -122,11 +137,14 @@ func charge_level() -> int:
 func _move(delta: float) -> void:
 	if (Input.is_action_just_pressed("use_tool") or _buffered) and _start_charge():
 		return
+	if _legs.is_playing():
+		_legs.stop()
 
-	var input_dir: Vector2 = _walk(delta, speed)
+	var input_dir: Vector2 = _walk(speed)
 	var anim_name: StringName = &"Idle"
 	var anim_speed: float = 1.0
 	if input_dir != Vector2.ZERO:
+		rotation.y = lerp_angle(rotation.y, atan2(-velocity.x, -velocity.z), TURN_SPEED * delta)
 		anim_name = &"Running_A"
 		anim_speed = speed / RUN_ANIM_SPEED
 	# play() with a blend queues a new blend every call, even for the current animation.
@@ -134,14 +152,22 @@ func _move(delta: float) -> void:
 		_anim.play(anim_name, ANIM_BLEND, anim_speed)
 
 
-## Walks along the move input at walk_speed, turning toward it. Returns the input.
-func _walk(delta: float, walk_speed: float) -> Vector2:
+## Walks along the move input at walk_speed without turning. Returns the input.
+func _walk(walk_speed: float) -> Vector2:
 	var input_dir: Vector2 = Input.get_vector("move_left", "move_right", "move_forward", "move_back")
 	velocity.x = input_dir.x * walk_speed
 	velocity.z = input_dir.y * walk_speed
-	if input_dir != Vector2.ZERO:
-		rotation.y = lerp_angle(rotation.y, atan2(-velocity.x, -velocity.z), TURN_SPEED * delta)
 	return input_dir
+
+
+## Walks with the facing held, the legs stepping under the charge or swing pose while moving.
+func _tool_walk(walk_speed: float) -> void:
+	_walk(walk_speed)
+	var moving: bool = velocity.x != 0.0 or velocity.z != 0.0
+	if moving and not _legs.is_playing():
+		_legs.play(&"walk", -1, walk_speed / WALK_ANIM_SPEED)
+	elif not moving and _legs.is_playing():
+		_legs.stop()
 
 
 func _start_charge() -> bool:
@@ -152,9 +178,7 @@ func _start_charge() -> bool:
 	_stack = stack
 	_state = State.CHARGE
 	_charge_time = 0.0
-	velocity.x = 0.0
-	velocity.z = 0.0
-	# Face exactly along the grid, so the tool lands on the targeted tile.
+	# Face exactly along the grid, so the tool lands on the targeted tile. The facing holds until the swing ends.
 	var f: Vector2i = facing()
 	rotation.y = atan2(-f.x, -f.y)
 	if stack.item is ToolDef:
@@ -170,6 +194,7 @@ func _start_charge() -> bool:
 
 
 func _charge(delta: float) -> void:
+	_tool_walk(Game.tool_feel.walk_speed)
 	var before: int = charge_level()
 	_charge_time += delta
 	var reached: int = charge_level()
@@ -200,12 +225,12 @@ func _start_swing(level: int) -> void:
 	_anim.seek(0.0, true)
 
 
-func _swing(delta: float) -> void:
+func _swing() -> void:
 	if Input.is_action_just_pressed("use_tool"):
 		_buffered = true
 	var tool: ToolDef = _stack.item
-	if _swing_level == 0 and tool.walk_speed > 0.0:
-		_walk(delta, tool.walk_speed)
+	# Like RF4, the can waters as you walk; the other tools stand still to swing.
+	_tool_walk(Game.tool_feel.walk_speed if tool.effect == ToolDef.Effect.WATER else 0.0)
 	var anim_time: float = _anim.current_animation_position
 	if _anim.current_animation != tool.swing_animation or (_impact_sent and anim_time >= _swing_end_time):
 		_state = State.MOVE

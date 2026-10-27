@@ -14,7 +14,7 @@ func _init(p_tree: SceneTree) -> void:
 
 
 func run() -> int:
-	for test: Callable in [test_tiers, test_bronze_models, test_cheap_never_charges, test_old_save_tools, test_charge_block, test_charge_off_field, test_charged_sow, test_water_per_plot, test_short_can, test_target_marker, test_charge_cues, test_water_gauge, test_no_effect, test_sounds_overlap, test_walk_water, test_swing_timing, test_hit_stop]:
+	for test: Callable in [test_tiers, test_bronze_models, test_cheap_never_charges, test_old_save_tools, test_charge_block, test_charge_off_field, test_charged_sow, test_water_per_plot, test_short_can, test_target_marker, test_charge_cues, test_water_gauge, test_no_effect, test_sounds_overlap, test_walk_water, test_walk_locked_facing, test_swing_timing, test_hit_stop]:
 		if (await test.call()) != true:
 			failed += 1
 			printerr("FAIL: %s did not finish" % test.get_method())
@@ -599,8 +599,7 @@ func _front_cell(player: Player, grid: FarmGrid, tool: ToolDef) -> Array[Vector2
 
 
 ## Walking along a row of dry plots while tapping a can waters each plot passed, one water each, and the player
-## keeps moving through every tap. A tap on a watered plot spends no water or RP. A hoe tap and a charged can
-## swing still stand still.
+## keeps moving through every tap. A tap on a watered plot spends no water or RP. A hoe tap still stands still.
 func test_walk_water() -> bool:
 	var farm: Node = await _farm()
 	var grid: FarmGrid = farm.get_node("Field")
@@ -639,12 +638,13 @@ func test_walk_water() -> bool:
 			if player.is_swinging() and not was_swinging:
 				starts.append(player.global_position)
 			was_swinging = player.is_swinging()
+		# Move stays held through the last swing, so it walks like the others.
 		Input.action_release(&"use_tool")
-		Input.action_release(&"move_right")
 		for i in 120:
 			if player.is_idle():
 				break
 			await tree.physics_frame
+		Input.action_release(&"move_right")
 		player.tool_used.disconnect(on_used)
 		var watered: Array[Vector2i] = []
 		for cell in row:
@@ -652,7 +652,7 @@ func test_walk_water() -> bool:
 				watered.append(cell)
 		check(impacts.size() >= 4, "walking with %s made %d impacts, want at least 4" % [id, impacts.size()])
 		for i in mini(starts.size(), impacts.size()):
-			check(impacts[i].x > starts[i].x + 0.2, "%s tap %d moved the player %.2f m between start and impact, want walking" % [id, i, impacts[i].x - starts[i].x])
+			check(impacts[i].x > starts[i].x + 0.1, "%s tap %d moved the player %.2f m between start and impact, want walking" % [id, i, impacts[i].x - starts[i].x])
 		var first: int = watered[0].x if watered else 0
 		var passed: Array[Vector2i] = []
 		for x in range(first, first + watered.size()):
@@ -685,26 +685,103 @@ func test_walk_water() -> bool:
 		await tree.physics_frame
 	Input.action_release(&"move_right")
 	check(still, "a hoe tap with move held moved the player")
-	# A charged bronze can swing with move held stands still too.
-	Game.inventory.replace_slots([ItemStack.new(Game.items[&"bronze_watering_can"], 1, 1)])
-	_stand(player, grid, Vector2i(4, 4), Vector2i(1, 0))
+	for sound in ["Impact", "NoEffect"]:
+		farm.get_node("ToolFeedback/" + sound).stop()
+	Game.inventory.replace_slots([])
+	return true
+
+
+## Runs physics frames until the player is idle, up to two seconds. Returns whether the facing held, the
+## speed walked in m/s, and whether the leg walk played on every moving frame and on no still one.
+func _until_idle(player: Player) -> Dictionary:
+	var rotation: float = player.rotation.y
+	var at: Vector3 = player.global_position
+	var held: bool = true
+	var legs_match: bool = true
+	var frames: int = 0
+	for i in 120:
+		if player.is_idle():
+			break
+		var before: Vector3 = player.global_position
+		await tree.physics_frame
+		frames += 1
+		held = held and is_equal_approx(player.rotation.y, rotation)
+		legs_match = legs_match and player._legs.is_playing() != player.global_position.is_equal_approx(before)
+	var moved: Vector3 = player.global_position - at
+	return {"held": held, "speed": Vector2(moved.x, moved.z).length() * Engine.physics_ticks_per_second / maxi(frames, 1), "legs": legs_match}
+
+
+## Holding a charge, the player walks at the tool walk speed in any direction with the facing locked, the legs
+## walking only while moving, and the charge outline follows the player's block. After release a charged can
+## swing walks on with the facing locked and a charged hoe swing stands still. A can tap with sideways input
+## walks at the same speed, keeps its facing and waters the plot in front along it. Back to idle, the legs stop.
+func test_walk_locked_facing() -> bool:
+	var farm: Node = await _farm()
+	var grid: FarmGrid = farm.get_node("Field")
+	var player: Player = farm.get_node("Player")
+	var speed: float = Game.tool_feel.walk_speed
+	var outline: Array[Vector2i] = []
+	check(is_equal_approx(speed, 1.0), "the tool walk speed is %.2f, want 1.0" % speed)
+	for id: StringName in [&"bronze_hoe", &"bronze_watering_can"]:
+		var tool: ToolDef = Game.items[id]
+		var walks: bool = tool.effect == ToolDef.Effect.WATER
+		_set_plots(_block_cells(Vector2i(1, 1)) + _block_cells(Vector2i(2, 1)), [])
+		Game.inventory.replace_slots([ItemStack.new(tool, 1, 1)])
+		Game.inventory.selected = 0
+		# Mid-tile on the right edge of block (1, 1), facing up.
+		_stand(player, grid, Vector2i(5, 4), Vector2i(0, -1))
+		await tree.physics_frame
+		var facing: float = player.rotation.y
+		Input.action_press(&"use_tool")
+		await _physics_step()
+		check(player.is_charging() and not player._legs.is_playing(), "standing to charge %s plays the leg walk" % id)
+		Input.action_press(&"move_right")
+		await tree.physics_frame
+		var at: Vector3 = player.global_position
+		for i in 60:
+			await tree.physics_frame
+		farm._process(0.0)
+		check(player.is_charging(), "holding %s with move held stopped charging" % id)
+		check(absf(player.global_position.x - at.x - speed) < 0.1, "charging %s walked %.2f m in a second, want %.2f" % [id, player.global_position.x - at.x, speed])
+		check(is_equal_approx(player.rotation.y, facing), "charging %s with move held turned the player %.2f rad" % [id, player.rotation.y - facing])
+		check(player._legs.is_playing() and player._legs.current_animation == &"walk", "charging %s while moving doesn't play the leg walk" % id)
+		grid.cells_hit(player.global_position, player.global_position, tool.charges[-1].size, player.facing(), outline)
+		check(_outline_rect(grid).is_equal_approx(grid._area(outline).grow(-grid.tile_size * (1.0 - FarmGrid.TILE_FILL) / 2.0)) and grid.block_of(outline[0]) == Vector2i(2, 1), "the %s charge outline at %s doesn't follow the player into block (2, 1)" % [id, _outline_rect(grid)])
+		Input.action_release(&"move_right")
+		await _physics_step()
+		check(player.is_charging() and not player._legs.is_playing(), "charging %s standing still again plays the leg walk" % id)
+		Input.action_press(&"move_right")
+		player._charge_time = 10.0
+		Input.action_release(&"use_tool")
+		await _physics_step()
+		check(player.is_swinging() and player._swing_level == 1, "releasing %s didn't swing at level 1" % id)
+		var swing: Dictionary = await _until_idle(player)
+		Input.action_release(&"move_right")
+		check(swing.held, "a charged %s swing with move held turned the player" % id)
+		check(absf(swing.speed - (speed if walks else 0.0)) < 0.1, "a charged %s swing with move held walked at %.2f m/s, want %.2f" % [id, swing.speed, speed if walks else 0.0])
+		check(swing.legs, "a charged %s swing played the leg walk when not moving, or not when moving" % id)
+	# A can tap with sideways input.
+	var can: ToolDef = Game.items[&"cheap_watering_can"]
+	_set_plots(_block_cells(Vector2i(1, 1)) + _block_cells(Vector2i(2, 1)) + _block_cells(Vector2i(1, 0)) + _block_cells(Vector2i(2, 0)), [])
+	Game.inventory.replace_slots([ItemStack.new(can, 1, 1)])
+	_stand(player, grid, Vector2i(4, 4), Vector2i(0, -1))
 	await tree.physics_frame
+	var hit: Array[Vector2i] = []
+	var on_used: Callable = func(_stack: ItemStack, _level: int) -> void: hit.assign(_front_cell(player, grid, can))
+	player.tool_used.connect(on_used)
 	Input.action_press(&"move_right")
 	Input.action_press(&"use_tool")
 	await _physics_step()
-	player._charge_time = 10.0
 	Input.action_release(&"use_tool")
-	await _physics_step()
-	check(player.is_swinging() and player._swing_level == 1, "releasing a held bronze can didn't swing at level 1")
-	at = player.global_position
-	still = true
-	for i in 120:
-		if not player.is_swinging():
-			break
-		still = still and player.global_position.is_equal_approx(at)
-		await tree.physics_frame
+	var tap: Dictionary = await _until_idle(player)
+	player.tool_used.disconnect(on_used)
+	check(tap.held and absf(tap.speed - speed) < 0.1, "a can tap with sideways input held its facing %s and walked at %.2f m/s, want held and %.2f" % [tap.held, tap.speed, speed])
+	check(tap.legs, "a can tap played the leg walk when not moving, or not when moving")
+	check(hit.size() == 1 and hit[0].y == 3 and Game.field.soil(hit[0]) == Field.Soil.WATERED, "a can tap facing up with sideways input watered %s, want a plot in row 3" % [hit])
+	await tree.physics_frame
 	Input.action_release(&"move_right")
-	check(still, "a charged bronze can swing with move held moved the player")
+	await tree.physics_frame
+	check(player.is_idle() and not player._legs.is_playing(), "back to idle, the leg walk still plays")
 	for sound in ["Impact", "NoEffect"]:
 		farm.get_node("ToolFeedback/" + sound).stop()
 	Game.inventory.replace_slots([])

@@ -14,6 +14,10 @@ extends Resource
 @export var outline_color: Color = Color.RED
 @export var outline_width: float = 0.0
 
+@export_group("Walking with a tool")
+## Metres per second the player can walk while charging or swinging the can. The facing holds.
+@export var walk_speed: float = 0.0
+
 @export_group("Charge cues")
 ## The held tool's glow at each charge level. Alpha 0 is no glow; levels past the end use the last.
 @export var glow_colors: Array[Color] = [Color.TRANSPARENT]
