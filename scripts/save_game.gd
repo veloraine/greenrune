@@ -73,7 +73,13 @@ static func read(tree: SceneTree) -> Error:
 	_load_stacks(Game.inventory, data.inventory)
 	_load_stacks(Game.bin, data.bin)
 	var plots: Dictionary[Vector2i, Field.Plot] = {}
+	var off_field: int = 0
 	for entry: Dictionary in data.field:
+		var cell := Vector2i(int(entry.cell[0]), int(entry.cell[1]))
+		# A save from when the field was bigger.
+		if not Game.field.has_cell(cell):
+			off_field += 1
+			continue
 		var plot := Field.Plot.new()
 		plot.watered = entry.watered
 		if entry.crop:
@@ -83,7 +89,9 @@ static func read(tree: SceneTree) -> Error:
 			else:
 				plot.crop = Field.Crop.new(def, clampi(int(entry.crop.level), 1, ItemStack.MAX_LEVEL))
 				plot.crop.days = entry.crop.days
-		plots[Vector2i(int(entry.cell[0]), int(entry.cell[1]))] = plot
+		plots[cell] = plot
+	if off_field > 0:
+		push_warning("Save has %d plots outside the field; dropping them" % off_field)
 	Game.field.replace_plots(plots)
 	var xp: Dictionary[StringName, float] = {}
 	for id: String in data.xp:

@@ -1,7 +1,6 @@
 class_name FarmGrid
 extends Node3D
 
-@export var size: Vector2i = Vector2i(5, 5)
 @export var tile_size: float = 1.0
 @export var untilled_material: Material
 @export var tilled_material: Material
@@ -37,8 +36,9 @@ func _ready() -> void:
 	tile_mesh.size = Vector3(tile_size * 0.95, 0.02, tile_size * 0.95)
 	_quad = BoxMesh.new()
 	_quad.size = Vector3(tile_size * 0.95, 0.01, tile_size * 0.95)
-	for x in size.x:
-		for y in size.y:
+	var def: FieldDef = Game.field.def
+	for x in def.size.x:
+		for y in def.size.y:
 			var cell := Vector2i(x, y)
 			var tile := MeshInstance3D.new()
 			tile.mesh = tile_mesh
@@ -50,6 +50,7 @@ func _ready() -> void:
 			add_child(slot)
 			_crops[cell] = slot
 			_on_soil_changed(cell)
+	_add_block_outlines(def)
 	Game.field.changed.connect(_on_soil_changed)
 
 
@@ -75,6 +76,11 @@ func cells_hit(player: Vector3, point: Vector3, size: int, out: Array[Vector2i])
 				out.append(cell)
 
 
+## The block holding cell, counted in blocks from the field's corner.
+func block_of(cell: Vector2i) -> Vector2i:
+	return cell / Game.field.def.block_size
+
+
 func show_target(cells: Array[Vector2i]) -> void:
 	_place(_targets, cells, target_material, 0.03)
 
@@ -95,6 +101,40 @@ func _place(pool: Array[MeshInstance3D], cells: Array[Vector2i], material: Mater
 		pool[i].visible = i < cells.size()
 		if pool[i].visible:
 			pool[i].position = _cell_center(cells[i]) + Vector3(0, height, 0)
+
+
+# One mesh of flat strips tracing each block's edge, inset to the tiles' edges so neighbouring blocks
+# keep separate lines. It sits just above the soil, so a crop's leaves cover it.
+func _add_block_outlines(def: FieldDef) -> void:
+	var inset: float = tile_size * 0.025
+	var w: float = def.outline_width
+	var surface := SurfaceTool.new()
+	surface.begin(Mesh.PRIMITIVE_TRIANGLES)
+	var blocks: Vector2i = def.size / def.block_size
+	for bx in blocks.x:
+		for by in blocks.y:
+			var start: Vector2 = Vector2(bx, by) * def.block_size * tile_size + Vector2.ONE * inset
+			var end: Vector2 = Vector2(bx + 1, by + 1) * def.block_size * tile_size - Vector2.ONE * inset
+			_add_strip(surface, start, Vector2(end.x, start.y + w))
+			_add_strip(surface, Vector2(start.x, end.y - w), end)
+			_add_strip(surface, Vector2(start.x, start.y + w), Vector2(start.x + w, end.y - w))
+			_add_strip(surface, Vector2(end.x - w, start.y + w), Vector2(end.x, end.y - w))
+	var material := StandardMaterial3D.new()
+	material.shading_mode = BaseMaterial3D.SHADING_MODE_UNSHADED
+	material.transparency = BaseMaterial3D.TRANSPARENCY_ALPHA
+	material.cull_mode = BaseMaterial3D.CULL_DISABLED
+	material.albedo_color = def.outline_color
+	var outlines := MeshInstance3D.new()
+	outlines.mesh = surface.commit()
+	outlines.material_override = material
+	outlines.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
+	outlines.position.y = 0.025
+	add_child(outlines)
+
+
+func _add_strip(surface: SurfaceTool, from: Vector2, to: Vector2) -> void:
+	for corner: Vector2 in [from, Vector2(to.x, from.y), to, from, to, Vector2(from.x, to.y)]:
+		surface.add_vertex(Vector3(corner.x, 0.0, corner.y))
 
 
 func _cell_center(cell: Vector2i) -> Vector3:

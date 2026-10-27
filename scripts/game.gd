@@ -26,7 +26,7 @@ var stats: Stats
 var inventory: Inventory = Inventory.new()
 ## The shipping bin's contents, which can be taken back out until they sell.
 var bin: Inventory = Inventory.new(shipping.bin_size)
-var field: Field = Field.new()
+var field: Field = Field.new(load("res://data/field.tres"))
 var day: int = 1
 ## Minutes since 00:00 of the current day. Past midnight it runs on beyond 1440.
 var minute: float = clock.wake_hour * 60.0

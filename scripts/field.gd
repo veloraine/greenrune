@@ -36,7 +36,16 @@ class Plot:
 	var crop: Crop
 
 
+var def: FieldDef
 var _plots: Dictionary[Vector2i, Plot] = {}
+
+
+func _init(p_def: FieldDef) -> void:
+	def = p_def
+
+
+func has_cell(cell: Vector2i) -> bool:
+	return Rect2i(Vector2i.ZERO, def.size).has_point(cell)
 
 
 func soil(cell: Vector2i) -> Soil:
