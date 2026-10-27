@@ -3,8 +3,6 @@ extends RefCounted
 ## The tests run by check_field.gd. Loaded at runtime, after the autoloads exist, because a --script
 ## file can't compile anything that names an autoload such as Game.
 
-const BACKUP_PATH: String = "user://save.json.check_field_backup"
-
 var failed: int = 0
 var tree: SceneTree
 
@@ -26,9 +24,6 @@ func run() -> int:
 		if (await test.call()) != true:
 			failed += 1
 			printerr("FAIL: %s did not finish" % test.get_method())
-	# Here rather than in the test, so a test that crashes still puts the player's save back.
-	if FileAccess.file_exists(BACKUP_PATH):
-		DirAccess.rename_absolute(BACKUP_PATH, SaveGame.PATH)
 	return failed
 
 
@@ -62,10 +57,9 @@ func test_block_of() -> bool:
 
 
 ## Writes a synthetic v2 save tilling all 12×12 cells and loads it through SaveGame.read() on the farm.
-## The player's real save is moved aside first; run() puts it back.
+## It uses its own save file, so the player's save is never touched.
 func test_old_save() -> bool:
-	if FileAccess.file_exists(SaveGame.PATH):
-		DirAccess.rename_absolute(SaveGame.PATH, BACKUP_PATH)
+	SaveGame.path = "user://check_field_save.json"
 	tree.change_scene_to_file("res://scenes/farm.tscn")
 	await tree.scene_changed
 	var field: Array = []
@@ -77,7 +71,7 @@ func test_old_save() -> bool:
 		"player_position": [0.0, 0.0, -12.0], "rp": 50, "hp": 50,
 		"inventory": [], "bin": [], "field": field,
 	}
-	var file: FileAccess = FileAccess.open(SaveGame.PATH, FileAccess.WRITE)
+	var file: FileAccess = FileAccess.open(SaveGame.path, FileAccess.WRITE)
 	file.store_string(JSON.stringify(data))
 	file.close()
 
@@ -86,7 +80,7 @@ func test_old_save() -> bool:
 	var result: Error = SaveGame.read(tree)
 	OS.remove_logger(log)
 
-	DirAccess.remove_absolute(SaveGame.PATH)
+	DirAccess.remove_absolute(SaveGame.path)
 
 	check(result == OK, "SaveGame.read returned %s" % error_string(result))
 	var plots: Dictionary[Vector2i, Field.Plot] = Game.field.plots()

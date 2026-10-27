@@ -56,7 +56,7 @@ func _run(args: PackedStringArray) -> String:
 			return _list()
 		"save":
 			var err: Error = SaveGame.write(get_tree())
-			return "Saved to %s" % ProjectSettings.globalize_path(SaveGame.PATH) if err == OK else "Save failed: %s" % error_string(err)
+			return "Saved to %s" % ProjectSettings.globalize_path(SaveGame.path) if err == OK else "Save failed: %s" % error_string(err)
 		"load":
 			var err: Error = SaveGame.read(get_tree())
 			return "Loaded" if err == OK else "Load failed: %s" % error_string(err)

@@ -3,7 +3,8 @@ extends RefCounted
 
 ## Bump when the format changes, and teach read() to upgrade older versions.
 const VERSION: int = 2
-const PATH: String = "user://save.json"
+## A check points this at its own file, so it never touches the player's save.
+static var path: String = "user://save.json"
 
 
 static func write(tree: SceneTree) -> Error:
@@ -43,23 +44,23 @@ static func write(tree: SceneTree) -> Error:
 		"field": field,
 	}
 	# Write a temp file and swap it in, so a crash mid-write can't destroy the last good save.
-	var temp_path: String = PATH + ".tmp"
+	var temp_path: String = path + ".tmp"
 	var file: FileAccess = FileAccess.open(temp_path, FileAccess.WRITE)
 	if file == null:
 		return FileAccess.get_open_error()
 	if not file.store_string(JSON.stringify(data, "\t")):
 		return ERR_FILE_CANT_WRITE
 	file.close()
-	return DirAccess.rename_absolute(temp_path, PATH)
+	return DirAccess.rename_absolute(temp_path, path)
 
 
 static func read(tree: SceneTree) -> Error:
 	var player: Player = tree.get_first_node_in_group(&"player")
 	if player == null:
 		return ERR_UNCONFIGURED
-	if not FileAccess.file_exists(PATH):
+	if not FileAccess.file_exists(path):
 		return ERR_FILE_NOT_FOUND
-	var data: Variant = JSON.parse_string(FileAccess.get_file_as_string(PATH))
+	var data: Variant = JSON.parse_string(FileAccess.get_file_as_string(path))
 	if not (data is Dictionary and _is_number(data.get("version")) and data.version >= 1 and data.version <= VERSION):
 		return ERR_FILE_UNRECOGNIZED
 	data.merge(_defaults())

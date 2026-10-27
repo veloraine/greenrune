@@ -11,6 +11,8 @@ extends Node3D
 const HITBOX_SECONDS: float = 0.3
 ## How much of a tile's width a ripe crop fills. Earlier stages keep their size relative to it.
 const CROP_WIDTH: float = 0.8
+## How much of its cell a soil tile covers, leaving a thin gap between tiles.
+const TILE_FILL: float = 0.95
 
 var _tiles: Dictionary[Vector2i, MeshInstance3D] = {}
 # One slot per tile on its top face, holding the model of the stage that grows there.
@@ -33,9 +35,9 @@ func _ready() -> void:
 		Field.Soil.WATERED: watered_material,
 	}
 	var tile_mesh := BoxMesh.new()
-	tile_mesh.size = Vector3(tile_size * 0.95, 0.02, tile_size * 0.95)
+	tile_mesh.size = Vector3(tile_size * TILE_FILL, 0.02, tile_size * TILE_FILL)
 	_quad = BoxMesh.new()
-	_quad.size = Vector3(tile_size * 0.95, 0.01, tile_size * 0.95)
+	_quad.size = Vector3(tile_size * TILE_FILL, 0.01, tile_size * TILE_FILL)
 	var def: FieldDef = Game.field.def
 	for x in def.size.x:
 		for y in def.size.y:
@@ -106,7 +108,7 @@ func _place(pool: Array[MeshInstance3D], cells: Array[Vector2i], material: Mater
 # One mesh of flat strips tracing each block's edge, inset to the tiles' edges so neighbouring blocks
 # keep separate lines. It sits just above the soil, so a crop's leaves cover it.
 func _add_block_outlines(def: FieldDef) -> void:
-	var inset: float = tile_size * 0.025
+	var inset: float = tile_size * (1.0 - TILE_FILL) / 2.0
 	var w: float = def.outline_width
 	var surface := SurfaceTool.new()
 	surface.begin(Mesh.PRIMITIVE_TRIANGLES)
