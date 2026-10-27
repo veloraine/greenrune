@@ -33,6 +33,7 @@ assets/
 - Location: `characters/tools/`
 - Used for: the tools held in the player's hand. `scenes/tools/` sizes each one for `handslot_r`.
 - Ours: the `*_cel.tres` materials, mapped in each `.glb.import`.
+- Bronze tools reuse these models: `scenes/tools/bronze_*.tscn` put `bronze_metal_cel.tres` (or `bronze_watering_can_cel.tres`) on the metal surfaces.
 
 ## Environment packs
 

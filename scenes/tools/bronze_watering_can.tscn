@@ -1,0 +1,11 @@
+[gd_scene format=3]
+
+[ext_resource type="PackedScene" path="res://scenes/tools/watering_can.tscn" id="1_can"]
+[ext_resource type="Material" path="res://assets/characters/tools/bronze_watering_can_cel.tres" id="2_bronze"]
+
+[node name="BronzeWateringCan" instance=ExtResource("1_can")]
+
+[node name="watering_can_B" parent="Model/RootNode" index="0"]
+surface_material_override/0 = ExtResource("2_bronze")
+
+[editable path="Model"]

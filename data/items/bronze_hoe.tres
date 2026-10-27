@@ -2,7 +2,7 @@
 
 [ext_resource type="Script" uid="uid://ns0lkui2s7vn" path="res://scripts/tool_def.gd" id="1_tool"]
 [ext_resource type="Script" uid="uid://djmulgstgn2ti" path="res://scripts/tool_charge.gd" id="2_charge"]
-[ext_resource type="PackedScene" uid="uid://bxr5jq71igvb2" path="res://scenes/tools/hoe.tscn" id="3_model"]
+[ext_resource type="PackedScene" path="res://scenes/tools/bronze_hoe.tscn" id="3_model"]
 [ext_resource type="AudioStream" path="res://assets/audio/kenney-impact/hoe_thud.tres" id="4_sound"]
 [ext_resource type="Texture2D" uid="uid://n2ivjk5q2t26" path="res://assets/icons/hoe.png" id="icon"]
 

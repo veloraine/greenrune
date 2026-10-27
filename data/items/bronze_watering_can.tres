@@ -2,7 +2,7 @@
 
 [ext_resource type="Script" path="res://scripts/tool_def.gd" id="1_tool"]
 [ext_resource type="Script" path="res://scripts/tool_charge.gd" id="2_charge"]
-[ext_resource type="PackedScene" path="res://scenes/tools/watering_can.tscn" id="3_model"]
+[ext_resource type="PackedScene" path="res://scenes/tools/bronze_watering_can.tscn" id="3_model"]
 [ext_resource type="AudioStream" path="res://assets/audio/rubberduck-water/watering_splash.tres" id="4_sound"]
 [ext_resource type="Texture2D" path="res://assets/icons/watering_can.png" id="icon"]
 

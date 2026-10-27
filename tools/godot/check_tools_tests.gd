@@ -14,7 +14,7 @@ func _init(p_tree: SceneTree) -> void:
 
 
 func run() -> int:
-	for test: Callable in [test_tiers, test_cheap_never_charges, test_old_save_tools, test_charge_block, test_charge_off_field, test_charged_sow]:
+	for test: Callable in [test_tiers, test_bronze_models, test_cheap_never_charges, test_old_save_tools, test_charge_block, test_charge_off_field, test_charged_sow]:
 		if (await test.call()) != true:
 			failed += 1
 			printerr("FAIL: %s did not finish" % test.get_method())
@@ -205,5 +205,29 @@ func test_old_save_tools() -> bool:
 	check(ids == [&"cheap_hoe", &"cheap_watering_can", &"cheap_sickle"], "old tools loaded as %s" % [ids])
 	if slots[1]:
 		check(slots[1].water == 7 and slots[1].level == 2, "old can loaded with water %d at Lv%d, want 7 at Lv2" % [slots[1].water, slots[1].level])
+	Game.inventory.replace_slots([])
+	return true
+
+
+## Each bronze tool holds the cheap tool's model with at least one surface tinted, and the console adds one.
+func test_bronze_models() -> bool:
+	for tool: String in ["hoe", "watering_can", "sickle"]:
+		var cheap: Node3D = Game.items[StringName("cheap_" + tool)].hand_model.instantiate()
+		var bronze: Node3D = Game.items[StringName("bronze_" + tool)].hand_model.instantiate()
+		var cheap_mesh: MeshInstance3D = cheap.find_children("*", "MeshInstance3D")[0]
+		var bronze_mesh: MeshInstance3D = bronze.find_children("*", "MeshInstance3D")[0]
+		check(bronze_mesh.mesh == cheap_mesh.mesh, "bronze_%s doesn't use the cheap model" % tool)
+		var tinted: int = 0
+		for surface in cheap_mesh.mesh.get_surface_count():
+			if bronze_mesh.get_active_material(surface) != cheap_mesh.get_active_material(surface):
+				tinted += 1
+		check(tinted > 0, "bronze_%s looks the same as cheap_%s" % [tool, tool])
+		cheap.free()
+		bronze.free()
+	var farm: Node = await _farm()
+	Game.inventory.replace_slots([])
+	farm.get_node("HUD/DebugConsole")._run(["add", "bronze_hoe"])
+	var first: ItemStack = Game.inventory.slots[0]
+	check(first != null and first.item == Game.items[&"bronze_hoe"], "console 'add bronze_hoe' added %s" % (first.item.id if first else null))
 	Game.inventory.replace_slots([])
 	return true

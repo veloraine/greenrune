@@ -1,0 +1,11 @@
+[gd_scene format=3]
+
+[ext_resource type="PackedScene" path="res://scenes/tools/hoe.tscn" id="1_hoe"]
+[ext_resource type="Material" path="res://assets/characters/tools/bronze_metal_cel.tres" id="2_bronze"]
+
+[node name="BronzeHoe" instance=ExtResource("1_hoe")]
+
+[node name="toolHoe" parent="Grip/Model" index="0"]
+surface_material_override/1 = ExtResource("2_bronze")
+
+[editable path="Grip/Model"]
