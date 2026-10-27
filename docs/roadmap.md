@@ -119,11 +119,11 @@ What changes in the current code, in build order. Each item names the sub-phase 
 - The can's water gauge shows on the HUD while the can is selected, drops one step per plot watered, refills with a sound, and tapping the can while walking waters each plot passed over.
 
 **Steps:**
-- [ ] 1. Tool data shape: `ToolCharge.size` and `SowingDef.charge_size` → `Vector2i` (width × depth along the facing); charged areas start at the 3×3 block holding the player's tile and run along the facing; off-field plots skipped.
-- [ ] 2. Split hoe, can and sickle into cheap (tap only) and bronze (tap + 3×3) items; map old save ids (`hoe` → `cheap_hoe`, etc., keeping the can's water). Update or retire `sandbox/prototypes/chibi_hoe/` first (it loads `data/items/hoe.tres`).
-- [ ] 3. Bronze items as tinted cheap models, testable with `add bronze_hoe`.
+- [x] 1. Tool data shape: `ToolCharge.size` and `SowingDef.charge_size` → `Vector2i` (width × depth along the facing); charged areas start at the 3×3 block holding the player's tile and run along the facing; off-field plots skipped.
+- [x] 2. Split hoe, can and sickle into cheap (tap only) and bronze (tap + 3×3) items; map old save ids (`hoe` → `cheap_hoe`, etc., keeping the can's water). Update or retire `sandbox/prototypes/chibi_hoe/` first (it loads `data/items/hoe.tres`).
+- [x] 3. Bronze items as tinted cheap models, testable with `add bronze_hoe`.
 - [ ] 4–5. *Deferred to the base body:* two-handed hoe, straight overhead swing.
-- [ ] 6. Water per plot: 1 water per plot watered; a short can waters only what it has, in a fixed order.
+- [x] 6. Water per plot: 1 water per plot watered; a short can waters only what it has, in a fixed order.
 - [ ] 7. Target marker on the tap plot and an outline of the charge area while held.
 - [ ] 8. Per-level charge cues: marker grows, tool glows, rising tone; early release uses the last level reached.
 - [ ] 9. HUD water gauge and refill sound.

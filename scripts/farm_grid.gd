@@ -76,7 +76,7 @@ func _process(delta: float) -> void:
 ## Fills out with the field cells a tool hits. A size of (1, 1) hits the tile at point in front of the
 ## player. A larger size hits whole blocks, like Farnia: the block holding the player's tile, then
 ## size.y / block size blocks in a line along facing. Cells off the field are left out. A charge lists its
-## cells nearest the player's tile first, so a can short of water waters those.
+## cells in _hit_first's order.
 func cells_hit(player: Vector3, point: Vector3, size: Vector2i, facing: Vector2i, out: Array[Vector2i]) -> void:
 	out.clear()
 	if size == Vector2i.ONE:
