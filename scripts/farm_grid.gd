@@ -166,7 +166,8 @@ func _cell_at(point: Vector3) -> Vector2i:
 	return Vector2i(floori(local.x), floori(local.z))
 
 
-## Nearest the player's tile first, then row by row along the facing, left to right as the player sees it.
+## Nearest the player's tile first; at equal distance, further ahead along the facing first, then left to
+## right as the player sees it.
 func _hit_first(a: Vector2i, b: Vector2i) -> bool:
 	var da: Vector2i = a - _order_from
 	var db: Vector2i = b - _order_from
@@ -176,7 +177,7 @@ func _hit_first(a: Vector2i, b: Vector2i) -> bool:
 	var depth_a: int = da.x * f.x + da.y * f.y
 	var depth_b: int = db.x * f.x + db.y * f.y
 	if depth_a != depth_b:
-		return depth_a < depth_b
+		return depth_a > depth_b
 	return da.x * -f.y + da.y * f.x < db.x * -f.y + db.y * f.x
 
 

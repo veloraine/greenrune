@@ -42,6 +42,12 @@ func _stand(player: Player, grid: FarmGrid, cell: Vector2i, facing: Vector2i, of
 	player.global_position = grid.to_global(Vector3(cell.x + offset.x, 0.0, cell.y + offset.y) * grid.tile_size)
 
 
+## Waits until the player's _physics_process has run once. physics_frame fires before the physics step.
+func _physics_step() -> void:
+	await tree.physics_frame
+	await tree.physics_frame
+
+
 func _block_cells(block: Vector2i) -> Array[Vector2i]:
 	var cells: Array[Vector2i] = []
 	var size: int = Game.field.def.block_size
@@ -150,32 +156,46 @@ func test_tiers() -> bool:
 	return true
 
 
-## Holding the use button with a cheap tool, however long, never reaches a charge level; with a bronze
-## tool the same hold reaches the 3×3. Drives the player's real input path.
+## A cheap tool swings on the press and never enters the charge state, and the still-held button doesn't
+## stop the player walking once the swing ends. A bronze tool held the same way charges to the 3×3.
+## Drives the player's real input path.
 func test_cheap_never_charges() -> bool:
 	var farm: Node = await _farm()
+	var grid: FarmGrid = farm.get_node("Field")
 	var player: Player = farm.get_node("Player")
-	for id: StringName in [&"cheap_hoe", &"cheap_watering_can", &"cheap_sickle", &"bronze_hoe"]:
+	for id: StringName in [&"cheap_hoe", &"cheap_watering_can", &"cheap_sickle"]:
+		_stand(player, grid, Vector2i(4, 4), Vector2i(0, -1))
 		Game.inventory.replace_slots([ItemStack.new(Game.items[id], 1, 1)])
 		Game.inventory.selected = 0
 		Input.action_press(&"use_tool")
-		for i in 5:
-			await tree.physics_frame
-			if not player.is_idle():
-				break
-		check(not player.is_idle(), "pressing use with %s didn't start the tool" % id)
-		var max_level: int = 0
-		# Ten seconds of holding, in physics frames.
+		await _physics_step()
+		check(player.is_swinging(), "pressing use with %s didn't swing on the first frame" % id)
+		var charged: bool = false
+		# Held through the whole swing, up to ten seconds of physics frames.
 		for i in 600:
-			player._charge_time += 1.0 / 60.0
-			max_level = maxi(max_level, player.charge_level())
-		await tree.physics_frame
-		max_level = maxi(max_level, player.charge_level())
-		var want: int = 1 if id == &"bronze_hoe" else 0
-		check(max_level == want, "holding %s reached charge level %d, want %d" % [id, max_level, want])
+			charged = charged or player._state == Player.State.CHARGE
+			if player.is_idle():
+				break
+			await tree.physics_frame
+		check(not charged, "holding use with %s entered the charge state" % id)
+		check(player.is_idle(), "the %s swing never ended" % id)
+		var before: Vector3 = player.global_position
+		Input.action_press(&"move_right")
+		for i in 10:
+			await tree.physics_frame
+		Input.action_release(&"move_right")
+		check(player.is_idle() and player.global_position.x > before.x + 0.1, "with use held after a %s swing, the player moved %.2f m, want walking" % [id, player.global_position.x - before.x])
 		Input.action_release(&"use_tool")
-		player.cancel_tool()
 		await tree.physics_frame
+	farm.get_node("ToolFeedback/Sound").stop()
+	Game.inventory.replace_slots([ItemStack.new(Game.items[&"bronze_hoe"], 1, 1)])
+	Input.action_press(&"use_tool")
+	await _physics_step()
+	check(player._state == Player.State.CHARGE, "pressing use with bronze_hoe didn't start a charge")
+	player._charge_time = 10.0
+	check(player.charge_level() == 1, "holding bronze_hoe reached charge level %d, want 1" % player.charge_level())
+	Input.action_release(&"use_tool")
+	player.cancel_tool()
 	Game.inventory.replace_slots([])
 	return true
 
@@ -271,17 +291,17 @@ func test_water_per_plot() -> bool:
 
 
 ## A can holding less water than the block has dry plots waters exactly that many, nearest the player's
-## tile first, then row by row along the facing, left to right as the player sees it.
+## tile first; at equal distance, further ahead first, then left to right as the player sees it.
 func test_short_can() -> bool:
 	var farm: Node = await _farm()
 	var grid: FarmGrid = farm.get_node("Field")
 	var player: Player = farm.get_node("Player")
 	var cases: Array = [
-		[Vector2i(4, 4), Vector2i(0, -1), [Vector2i(4, 4), Vector2i(4, 5), Vector2i(3, 4), Vector2i(5, 4)]],
-		[Vector2i(4, 4), Vector2i(0, -1), [Vector2i(4, 4), Vector2i(4, 5), Vector2i(3, 4)]],
-		[Vector2i(4, 4), Vector2i(-1, 0), [Vector2i(4, 4), Vector2i(5, 4), Vector2i(4, 5)]],
-		[Vector2i(3, 3), Vector2i(1, 0), [Vector2i(3, 3), Vector2i(3, 4), Vector2i(4, 3)]],
-		[Vector2i(5, 5), Vector2i(0, 1), [Vector2i(5, 5), Vector2i(5, 4), Vector2i(4, 5), Vector2i(4, 4), Vector2i(5, 3)]],
+		[Vector2i(4, 4), Vector2i(0, -1), [Vector2i(4, 4), Vector2i(4, 3), Vector2i(3, 4), Vector2i(5, 4)]],
+		[Vector2i(4, 4), Vector2i(0, -1), [Vector2i(4, 4), Vector2i(4, 3), Vector2i(3, 4)]],
+		[Vector2i(4, 4), Vector2i(-1, 0), [Vector2i(4, 4), Vector2i(3, 4), Vector2i(4, 5)]],
+		[Vector2i(3, 3), Vector2i(1, 0), [Vector2i(3, 3), Vector2i(4, 3)]],
+		[Vector2i(5, 5), Vector2i(0, 1), [Vector2i(5, 5), Vector2i(4, 5), Vector2i(5, 4), Vector2i(4, 4), Vector2i(3, 5)]],
 	]
 	for case: Array in cases:
 		var want: Array[Vector2i] = []

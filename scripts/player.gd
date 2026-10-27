@@ -139,6 +139,10 @@ func _start_charge() -> bool:
 	rotation.y = atan2(-f.x, -f.y)
 	if stack.item is ToolDef:
 		_equip(stack.item)
+		# A tool with only a tap swings at once, so holding the button never charges it.
+		if stack.item.charges.size() == 1:
+			_start_swing(0)
+			return true
 	if _anim.current_animation != &"Idle":
 		_anim.play(&"Idle", ANIM_BLEND)
 	return true
@@ -155,8 +159,12 @@ func _charge(delta: float) -> void:
 		_stack = null
 		sow_released.emit(stack, level)
 		return
+	_start_swing(charge_level())
+
+
+func _start_swing(level: int) -> void:
 	var tool: ToolDef = _stack.item
-	_swing_level = charge_level()
+	_swing_level = level
 	_state = State.SWING
 	_impact_sent = false
 	_anim.play(tool.swing_animation, ANIM_BLEND, tool.swing_speed)
