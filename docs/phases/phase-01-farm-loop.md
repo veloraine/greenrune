@@ -26,7 +26,7 @@
 
 **Blender work** follows [CLAUDE.md](../../CLAUDE.md). **(Blender — Claude: base)** is the blockout, proportions, origin on the tile grid and export, done by a Blender Python script or by editing an asset-pack GLB. **(Blender — user: polish)** is the final shaping, colour and texture. Godot import and wiring are Claude's. Phase 1 makes no humanoid or building models: the character base comes in [Phase 2.0](phase-02-town-npcs.md#phase-20--character-base), and custom buildings wait for Phase 4+.
 
-**Saves.** New saved state from these sub-phases (debris, items on the ground, carried items, withering, lesson progress) goes into save v2, and a value missing from an older file loads as a new game has it, as Step 6 does. Phase 1 stays on save v2.
+**Saves.** New saved state from these sub-phases (debris, items on the ground, carried items, withering, lesson progress) goes into save v2, and a value missing from an older file loads as a new game has it. Debris is the exception: an older file loads with no debris, so an existing farm isn't suddenly covered. Phase 1 stays on save v2.
 
 ## Built so far: Steps 1–6
 

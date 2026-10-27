@@ -128,7 +128,7 @@ What changes in the current code, in build order. Each item names the sub-phase 
 - [ ] 5. Make the soil states read from the gameplay camera at 12:00 and 22:00 under the current lighting: tilled darker and furrowed, watered darker still with a sheen.
 - [x] 6. Add `DebrisDef` and a starting set of weeds, stones and branches in a new game; Quaternius models first, else Blender (Claude: base; user: polish).
 - [x] 7. Make tools skip debris plots: no change, no RP.
-- [ ] 8. Tune the outdoor camera in `data/camera.tres` from side-by-side screenshots of the 9×12 field. The user's edit is committed (8200d2a); tune from it.
+- [x] 8. Tune the outdoor camera in `data/camera.tres` from side-by-side screenshots of the 9×12 field. The user's edit is committed (8200d2a); tune from it.
 - [ ] 9. Re-check the props around the field: water source in a corner, bin at the edge, nothing blocking the camera.
 
 **Checklist:**
