@@ -2,7 +2,8 @@ extends SceneTree
 
 ## Phase 1.2 tool checks: cheap and bronze tools, charged areas snapped to blocks along the facing,
 ## charged sowing, water per plot, old saves' tool ids, the target marker and charge cues, the water gauge,
-## and the feedback for RP spent and for a swing that changes nothing.
+## the feedback for RP spent and for a swing that changes nothing, watering as you walk, each tool's swing
+## timing, and hit-stop and shake per tool.
 ## Run: Godot --headless --path . --script res://tools/godot/check_tools.gd
 
 

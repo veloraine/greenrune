@@ -14,7 +14,7 @@ func _init(p_tree: SceneTree) -> void:
 
 
 func run() -> int:
-	for test: Callable in [test_tiers, test_bronze_models, test_cheap_never_charges, test_old_save_tools, test_charge_block, test_charge_off_field, test_charged_sow, test_water_per_plot, test_short_can, test_target_marker, test_charge_cues, test_water_gauge, test_no_effect, test_sounds_overlap]:
+	for test: Callable in [test_tiers, test_bronze_models, test_cheap_never_charges, test_old_save_tools, test_charge_block, test_charge_off_field, test_charged_sow, test_water_per_plot, test_short_can, test_target_marker, test_charge_cues, test_water_gauge, test_no_effect, test_sounds_overlap, test_walk_water, test_swing_timing, test_hit_stop]:
 		if (await test.call()) != true:
 			failed += 1
 			printerr("FAIL: %s did not finish" % test.get_method())
@@ -588,4 +588,205 @@ func test_sounds_overlap() -> bool:
 	check(refill.stream == Game.tool_feel.refill_sound and dull.stream == Game.tool_feel.no_effect_sound, "the refill or no-effect player's stream changed to %s / %s" % [refill.stream, dull.stream])
 	for sound in [impact, refill, dull]:
 		sound.stop()
+	return true
+
+
+## The one plot in front of the player, or none off the field.
+func _front_cell(player: Player, grid: FarmGrid, tool: ToolDef) -> Array[Vector2i]:
+	var cells: Array[Vector2i] = []
+	grid.cells_hit(player.global_position, player.tool_point(tool), Vector2i.ONE, player.facing(), cells)
+	return cells
+
+
+## Walking along a row of dry plots while tapping a can waters each plot passed, one water each, and the player
+## keeps moving through every tap. A tap on a watered plot spends no water or RP. A hoe tap still stands still.
+func test_walk_water() -> bool:
+	var farm: Node = await _farm()
+	var grid: FarmGrid = farm.get_node("Field")
+	var player: Player = farm.get_node("Player")
+	for id: StringName in [&"cheap_watering_can", &"bronze_watering_can"]:
+		var tool: ToolDef = Game.items[id]
+		var can := ItemStack.new(tool, 1, 1)
+		# Nine plots, fewer than the cheap can's water, so it never runs dry here.
+		var row: Array[Vector2i] = []
+		for x in 9:
+			row.append(Vector2i(x, 4))
+		_set_plots(row, [])
+		Game.inventory.replace_slots([can])
+		Game.inventory.selected = 0
+		Game.stats.rp = Game.stats.max_rp()
+		_stand(player, grid, Vector2i(0, 4), Vector2i(1, 0))
+		await tree.physics_frame
+		var impacts: Array[Vector3] = []
+		var targets: Array[Vector2i] = []
+		var on_used: Callable = func(_stack: ItemStack, _level: int) -> void:
+			impacts.append(player.global_position)
+			targets.append_array(_front_cell(player, grid, tool))
+		player.tool_used.connect(on_used)
+		var starts: Array[Vector3] = []
+		var was_swinging: bool = false
+		Input.action_press(&"move_right")
+		# Mashing use, up to ten seconds, until the player nears the row's far end.
+		for i in 600:
+			if grid.to_local(player.global_position).x > row.size() - 1.5:
+				break
+			if i % 2 == 0:
+				Input.action_press(&"use_tool")
+			else:
+				Input.action_release(&"use_tool")
+			await tree.physics_frame
+			if player.is_swinging() and not was_swinging:
+				starts.append(player.global_position)
+			was_swinging = player.is_swinging()
+		Input.action_release(&"use_tool")
+		Input.action_release(&"move_right")
+		for i in 120:
+			if player.is_idle():
+				break
+			await tree.physics_frame
+		player.tool_used.disconnect(on_used)
+		var watered: Array[Vector2i] = []
+		for cell in row:
+			if Game.field.soil(cell) == Field.Soil.WATERED:
+				watered.append(cell)
+		check(impacts.size() >= 4, "walking with %s made %d impacts, want at least 4" % [id, impacts.size()])
+		for i in mini(starts.size(), impacts.size()):
+			check(impacts[i].x > starts[i].x + 0.2, "%s tap %d moved the player %.2f m between start and impact, want walking" % [id, i, impacts[i].x - starts[i].x])
+		var first: int = watered[0].x if watered else 0
+		var passed: Array[Vector2i] = []
+		for x in range(first, first + watered.size()):
+			passed.append(Vector2i(x, 4))
+		check(watered == passed and watered.size() >= 4, "walking with %s watered %s, want each plot passed" % [id, watered])
+		check(_sorted(watered) == _sorted(_unique(targets)), "walking with %s watered %s, want the plots in front at each impact %s" % [id, watered, targets])
+		check(can.water == tool.capacity - watered.size(), "watering %d plots left %s with %d water, want %d" % [watered.size(), id, can.water, tool.capacity - watered.size()])
+		# Standing in front of a watered plot, a tap spends nothing.
+		_set_plots([], [Vector2i(4, 4)])
+		_stand(player, grid, Vector2i(4, 5), Vector2i(0, -1))
+		var water: int = can.water
+		var rp: int = Game.stats.rp
+		farm._on_tool_used(can, 0)
+		check(can.water == water and Game.stats.rp == rp, "a %s tap on a watered plot took water %d → %d, RP %d → %d" % [id, water, can.water, rp, Game.stats.rp])
+	# A hoe tap with move held stands still.
+	_set_plots([], [])
+	Game.inventory.replace_slots([ItemStack.new(Game.items[&"cheap_hoe"], 1, 1)])
+	_stand(player, grid, Vector2i(2, 4), Vector2i(1, 0))
+	await tree.physics_frame
+	Input.action_press(&"move_right")
+	Input.action_press(&"use_tool")
+	await _physics_step()
+	Input.action_release(&"use_tool")
+	var at: Vector3 = player.global_position
+	var still: bool = true
+	for i in 120:
+		if not player.is_swinging():
+			break
+		still = still and player.global_position.is_equal_approx(at)
+		await tree.physics_frame
+	Input.action_release(&"move_right")
+	check(still, "a hoe tap with move held moved the player")
+	for sound in ["Impact", "NoEffect"]:
+		farm.get_node("ToolFeedback/" + sound).stop()
+	Game.inventory.replace_slots([])
+	return true
+
+
+func _unique(cells: Array[Vector2i]) -> Array[Vector2i]:
+	var out: Array[Vector2i] = []
+	for cell in cells:
+		if not out.has(cell):
+			out.append(cell)
+	return out
+
+
+## Each tool's swing plays at its swing_speed and its impact fires at impact_time into the clip, so
+## impact_time / swing_speed seconds after the swing starts. Drives the real input path.
+func test_swing_timing() -> bool:
+	var farm: Node = await _farm()
+	var grid: FarmGrid = farm.get_node("Field")
+	var player: Player = farm.get_node("Player")
+	var anim: AnimationPlayer = player.get_node("Model/AnimationPlayer")
+	var frame: float = 1.0 / Engine.physics_ticks_per_second
+	var impact: Array[float] = []
+	var on_used: Callable = func(_stack: ItemStack, _level: int) -> void:
+		impact.assign([anim.current_animation_position, anim.get_playing_speed(), Time.get_ticks_usec() / 1e6])
+	player.tool_used.connect(on_used)
+	for id: StringName in [&"cheap_hoe", &"bronze_hoe", &"cheap_watering_can", &"bronze_watering_can", &"cheap_sickle", &"bronze_sickle"]:
+		var tool: ToolDef = Game.items[id]
+		_set_plots([], [])
+		Game.inventory.replace_slots([ItemStack.new(tool, 1, 1)])
+		Game.inventory.selected = 0
+		_stand(player, grid, Vector2i(4, 4), Vector2i(0, -1))
+		await tree.physics_frame
+		impact.clear()
+		Input.action_press(&"use_tool")
+		await tree.physics_frame
+		Input.action_release(&"use_tool")
+		var start: float = 0.0
+		for i in 600:
+			if start == 0.0 and player.is_swinging():
+				start = Time.get_ticks_usec() / 1e6
+			if not impact.is_empty():
+				break
+			await tree.physics_frame
+		check(not impact.is_empty(), "%s's swing never hit" % id)
+		if impact.is_empty():
+			continue
+		check(is_equal_approx(impact[1], tool.swing_speed), "%s swung at speed %.2f, want %.2f" % [id, impact[1], tool.swing_speed])
+		check(impact[0] >= tool.impact_time and impact[0] < tool.impact_time + 3.0 * frame * tool.swing_speed, "%s hit %.3f s into its clip, want %.3f" % [id, impact[0], tool.impact_time])
+		var want: float = tool.impact_time / tool.swing_speed
+		check(absf(impact[2] - start - want) < 4.0 * frame, "%s hit %.3f s after its swing started, want %.3f" % [id, impact[2] - start, want])
+		for i in 120:
+			if player.is_idle():
+				break
+			await tree.physics_frame
+	player.tool_used.disconnect(on_used)
+	farm.get_node("ToolFeedback/NoEffect").stop()
+	Game.inventory.replace_slots([])
+	return true
+
+
+## A hit that changes a plot freezes the game only for a tool with hit_stop, and shakes the camera only for one
+## with shake: the hoe holds 50 ms, the sickle a shorter one, and the can never freezes or shakes. Each such hit
+## plays its tool's sound and bursts dust, after any hit-stop.
+func test_hit_stop() -> bool:
+	var farm: Node = await _farm()
+	var grid: FarmGrid = farm.get_node("Field")
+	var player: Player = farm.get_node("Player")
+	var rig: FollowCamera = farm.get_node("CameraRig")
+	var dust: GPUParticles3D = farm.get_node("ToolFeedback/Dust")
+	var impact: AudioStreamPlayer3D = farm.get_node("ToolFeedback/Impact")
+	var turnip: CropDef = Game.crops[&"turnip_seed"]
+	for id: StringName in [&"cheap_hoe", &"bronze_hoe", &"cheap_watering_can", &"bronze_watering_can", &"cheap_sickle", &"bronze_sickle"]:
+		var tool: ToolDef = Game.items[id]
+		match tool.effect:
+			ToolDef.Effect.TILL:
+				check(is_equal_approx(tool.hit_stop, 0.05) and tool.shake > 0.0, "%s has hit-stop %.3f and shake %.3f, want 0.05 and some" % [id, tool.hit_stop, tool.shake])
+			ToolDef.Effect.WATER:
+				check(tool.hit_stop == 0.0 and tool.shake == 0.0, "%s has hit-stop %.3f and shake %.3f, want none" % [id, tool.hit_stop, tool.shake])
+			ToolDef.Effect.REAP:
+				check(tool.hit_stop > 0.0 and tool.hit_stop < 0.05 and tool.shake > 0.0, "%s has hit-stop %.3f and shake %.3f, want a short one and some" % [id, tool.hit_stop, tool.shake])
+		var cell := Vector2i(4, 3)
+		var tilled: Array[Vector2i] = []
+		if tool.effect != ToolDef.Effect.TILL:
+			tilled.append(cell)
+		_set_plots(tilled, [])
+		if tool.effect == ToolDef.Effect.REAP:
+			Game.field.sow(cell, turnip, 1)
+			Game.field.crop(cell).days = turnip.stage_days[0]
+		_stand(player, grid, Vector2i(4, 4), Vector2i(0, -1))
+		rig._shake_left = 0.0
+		dust.emitting = false
+		impact.stop()
+		Game.stats.rp = Game.stats.max_rp()
+		farm._on_tool_used(ItemStack.new(tool, 1, 1), 0)
+		check(Game.field.soil(cell) != Field.Soil.UNTILLED and (tool.effect != ToolDef.Effect.REAP or Game.field.crop(cell) == null), "%s's hit changed nothing" % id)
+		check((Engine.time_scale == 0.0) == (tool.hit_stop > 0.0), "after a %s hit time_scale is %.1f, want hit-stop only with hit_stop %.3f" % [id, Engine.time_scale, tool.hit_stop])
+		check((rig._shake_left > 0.0) == (tool.shake > 0.0), "after a %s hit the camera shake is %.3f, want shake only with shake %.3f" % [id, rig._shake_left, tool.shake])
+		for i in 120:
+			if Engine.time_scale == 1.0:
+				break
+			await tree.process_frame
+		check(Engine.time_scale == 1.0, "%s's hit-stop never ended" % id)
+		check(impact.playing and impact.stream == tool.impact_sound and dust.emitting, "a %s hit played its sound %s and burst dust %s, want both" % [id, impact.playing, dust.emitting])
+	farm.get_node("ToolFeedback/Impact").stop()
 	return true

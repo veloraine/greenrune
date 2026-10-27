@@ -51,7 +51,7 @@ func _physics_process(delta: float) -> void:
 		State.CHARGE:
 			_charge(delta)
 		State.SWING:
-			_swing()
+			_swing(delta)
 
 	if is_on_floor():
 		velocity.y = 0.0
@@ -123,19 +123,25 @@ func _move(delta: float) -> void:
 	if (Input.is_action_just_pressed("use_tool") or _buffered) and _start_charge():
 		return
 
-	var input_dir: Vector2 = Input.get_vector("move_left", "move_right", "move_forward", "move_back")
-	velocity.x = input_dir.x * speed
-	velocity.z = input_dir.y * speed
-
+	var input_dir: Vector2 = _walk(delta, speed)
 	var anim_name: StringName = &"Idle"
 	var anim_speed: float = 1.0
 	if input_dir != Vector2.ZERO:
-		rotation.y = lerp_angle(rotation.y, atan2(-velocity.x, -velocity.z), TURN_SPEED * delta)
 		anim_name = &"Running_A"
 		anim_speed = speed / RUN_ANIM_SPEED
 	# play() with a blend queues a new blend every call, even for the current animation.
 	if _anim.current_animation != anim_name:
 		_anim.play(anim_name, ANIM_BLEND, anim_speed)
+
+
+## Walks along the move input at walk_speed, turning toward it. Returns the input.
+func _walk(delta: float, walk_speed: float) -> Vector2:
+	var input_dir: Vector2 = Input.get_vector("move_left", "move_right", "move_forward", "move_back")
+	velocity.x = input_dir.x * walk_speed
+	velocity.z = input_dir.y * walk_speed
+	if input_dir != Vector2.ZERO:
+		rotation.y = lerp_angle(rotation.y, atan2(-velocity.x, -velocity.z), TURN_SPEED * delta)
+	return input_dir
 
 
 func _start_charge() -> bool:
@@ -194,10 +200,12 @@ func _start_swing(level: int) -> void:
 	_anim.seek(0.0, true)
 
 
-func _swing() -> void:
+func _swing(delta: float) -> void:
 	if Input.is_action_just_pressed("use_tool"):
 		_buffered = true
 	var tool: ToolDef = _stack.item
+	if _swing_level == 0 and tool.walk_speed > 0.0:
+		_walk(delta, tool.walk_speed)
 	var anim_time: float = _anim.current_animation_position
 	if _anim.current_animation != tool.swing_animation or (_impact_sent and anim_time >= _swing_end_time):
 		_state = State.MOVE

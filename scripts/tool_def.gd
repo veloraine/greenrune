@@ -19,6 +19,8 @@ enum Effect { TILL, WATER, REAP }
 @export var impact_time: float = 0.5
 ## Metres ahead of the player where the tool lands.
 @export var reach: float = 1.0
+## Metres per second the player keeps walking during a tap; 0 stands still. RF4's can waters as you walk.
+@export var walk_speed: float = 0.0
 
 @export_group("Feedback")
 @export var impact_sound: AudioStream
