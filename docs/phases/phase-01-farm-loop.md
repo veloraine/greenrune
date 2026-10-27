@@ -60,7 +60,7 @@ Steps 1–6 built every Phase 1 system. They stay here as the record of what exi
 - [x] Target tile = tile in front of the player, highlighted (the tile where the tool lands, `reach` metres ahead)
 - [x] `ToolDef` (extends `ItemDef`): RP cost, linked skill, hitbox shape, effect (RP cost and hit area size live per charge level in `ToolCharge`)
 - [x] Swing: animation → hitbox active frames → effect on every tile hit
-- [x] Hoe tills; watering can waters (with a water count, refilled at a pond or well) (15 uses; the pond is east of the field)
+- [x] Hoe tills; watering can waters (with a water count, refilled at a pond or well) (15 uses; the well is at the field's north-east corner)
 - [x] Hold to charge: wider area, higher RP cost (tap 1 tile, 0.6 s the 2×2 around the player, 1.2 s the 4×4 around the player; a bigger level waits for tool upgrades at the forge in Phase 6; the cost is data now and is spent from Step 4)
   - **Correction:** this item first said the areas were "like Rune Factory 4". They are not. RF4's starter tools don't charge, a bronze tool charges to 2×2, a silver hoe to 2×4, the only 4×4 is an upgraded platinum 4th charge, and charged areas snap to the field's 2×2 sections ([research › Tools, areas and charge](../rf4-farnia-research.md#tools-areas-and-charge)). Greenrune takes Farnia's 3×3 instead, gated by tier like RF4 and snapped to 3×3 blocks; fixed in [Phase 1.2](#phase-12--tool-feel).
 - [x] "Pop" feedback on every hit: sound, particle, tiny camera shake (a thud for the hoe, a splash for the watering can, a slice for the sickle; only the hoe sets hit-stop and shake so far)
@@ -150,9 +150,9 @@ Steps 1–6 built every Phase 1 system. They stay here as the record of what exi
 - [ ] A 12×12 save from before this change loads with no plot outside the 9×12 field and a warning in the output
 - [ ] A swing on a debris plot changes nothing and costs no RP
 - [x] Watered and dry tilled soil differ by at least 25% in brightness at 12:00 and at 22:00 *(default)*, measured from screenshots
-- [ ] From the field centre the whole field is on screen with no camera move
+- [x] From the field centre the whole field is on screen with no camera move
 - [ ] Each soil and debris model is under 500 triangles *(default)*
-- [ ] 60 fps on the farm with every plot tilled and planted (Godot's FPS monitor)
+- [x] 60 fps on the farm with every plot tilled and planted (Godot's FPS monitor)
 
 **Out of scope for this phase:** tool feel and charge areas (1.2), clearing debris by hand and debris regrowth (1.3), withered soil (1.4), soil stats and giant crops ([NOT_IN_SCOPE.md](../../NOT_IN_SCOPE.md)). Stumps and rocks stay off the field: RF4 clears them only with the axe and hammer, which its tutorial requests hand out as farm tools ([research › Clearing debris](../rf4-farnia-research.md#clearing-debris)). Greenrune keeps the axe and hammer in [Phase 4 Step 5](phase-04-combat-core.md), so the Phase 1 field has none.
 

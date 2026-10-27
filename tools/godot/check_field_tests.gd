@@ -20,7 +20,7 @@ func _init(p_tree: SceneTree) -> void:
 
 
 func run() -> int:
-	for test: Callable in [test_field_def, test_block_of, test_old_save, test_debris_scatter, test_debris_save, test_save_without_debris, test_debris_off_field, test_debris_under_plot, test_debris_overfull, test_tool_skips_debris, test_soil_tiles]:
+	for test: Callable in [test_field_def, test_block_of, test_old_save, test_debris_scatter, test_debris_save, test_save_without_debris, test_debris_off_field, test_debris_under_plot, test_debris_overfull, test_tool_skips_debris, test_soil_tiles, test_farm_props]:
 		if (await test.call()) != true:
 			failed += 1
 			printerr("FAIL: %s did not finish" % test.get_method())
@@ -276,4 +276,39 @@ func test_soil_tiles() -> bool:
 			var points: Variant = arrays[Mesh.ARRAY_INDEX] if arrays[Mesh.ARRAY_INDEX] != null else arrays[Mesh.ARRAY_VERTEX]
 			triangles += points.size() / 3
 		check(triangles < 500, "%s tile has %d triangles, want under 500" % [soil, triangles])
+	return true
+
+
+## The well refills the can from beside the field's north-east corner, without any field point counting
+## as water, and the bin's reach covers the field's north edge beside it.
+func test_farm_props() -> bool:
+	tree.change_scene_to_file("res://scenes/farm.tscn")
+	await tree.scene_changed
+	var farm: Node = tree.current_scene
+	var grid: FarmGrid = farm.get_node("Field")
+	var player: Player = farm.get_node("Player")
+	var extent := Vector2(Game.field.def.size) * grid.tile_size
+	await tree.physics_frame
+	# A water point on the field would refill the can instead of watering that plot.
+	for x in int(extent.x * 4.0) + 1:
+		for z in int(extent.y * 4.0) + 1:
+			var point: Vector3 = grid.to_global(Vector3(x * 0.25, 0.0, z * 0.25))
+			check(not farm._is_water(point), "field point %s is water" % point)
+	var well: Node3D = farm.get_node("Well")
+	var corner: Vector3 = grid.to_global(Vector3(extent.x, 0.0, 0.0))
+	check(well.global_position.distance_to(corner) < 2.0, "the well is %.1f m from the field's north-east corner, want under 2" % well.global_position.distance_to(corner))
+	var can := ItemStack.new(Game.items[&"watering_can"], 1, 1)
+	can.water = 0
+	# Facing -z, just south of the well.
+	player.rotation.y = 0.0
+	player.global_position = well.global_position + Vector3(0.0, 0.0, 1.4)
+	farm._on_tool_used(can, 0)
+	# A splash still playing at exit leaks its stream in a headless run.
+	farm.get_node("ToolFeedback/Sound").stop()
+	check(can.water == (can.item as ToolDef).capacity, "a can tap at the well left %d water" % can.water)
+	var bin: Node3D = farm.get_node("ShippingBin")
+	player.global_position = grid.to_global(Vector3(grid.to_local(bin.global_position).x, 0.0, 0.0))
+	await tree.physics_frame
+	await tree.physics_frame
+	check(farm.get_node("ShippingBin/Reach").overlaps_body(player), "the bin's reach misses the field's north edge beside it")
 	return true

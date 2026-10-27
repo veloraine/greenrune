@@ -15,7 +15,7 @@
 [ext_resource type="PackedScene" uid="uid://bq6hosblpxnr5" path="res://assets/environment/quaternius-nature/Grass_Short.fbx" id="13_grass_short"]
 [ext_resource type="PackedScene" path="res://ui/hud.tscn" id="14_hud"]
 [ext_resource type="Script" uid="uid://c7v6vk2cg5dfb" path="res://scripts/farm.gd" id="15_farm"]
-[ext_resource type="PackedScene" path="res://scenes/props/pond.tscn" id="16_pond"]
+[ext_resource type="PackedScene" path="res://scenes/props/village/well.tscn" id="16_well"]
 [ext_resource type="PackedScene" path="res://scenes/tool_feedback.tscn" id="17_feedback"]
 [ext_resource type="PackedScene" path="res://scenes/sky.tscn" id="18_sky"]
 [ext_resource type="Script" uid="uid://duaosnlxfonee" path="res://scripts/exit.gd" id="19_exit"]
@@ -58,6 +58,9 @@ albedo_color = Color(1, 0.15, 0.1, 0.6)
 
 [sub_resource type="BoxShape3D" id="BoxShape3D_town_exit"]
 size = Vector3(0.8, 2, 4)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_well_water"]
+size = Vector3(2, 1, 2)
 
 [node name="Farm" type="Node3D" unique_id=407203954]
 script = ExtResource("15_farm")
@@ -111,7 +114,7 @@ transform = Transform3D(-1, 0, 0, 0, 1, 0, 0, 0, -1, -0.4, 0, -12.4)
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 100, 0, 0)
 
 [node name="ShippingBin" parent="." unique_id=2009741061 instance=ExtResource("7_bin")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2.8, 0, -13.4)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2, 0, -10.1)
 
 [node name="Field" type="Node3D" parent="." unique_id=1385773560]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -4.5, 0, -9)
@@ -122,28 +125,36 @@ watered_model = ExtResource("23_watered")
 target_material = SubResource("StandardMaterial3D_target")
 hitbox_material = SubResource("StandardMaterial3D_hitbox")
 
-[node name="Pond" parent="." unique_id=531432555 instance=ExtResource("16_pond")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 10, 0, -4)
+[node name="Well" parent="." unique_id=531432555 instance=ExtResource("16_well")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 5.25, 0, -10.2)
+
+[node name="Water" type="Area3D" parent="Well" unique_id=1840276531]
+collision_layer = 16
+collision_mask = 0
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Well/Water" unique_id=1162048790]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.5, 0)
+shape = SubResource("BoxShape3D_well_water")
 
 [node name="Fences" type="Node3D" parent="." unique_id=1521218709]
 
 [node name="Fence1" parent="Fences" unique_id=2012794244 instance=ExtResource("8_fence")]
-transform = Transform3D(6.123234e-17, 0, -1, 0, 1, 0, 1, 0, 6.123234e-17, -6.6, 0, -6)
+transform = Transform3D(6.123234e-17, 0, -1, 0, 1, 0, 1, 0, 6.123234e-17, -6, 0, -6)
 
 [node name="Fence2" parent="Fences" unique_id=2008767249 instance=ExtResource("8_fence")]
-transform = Transform3D(6.123234e-17, 0, -1, 0, 1, 0, 1, 0, 6.123234e-17, -6.6, 0, 0)
+transform = Transform3D(6.123234e-17, 0, -1, 0, 1, 0, 1, 0, 6.123234e-17, -6, 0, 0)
 
 [node name="Fence3" parent="Fences" unique_id=776712127 instance=ExtResource("8_fence")]
-transform = Transform3D(6.123234e-17, 0, -1, 0, 1, 0, 1, 0, 6.123234e-17, 6.6, 0, -6)
+transform = Transform3D(6.123234e-17, 0, -1, 0, 1, 0, 1, 0, 6.123234e-17, 6, 0, -6)
 
 [node name="Fence4" parent="Fences" unique_id=582166148 instance=ExtResource("8_fence")]
-transform = Transform3D(6.123234e-17, 0, -1, 0, 1, 0, 1, 0, 6.123234e-17, 6.6, 0, 0)
+transform = Transform3D(6.123234e-17, 0, -1, 0, 1, 0, 1, 0, 6.123234e-17, 6, 0, 0)
 
 [node name="Fence5" parent="Fences" unique_id=1581113760 instance=ExtResource("8_fence")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -3, 0, 3.6)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -3, 0, 4.5)
 
 [node name="Fence6" parent="Fences" unique_id=387752478 instance=ExtResource("8_fence")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 3, 0, 3.6)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 3, 0, 4.5)
 
 [node name="Trees" type="Node3D" parent="." unique_id=1459335097]
 
