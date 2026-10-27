@@ -78,9 +78,10 @@ func _on_tool_used(stack: ItemStack, charge_level: int) -> void:
 		if _is_water(point):
 			stack.water = tool.capacity
 			Game.inventory.changed.emit()
-			_pop(point, tool)
+			_feedback.refill(point, tool)
 			return
 		if stack.water == 0:
+			_feedback.no_effect(point)
 			return
 	var field_changed: bool = false
 	# _cells comes nearest the player first, so a can short of water waters those.
@@ -104,7 +105,9 @@ func _on_tool_used(stack: ItemStack, charge_level: int) -> void:
 				Game.inventory.add(crop.def.seed_item, seed_level, 1)
 	if field_changed:
 		_pay(stack, charge_level)
-	_pop(point, tool)
+		_pop(point, tool)
+	else:
+		_feedback.no_effect(point)
 
 
 ## Everything a tool use costs and earns. RF4's rule: only an action that did something pays,
@@ -114,7 +117,10 @@ func _pay(stack: ItemStack, charge_level: int) -> void:
 	# Priced before the XP, so a swing that levels up still pays the old cost.
 	var cost: int = Game.stats.rp_cost(tool, charge_level)
 	Game.stats.add_xp(tool.skill, Game.skills[tool.skill].xp_per_use + tool.charges[charge_level].xp_bonus)
+	var rp: int = Game.stats.rp
 	Game.stats.spend(cost)
+	if Game.stats.rp < rp:
+		_feedback.rp_popup(_player.global_position, rp - Game.stats.rp)
 	if tool.capacity > 0:
 		Game.inventory.changed.emit()
 

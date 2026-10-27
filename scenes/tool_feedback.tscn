@@ -60,3 +60,15 @@ draw_pass_1 = SubResource("QuadMesh_dust")
 max_polyphony = 2
 
 [node name="Cue" type="AudioStreamPlayer" parent="."]
+
+[node name="RpPopup" type="Label3D" parent="."]
+top_level = true
+visible = false
+cast_shadow = 0
+billboard = 1
+no_depth_test = true
+render_priority = 1
+outline_render_priority = 0
+pixel_size = 0.012
+font_size = 48
+outline_size = 12

@@ -2,6 +2,8 @@
 
 [ext_resource type="Script" path="res://scripts/tool_feel_def.gd" id="1_feel"]
 [ext_resource type="AudioStream" path="res://assets/audio/kenney-rpg-audio/knifeSlice2.ogg" id="2_charge"]
+[ext_resource type="AudioStream" path="res://assets/audio/rubberduck-water/splash_15.ogg" id="3_refill"]
+[ext_resource type="AudioStream" path="res://assets/audio/kenney-impact/impactSoft_heavy_004.ogg" id="4_dull"]
 
 [resource]
 script = ExtResource("1_feel")
@@ -14,3 +16,12 @@ outline_width = 0.08
 glow_colors = Array[Color]([Color(1, 0.6, 0.2, 0), Color(1, 0.6, 0.2, 0.45), Color(1, 0.85, 0.4, 0.6)])
 charge_sound = ExtResource("2_charge")
 charge_pitches = Array[float]([1.2, 1.5])
+refill_sound = ExtResource("3_refill")
+refill_pitch = 0.7
+no_effect_sound = ExtResource("4_dull")
+no_effect_pitch = 0.6
+no_effect_volume_db = -8.0
+rp_popup_color = Color(0.5, 0.75, 1, 1)
+rp_popup_height = 2.6
+rp_popup_rise = 0.6
+rp_popup_seconds = 0.8

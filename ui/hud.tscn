@@ -10,6 +10,7 @@
 [ext_resource type="Script" path="res://scripts/gold_label.gd" id="8_gold"]
 [ext_resource type="Script" path="res://scripts/bin_screen.gd" id="9_bin"]
 [ext_resource type="Script" path="res://scripts/shop_screen.gd" id="10_shop"]
+[ext_resource type="Script" path="res://scripts/water_gauge.gd" id="11_water"]
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_bin"]
 content_margin_left = 16.0
@@ -22,11 +23,57 @@ corner_radius_top_right = 8
 corner_radius_bottom_right = 8
 corner_radius_bottom_left = 8
 
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_gauge_back"]
+bg_color = Color(0, 0, 0, 0.55)
+corner_radius_top_left = 4
+corner_radius_top_right = 4
+corner_radius_bottom_right = 4
+corner_radius_bottom_left = 4
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_water"]
+bg_color = Color(0.3, 0.7, 0.95, 1)
+corner_radius_top_left = 4
+corner_radius_top_right = 4
+corner_radius_bottom_right = 4
+corner_radius_bottom_left = 4
+
 [node name="HUD" type="CanvasLayer"]
 
 [node name="Hotbar" parent="." instance=ExtResource("1_hotbar")]
 
 [node name="VitalsBars" parent="." instance=ExtResource("3_bars")]
+
+[node name="WaterGauge" type="ProgressBar" parent="."]
+anchors_preset = 7
+anchor_left = 0.5
+anchor_top = 1.0
+anchor_right = 0.5
+anchor_bottom = 1.0
+offset_left = -120.0
+offset_top = -118.0
+offset_right = 120.0
+offset_bottom = -92.0
+grow_horizontal = 2
+grow_vertical = 0
+mouse_filter = 2
+theme_override_styles/background = SubResource("StyleBoxFlat_gauge_back")
+theme_override_styles/fill = SubResource("StyleBoxFlat_water")
+step = 1.0
+show_percentage = false
+script = ExtResource("11_water")
+
+[node name="Label" type="Label" parent="WaterGauge"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_colors/font_outline_color = Color(0, 0, 0, 1)
+theme_override_constants/outline_size = 4
+theme_override_font_sizes/font_size = 14
+horizontal_alignment = 1
+vertical_alignment = 1
 
 [node name="Clock" type="Label" parent="."]
 anchors_preset = 1

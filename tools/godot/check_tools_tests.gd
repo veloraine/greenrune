@@ -14,7 +14,7 @@ func _init(p_tree: SceneTree) -> void:
 
 
 func run() -> int:
-	for test: Callable in [test_tiers, test_bronze_models, test_cheap_never_charges, test_old_save_tools, test_charge_block, test_charge_off_field, test_charged_sow, test_water_per_plot, test_short_can, test_target_marker, test_charge_cues]:
+	for test: Callable in [test_tiers, test_bronze_models, test_cheap_never_charges, test_old_save_tools, test_charge_block, test_charge_off_field, test_charged_sow, test_water_per_plot, test_short_can, test_target_marker, test_charge_cues, test_water_gauge, test_no_effect]:
 		if (await test.call()) != true:
 			failed += 1
 			printerr("FAIL: %s did not finish" % test.get_method())
@@ -454,3 +454,76 @@ func test_charge_cues() -> bool:
 	Game.inventory.replace_slots([])
 	return true
 
+
+## The HUD gauge shows only while a can is selected, holds each can's capacity, follows the can's water one
+## step per plot watered, stays put on a swing that waters nothing, and refills at the well with the refill sound.
+func test_water_gauge() -> bool:
+	var farm: Node = await _farm()
+	var grid: FarmGrid = farm.get_node("Field")
+	var player: Player = farm.get_node("Player")
+	var gauge: ProgressBar = farm.get_node("HUD/WaterGauge")
+	var sound: AudioStreamPlayer3D = farm.get_node("ToolFeedback/Sound")
+	var cheap := ItemStack.new(Game.items[&"cheap_watering_can"], 1, 1)
+	var bronze := ItemStack.new(Game.items[&"bronze_watering_can"], 1, 1)
+	Game.inventory.replace_slots([cheap, bronze, ItemStack.new(Game.items[&"cheap_hoe"], 1, 1)])
+	for slot in 3:
+		Game.inventory.select(slot)
+		var stack: ItemStack = Game.inventory.slots[slot]
+		var capacity: int = (stack.item as ToolDef).capacity
+		check(gauge.visible == (capacity > 0), "with %s selected the gauge's visible is %s" % [stack.item.id, gauge.visible])
+		if capacity > 0:
+			check(gauge.max_value == capacity and gauge.value == stack.water, "with %s selected the gauge shows %d / %d, want %d / %d" % [stack.item.id, gauge.value, gauge.max_value, stack.water, capacity])
+	Game.inventory.select(1)
+	var block: Array[Vector2i] = _block_cells(Vector2i(1, 1))
+	_stand(player, grid, Vector2i(4, 4), Vector2i(0, -1))
+	# 4 dry, 3 wet, 2 untilled.
+	_set_plots(block.slice(0, 4), block.slice(4, 7))
+	farm._on_tool_used(bronze, 1)
+	check(gauge.value == 32 and bronze.water == 32, "watering 4 plots left the gauge at %d and the can at %d, want 32" % [gauge.value, bronze.water])
+	farm._on_tool_used(bronze, 1)
+	check(gauge.value == 32, "a swing that waters nothing moved the gauge to %d" % gauge.value)
+	_set_plots([Vector2i(4, 3)], [])
+	farm._on_tool_used(bronze, 0)
+	check(gauge.value == 31, "a tap on a dry plot left the gauge at %d, want 31" % gauge.value)
+	player.rotation.y = 0.0
+	player.global_position = farm.get_node("Well").global_position + Vector3(0.0, 0.0, 1.4)
+	await tree.physics_frame
+	farm._on_tool_used(bronze, 0)
+	check(gauge.value == 36, "a refill left the gauge at %d, want 36" % gauge.value)
+	check(sound.stream == Game.tool_feel.refill_sound and is_equal_approx(sound.pitch_scale, Game.tool_feel.refill_pitch), "a refill played %s at pitch %.2f, want the refill sound" % [sound.stream, sound.pitch_scale])
+	sound.stop()
+	Game.inventory.replace_slots([])
+	return true
+
+
+## A swing that changes nothing, including an empty can's, plays the dull "no effect" sound instead of the
+## impact, costs no RP and pops nothing. A swing that changes a plot plays the tool's impact sound and pops
+## "-N RP" over the player.
+func test_no_effect() -> bool:
+	var farm: Node = await _farm()
+	var grid: FarmGrid = farm.get_node("Field")
+	var player: Player = farm.get_node("Player")
+	var sound: AudioStreamPlayer3D = farm.get_node("ToolFeedback/Sound")
+	var popup: Label3D = farm.get_node("ToolFeedback/RpPopup")
+	var hoe := ItemStack.new(Game.items[&"cheap_hoe"], 1, 1)
+	var can := ItemStack.new(Game.items[&"cheap_watering_can"], 1, 1)
+	can.water = 0
+	var cell := Vector2i(4, 3)
+	_stand(player, grid, Vector2i(4, 4), Vector2i(0, -1))
+	Game.stats.rp = Game.stats.max_rp()
+	var rp: int = Game.stats.rp
+	for stack: ItemStack in [hoe, can]:
+		_set_plots([cell], [])
+		sound.stream = null
+		farm._on_tool_used(stack, 0)
+		check(Game.stats.rp == rp and can.water == 0 and Game.field.soil(cell) == Field.Soil.TILLED, "a %s swing that changes nothing changed RP %d → %d or water to %d" % [stack.item.id, rp, Game.stats.rp, can.water])
+		check(sound.stream == Game.tool_feel.no_effect_sound and is_equal_approx(sound.pitch_scale, Game.tool_feel.no_effect_pitch), "a %s swing that changes nothing played %s" % [stack.item.id, sound.stream])
+		check(not popup.visible, "a %s swing that changes nothing popped '%s'" % [stack.item.id, popup.text])
+	Game.field.replace_plots({})
+	var cost: int = Game.stats.rp_cost(hoe.item, 0)
+	farm._on_tool_used(hoe, 0)
+	check(Game.field.soil(cell) == Field.Soil.TILLED and Game.stats.rp == rp - cost, "a hoe tap on untilled soil left it %s and RP %d, want tilled and %d" % [Field.Soil.find_key(Game.field.soil(cell)), Game.stats.rp, rp - cost])
+	check(sound.stream == (hoe.item as ToolDef).impact_sound and is_equal_approx(sound.pitch_scale, 1.0), "a hoe tap that tills played %s at pitch %.2f, want its impact sound" % [sound.stream, sound.pitch_scale])
+	check(popup.visible and popup.text == "-%d RP" % cost, "a hoe tap that tills popped '%s' (visible %s), want '-%d RP'" % [popup.text, popup.visible, cost])
+	sound.stop()
+	return true

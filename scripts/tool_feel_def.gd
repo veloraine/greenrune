@@ -21,3 +21,18 @@ extends Resource
 @export var charge_sound: AudioStream
 ## charge_sound's pitch on reaching level i + 1. Levels past the end use the last.
 @export var charge_pitches: Array[float] = [1.0]
+
+@export_group("Sounds")
+@export var refill_sound: AudioStream
+@export var refill_pitch: float = 1.0
+## Plays instead of the tool's impact sound on a swing that changes nothing.
+@export var no_effect_sound: AudioStream
+@export var no_effect_pitch: float = 1.0
+@export var no_effect_volume_db: float = 0.0
+
+@export_group("RP popup")
+@export var rp_popup_color: Color = Color.WHITE
+## Metres above the player's feet where the popup starts.
+@export var rp_popup_height: float = 0.0
+@export var rp_popup_rise: float = 0.0
+@export var rp_popup_seconds: float = 0.0
