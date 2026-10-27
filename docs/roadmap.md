@@ -121,14 +121,14 @@ What changes in the current code, in build order. Each item names the sub-phase 
 
 **Steps:**
 - [ ] 1. Blender setup (Claude: base): an export preset or Blender Python script (`.glb`, +Y Up, Apply Modifiers, Materials = Placeholder, no Draco or Meshopt, backface culling, 1 unit = 1 m, transforms applied, origin at the base centre); the shared palette texture and its cel `ShaderMaterial`; round-trip one 1×1 m test tile into the farm with Use External; add `*.blend1` to `.gitignore`.
-- [ ] 2. Set the field to 9×12 and move field size and block size (3) into `data/`.
-- [ ] 2a. Make `Field` read the field-size resource, and make `SaveGame.read()` skip out-of-bounds cells with a warning, so an old 12×12 save loads without plots off the field.
-- [ ] 3. Add blocks to `FarmGrid` (cell → block index) and a faint outline per block.
+- [x] 2. Set the field to 9×12 and move field size and block size (3) into `data/`.
+- [x] 2a. Make `Field` read the field-size resource, and make `SaveGame.read()` skip out-of-bounds cells with a warning, so an old 12×12 save loads without plots off the field.
+- [x] 3. Add blocks to `FarmGrid` (cell → block index) and a faint outline per block.
 - [ ] 4. Field ground and soil meshes (Claude: base; user: polish): ground, border, and one tile mesh each for untilled, tilled and watered soil, on the palette texture.
 - [ ] 5. Make the soil states read from the gameplay camera at 12:00 and 22:00 under the current lighting: tilled darker and furrowed, watered darker still with a sheen.
 - [ ] 6. Add `DebrisDef` and a starting set of weeds, stones and branches in a new game; Quaternius models first, else Blender (Claude: base; user: polish).
 - [ ] 7. Make tools skip debris plots: no change, no RP.
-- [ ] 8. Tune the outdoor camera in `data/camera.tres` from side-by-side screenshots of the 9×12 field. First the user commits or discards their uncommitted edit to that file; until then, work the other steps.
+- [ ] 8. Tune the outdoor camera in `data/camera.tres` from side-by-side screenshots of the 9×12 field. The user's edit is committed (8200d2a); tune from it.
 - [ ] 9. Re-check the props around the field: water source in a corner, bin at the edge, nothing blocking the camera.
 
 **Checklist:**
