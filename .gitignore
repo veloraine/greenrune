@@ -32,3 +32,6 @@ exports/
 *.pck
 *.zip
 
+
+# Blender save-version backups
+*.blend1

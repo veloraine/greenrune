@@ -75,6 +75,13 @@ assets/
 - Stages: each pack crop grows through `_1` (sprout) to `_4` (grown). We use `_1` for the seed stage, `_3` for the middle stage and `_4` for the ripe crop. `_2`, `_Crop` (the picked produce) and `_Harvested` are unused.
 - Ours: the `*_cel.tres` materials, with the pack's DarkGreen and DarkRed colors, mapped in each `.fbx.import`. `scripts/farm_grid.gd` sizes each crop so its ripe model fills 0.8 of a tile.
 
+### Greenrune models (ours)
+
+- Location: `environment/greenrune/`; Blender sources in `environment/greenrune/source/` (a `.gdignore` keeps Godot from importing the `.blend`)
+- `palette.png`: the shared palette, a 128x128 atlas of flat colour squares written by `tools/blender/palette.py`. Every model we build in Blender UVs its faces onto these squares.
+- `palette_cel.tres`: the one cel `ShaderMaterial` for the palette. Each `.glb.import` maps the `palette` material to it with Use External.
+- Built by `tools/blender/build_field_tiles.py`, exported by `tools/blender/export_glb.py` (see each script's header for the command)
+
 ## Shaders
 
 ### Complete Cel Shader for Godot 4
