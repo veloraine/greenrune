@@ -178,6 +178,7 @@ func _add_target_marker() -> void:
 	_marker.mesh = cone
 	var marker_material: StandardMaterial3D = _flat_material(feel.marker_color)
 	# Drawn over everything, so the player's head can't hide the plot in front when facing away from the camera.
+	# Opaque, but in the transparent pass so render_priority sorts it over the ground.
 	marker_material.transparency = BaseMaterial3D.TRANSPARENCY_ALPHA
 	marker_material.no_depth_test = true
 	marker_material.render_priority = 1

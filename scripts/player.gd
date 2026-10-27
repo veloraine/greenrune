@@ -169,7 +169,9 @@ func _charge(delta: float) -> void:
 	var reached: int = charge_level()
 	if reached > before:
 		_set_glow(reached)
-		charge_level_reached.emit(reached)
+		# A long frame can cross more than one level; each gets its cue.
+		for level in range(before + 1, reached + 1):
+			charge_level_reached.emit(level)
 	if Input.is_action_pressed("use_tool"):
 		return
 	if not _stack.item is ToolDef:

@@ -14,7 +14,7 @@ func _init(p_tree: SceneTree) -> void:
 
 
 func run() -> int:
-	for test: Callable in [test_tiers, test_bronze_models, test_cheap_never_charges, test_old_save_tools, test_charge_block, test_charge_off_field, test_charged_sow, test_water_per_plot, test_short_can, test_target_marker, test_charge_cues, test_water_gauge, test_no_effect]:
+	for test: Callable in [test_tiers, test_bronze_models, test_cheap_never_charges, test_old_save_tools, test_charge_block, test_charge_off_field, test_charged_sow, test_water_per_plot, test_short_can, test_target_marker, test_charge_cues, test_water_gauge, test_no_effect, test_sounds_overlap]:
 		if (await test.call()) != true:
 			failed += 1
 			printerr("FAIL: %s did not finish" % test.get_method())
@@ -187,7 +187,7 @@ func test_cheap_never_charges() -> bool:
 		check(player.is_idle() and player.global_position.x > before.x + 0.1, "with use held after a %s swing, the player moved %.2f m, want walking" % [id, player.global_position.x - before.x])
 		Input.action_release(&"use_tool")
 		await tree.physics_frame
-	farm.get_node("ToolFeedback/Sound").stop()
+	farm.get_node("ToolFeedback/Impact").stop()
 	Game.inventory.replace_slots([ItemStack.new(Game.items[&"bronze_hoe"], 1, 1)])
 	Input.action_press(&"use_tool")
 	await _physics_step()
@@ -286,7 +286,7 @@ func test_water_per_plot() -> bool:
 	_set_plots([Vector2i(4, 3)], [])
 	farm._on_tool_used(can, 0)
 	check(can.water == 31, "a tap on a dry plot left %d water, want 31" % can.water)
-	farm.get_node("ToolFeedback/Sound").stop()
+	farm.get_node("ToolFeedback/Impact").stop()
 	return true
 
 
@@ -317,7 +317,7 @@ func test_short_can() -> bool:
 				watered.append(cell)
 		check(can.water == 0, "a can with %d water ended with %d" % [want.size(), can.water])
 		check(_sorted(watered) == _sorted(want), "a can with %d water from %s facing %s watered %s, want %s" % [want.size(), case[0], case[1], _sorted(watered), _sorted(want)])
-	farm.get_node("ToolFeedback/Sound").stop()
+	farm.get_node("ToolFeedback/Impact").stop()
 	return true
 
 
@@ -347,7 +347,7 @@ func _marker_tip(grid: FarmGrid) -> float:
 
 
 ## A tap's marker and shadow sit on the plot in front over untilled, tilled and watered soil and over each
-## debris, the marker's tip above the debris, and a tap shows no charge outline.
+## debris, the marker's tip above the debris, and a tap, or use held with a cheap tool, shows no charge outline.
 func test_target_marker() -> bool:
 	var farm: Node = await _farm()
 	var grid: FarmGrid = farm.get_node("Field")
@@ -381,6 +381,14 @@ func test_target_marker() -> bool:
 		check(_marker_tip(grid) > looks[look], "over %s the marker's tip is at y %.2f, want above %.2f" % [look, _marker_tip(grid), looks[look]])
 		check(_outline_rect(grid).size == Vector2.ZERO, "a tap over %s shows a charge outline" % look)
 	Game.field.replace_debris({})
+	# Pressed and held, a cheap tool still shows no outline.
+	Input.action_press(&"use_tool")
+	await _physics_step()
+	farm._process(0.0)
+	check(_outline_rect(grid).size == Vector2.ZERO, "use held with cheap_hoe shows a charge outline")
+	Input.action_release(&"use_tool")
+	player.cancel_tool()
+	farm.get_node("ToolFeedback/NoEffect").stop()
 	Game.inventory.replace_slots([])
 	return true
 
@@ -449,6 +457,25 @@ func test_charge_cues() -> bool:
 	check(_outline_rect(grid).size == Vector2.ZERO, "a charge whose block is off the field shows an outline at %s" % _outline_rect(grid))
 	Input.action_release(&"use_tool")
 	player.cancel_tool()
+	# One frame that crosses two levels cues each of them, in order.
+	var silver: ToolDef = hoe.duplicate()
+	silver.charges = hoe.charges.duplicate()
+	var line := ToolCharge.new()
+	# Close behind level 1, so one physics frame crosses both.
+	line.hold_seconds = hoe.charges[1].hold_seconds + 0.002
+	line.size = Vector2i(3, 6)
+	silver.charges.append(line)
+	Game.inventory.replace_slots([ItemStack.new(silver, 1, 1)])
+	_stand(player, grid, Vector2i(4, 4), Vector2i(0, -1))
+	reached.clear()
+	await tree.physics_frame
+	Input.action_press(&"use_tool")
+	await _physics_step()
+	player._charge_time = hoe.charges[1].hold_seconds - 0.001
+	await _physics_step()
+	check(reached == [1, 2], "a frame crossing levels 1 and 2 cued %s, want [1, 2]" % [reached])
+	Input.action_release(&"use_tool")
+	player.cancel_tool()
 	player.charge_level_reached.disconnect(on_reached)
 	cue.stop()
 	Game.inventory.replace_slots([])
@@ -462,7 +489,7 @@ func test_water_gauge() -> bool:
 	var grid: FarmGrid = farm.get_node("Field")
 	var player: Player = farm.get_node("Player")
 	var gauge: ProgressBar = farm.get_node("HUD/WaterGauge")
-	var sound: AudioStreamPlayer3D = farm.get_node("ToolFeedback/Sound")
+	var refill: AudioStreamPlayer3D = farm.get_node("ToolFeedback/Refill")
 	var cheap := ItemStack.new(Game.items[&"cheap_watering_can"], 1, 1)
 	var bronze := ItemStack.new(Game.items[&"bronze_watering_can"], 1, 1)
 	Game.inventory.replace_slots([cheap, bronze, ItemStack.new(Game.items[&"cheap_hoe"], 1, 1)])
@@ -490,8 +517,9 @@ func test_water_gauge() -> bool:
 	await tree.physics_frame
 	farm._on_tool_used(bronze, 0)
 	check(gauge.value == 36, "a refill left the gauge at %d, want 36" % gauge.value)
-	check(sound.stream == Game.tool_feel.refill_sound and is_equal_approx(sound.pitch_scale, Game.tool_feel.refill_pitch), "a refill played %s at pitch %.2f, want the refill sound" % [sound.stream, sound.pitch_scale])
-	sound.stop()
+	check(refill.playing, "a refill didn't play the refill sound")
+	farm.get_node("ToolFeedback/Impact").stop()
+	refill.stop()
 	Game.inventory.replace_slots([])
 	return true
 
@@ -503,7 +531,8 @@ func test_no_effect() -> bool:
 	var farm: Node = await _farm()
 	var grid: FarmGrid = farm.get_node("Field")
 	var player: Player = farm.get_node("Player")
-	var sound: AudioStreamPlayer3D = farm.get_node("ToolFeedback/Sound")
+	var impact: AudioStreamPlayer3D = farm.get_node("ToolFeedback/Impact")
+	var dull: AudioStreamPlayer3D = farm.get_node("ToolFeedback/NoEffect")
 	var popup: Label3D = farm.get_node("ToolFeedback/RpPopup")
 	var hoe := ItemStack.new(Game.items[&"cheap_hoe"], 1, 1)
 	var can := ItemStack.new(Game.items[&"cheap_watering_can"], 1, 1)
@@ -514,16 +543,49 @@ func test_no_effect() -> bool:
 	var rp: int = Game.stats.rp
 	for stack: ItemStack in [hoe, can]:
 		_set_plots([cell], [])
-		sound.stream = null
+		impact.stop()
+		dull.stop()
 		farm._on_tool_used(stack, 0)
 		check(Game.stats.rp == rp and can.water == 0 and Game.field.soil(cell) == Field.Soil.TILLED, "a %s swing that changes nothing changed RP %d → %d or water to %d" % [stack.item.id, rp, Game.stats.rp, can.water])
-		check(sound.stream == Game.tool_feel.no_effect_sound and is_equal_approx(sound.pitch_scale, Game.tool_feel.no_effect_pitch), "a %s swing that changes nothing played %s" % [stack.item.id, sound.stream])
+		check(dull.playing and not impact.playing, "a %s swing that changes nothing played no-effect %s, impact %s; want only no-effect" % [stack.item.id, dull.playing, impact.playing])
 		check(not popup.visible, "a %s swing that changes nothing popped '%s'" % [stack.item.id, popup.text])
 	Game.field.replace_plots({})
 	var cost: int = Game.stats.rp_cost(hoe.item, 0)
+	dull.stop()
 	farm._on_tool_used(hoe, 0)
 	check(Game.field.soil(cell) == Field.Soil.TILLED and Game.stats.rp == rp - cost, "a hoe tap on untilled soil left it %s and RP %d, want tilled and %d" % [Field.Soil.find_key(Game.field.soil(cell)), Game.stats.rp, rp - cost])
-	check(sound.stream == (hoe.item as ToolDef).impact_sound and is_equal_approx(sound.pitch_scale, 1.0), "a hoe tap that tills played %s at pitch %.2f, want its impact sound" % [sound.stream, sound.pitch_scale])
+	check(impact.playing and impact.stream == (hoe.item as ToolDef).impact_sound and not dull.playing, "a hoe tap that tills played impact %s (%s), no-effect %s; want only its impact sound" % [impact.playing, impact.stream, dull.playing])
 	check(popup.visible and popup.text == "-%d RP" % cost, "a hoe tap that tills popped '%s' (visible %s), want '-%d RP'" % [popup.text, popup.visible, cost])
-	sound.stop()
+	impact.stop()
+	return true
+
+
+## Each sound has its own player, because assigning a player's stream stops every voice it plays: a refill
+## followed at once by a swing that changes nothing leaves the refill playing, then an impact leaves both
+## playing, and the refill and no-effect players keep their own streams throughout. Whether a second tap cuts
+## the first can't be seen headless (the dummy audio driver never retires a cut voice), so that is left to the
+## guard in ToolFeedback.play() and the user's twenty-tap test.
+func test_sounds_overlap() -> bool:
+	var farm: Node = await _farm()
+	var grid: FarmGrid = farm.get_node("Field")
+	var player: Player = farm.get_node("Player")
+	var impact: AudioStreamPlayer3D = farm.get_node("ToolFeedback/Impact")
+	var refill: AudioStreamPlayer3D = farm.get_node("ToolFeedback/Refill")
+	var dull: AudioStreamPlayer3D = farm.get_node("ToolFeedback/NoEffect")
+	var can := ItemStack.new(Game.items[&"cheap_watering_can"], 1, 1)
+	can.water = 0
+	player.rotation.y = 0.0
+	player.global_position = farm.get_node("Well").global_position + Vector3(0.0, 0.0, 1.4)
+	await tree.physics_frame
+	farm._on_tool_used(can, 0)
+	_stand(player, grid, Vector2i(4, 4), Vector2i(0, -1))
+	_set_plots([], [Vector2i(4, 3)])
+	farm._on_tool_used(can, 0)
+	check(refill.playing and dull.playing, "after a refill and a swing that changes nothing, refill playing %s and no-effect playing %s; want both" % [refill.playing, dull.playing])
+	_set_plots([Vector2i(4, 3)], [])
+	farm._on_tool_used(can, 0)
+	check(impact.playing and refill.playing and dull.playing, "after an impact, impact %s, refill %s, no-effect %s; want all playing" % [impact.playing, refill.playing, dull.playing])
+	check(refill.stream == Game.tool_feel.refill_sound and dull.stream == Game.tool_feel.no_effect_sound, "the refill or no-effect player's stream changed to %s / %s" % [refill.stream, dull.stream])
+	for sound in [impact, refill, dull]:
+		sound.stop()
 	return true

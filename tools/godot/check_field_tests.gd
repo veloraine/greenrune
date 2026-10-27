@@ -304,7 +304,7 @@ func test_farm_props() -> bool:
 	player.global_position = well.global_position + Vector3(0.0, 0.0, 1.4)
 	farm._on_tool_used(can, 0)
 	# A splash still playing at exit leaks its stream in a headless run.
-	farm.get_node("ToolFeedback/Sound").stop()
+	farm.get_node("ToolFeedback/Refill").stop()
 	check(can.water == (can.item as ToolDef).capacity, "a can tap at the well left %d water" % can.water)
 	var bin: Node3D = farm.get_node("ShippingBin")
 	player.global_position = grid.to_global(Vector3(grid.to_local(bin.global_position).x, 0.0, 0.0))

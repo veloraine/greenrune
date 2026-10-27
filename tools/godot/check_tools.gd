@@ -12,5 +12,7 @@ func _initialize() -> void:
 	create_timer(60.0).timeout.connect(quit.bind(1))
 	var tests: GDScript = load("res://tools/godot/check_tools_tests.gd")
 	var failed: int = 1 if tests == null or not tests.can_instantiate() else await tests.new(self).run()
+	# The audio server lets go of stopped streams on a later mix; quitting at once leaks them.
+	await create_timer(0.2).timeout
 	print("check_tools: %s" % ("FAIL" if failed > 0 else "PASS"))
 	quit(1 if failed > 0 else 0)
