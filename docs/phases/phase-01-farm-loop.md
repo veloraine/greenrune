@@ -140,7 +140,7 @@ Steps 1–6 built every Phase 1 system. They stay here as the record of what exi
 6. Add `DebrisDef` (id, model, how it is cleared, drop) and place a starting set of weeds, stones and branches in a new game. Debris models: try Quaternius nature models first; where none reads well, (Blender — Claude: base) blocks one out on the tile grid and (Blender — user: polish) shapes and colours it.
 7. Make tools skip plots that hold debris: a swing there changes nothing, so it costs no RP.
 8. Tune the outdoor camera in `data/camera.tres` with side-by-side screenshots of the 9×12 field and commit the chosen pitch, arm and FOV. `data/camera.tres` currently has pitch 45°, arm 20, FOV 35. The user commits or discards their uncommitted edit to that file first.
-9. Re-check the props around the field: water source in a corner like RF4's north-east well, bin at the edge, nothing blocking the camera. Small farm props come from the packs first; a missing one is (Blender — Claude: base) then (Blender — user: polish).
+9. Re-check the props around the field: water source in a corner like RF4's north-east well, bin by the house door, nothing blocking the camera. Small farm props come from the packs first; a missing one is (Blender — Claude: base) then (Blender — user: polish).
 
 **Checklist:**
 - [x] Field size and block size live in `data/`, not in `farm_grid.gd` or `farm.tscn`
@@ -231,7 +231,6 @@ Steps 1–6 built every Phase 1 system. They stay here as the record of what exi
 5. Make the shipping bin accept thrown items.
 6. Give each `DebrisDef` its drop when cleared (none for weeds) *(default per debris type)*.
 7. Add debris regrowth on untilled, empty plots in the `DayTick`; the rate lives in data *(default; RF4's rate was not found)*.
-8. Interact prefers the bin over harvesting row 0 near the bin (columns 1–3, incl. starter cell (3,0)); harvest a ripe crop in front first, else the bin — add a check_field case.
 
 **Checklist:**
 - [ ] Lift, throw and store each play a sound and a short animation

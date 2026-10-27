@@ -280,7 +280,7 @@ func test_soil_tiles() -> bool:
 
 
 ## The well refills the can from beside the field's north-east corner, without any field point counting
-## as water, and the bin's reach covers the field's north edge beside it.
+## as water, and the bin stands by the house door, out of reach from the field.
 func test_farm_props() -> bool:
 	tree.change_scene_to_file("res://scenes/farm.tscn")
 	await tree.scene_changed
@@ -310,5 +310,8 @@ func test_farm_props() -> bool:
 	player.global_position = grid.to_global(Vector3(grid.to_local(bin.global_position).x, 0.0, 0.0))
 	await tree.physics_frame
 	await tree.physics_frame
-	check(farm.get_node("ShippingBin/Reach").overlaps_body(player), "the bin's reach misses the field's north edge beside it")
+	# From the field, interact must harvest, not open the bin.
+	check(not farm.get_node("ShippingBin/Reach").overlaps_body(player), "the bin's reach covers the field's north edge")
+	var entrance: Vector3 = farm.get_node("HouseEntrance").global_position
+	check(bin.global_position.distance_to(entrance) < 4.0, "the bin is %.1f m from the house door, want under 4" % bin.global_position.distance_to(entrance))
 	return true

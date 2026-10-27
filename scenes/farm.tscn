@@ -113,7 +113,7 @@ transform = Transform3D(-1, 0, 0, 0, 1, 0, 0, 0, -1, -0.4, 0, -12.4)
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 100, 0, 0)
 
 [node name="ShippingBin" parent="." unique_id=2009741061 instance=ExtResource("7_bin")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2, 0, -10.1)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2.8, 0, -13.4)
 
 [node name="Field" type="Node3D" parent="." unique_id=1385773560]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -4.5, 0, -9)
