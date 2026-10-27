@@ -203,9 +203,9 @@ Steps 1–6 built every Phase 1 system. They stay here as the record of what exi
 - [ ] The hoe head's sideways drift from the facing line stays under N cm through the swing *(default; set from the prototype)*
 - [ ] Every swing that changes a plot plays its sound and particle on the impact frame
 - [ ] Hit-stop 50 ms *(default, from the Phase 0 feel test)* on hoe hits; the can has none
-- [ ] Each charge level has a distinct marker size and sound
-- [ ] The target marker is visible on every soil state and over debris
-- [ ] The water gauge drops one step per plot watered, does not change on a swing that waters nothing, and a charge with too little water waters only that many plots
+- [x] Each charge level has a distinct marker size and sound
+- [x] The target marker is visible on every soil state and over debris
+- [x] The water gauge drops one step per plot watered, does not change on a swing that waters nothing, and a charge with too little water waters only that many plots
 - [ ] Tool tiers, charge areas, hold times, RP costs and can capacities live in `data/`
 - [ ] Twenty taps in a row at 60 fps with no dropped sound
 

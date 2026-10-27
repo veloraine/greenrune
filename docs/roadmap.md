@@ -124,11 +124,11 @@ What changes in the current code, in build order. Each item names the sub-phase 
 - [x] 3. Bronze items as tinted cheap models, testable with `add bronze_hoe`.
 - [ ] 4–5. *Deferred to the base body:* two-handed hoe, straight overhead swing.
 - [x] 6. Water per plot: 1 water per plot watered; a short can waters only what it has, in a fixed order.
-- [ ] 7. Target marker on the tap plot and an outline of the charge area while held.
-- [ ] 8. Per-level charge cues: marker grows, tool glows, rising tone; early release uses the last level reached.
-- [ ] 9. HUD water gauge and refill sound.
+- [x] 7. Target marker on the tap plot and an outline of the charge area while held.
+- [x] 8. Per-level charge cues: marker grows, tool glows, rising tone; early release uses the last level reached.
+- [x] 9. HUD water gauge and refill sound.
 - [ ] 10. Water as you walk.
-- [ ] 11. RP feedback: popup or bar flash on spend; a dull "no effect" sound for a swing that changes nothing.
+- [x] 11. RP feedback: popup or bar flash on spend; a dull "no effect" sound for a swing that changes nothing.
 - [ ] 12. Tune swing speed, impact time, hit-stop and shake per `ToolDef`.
 
 **Checklist:** as in the [phase file](phases/phase-01-farm-loop.md#phase-12--tool-feel), except the two swing items (both hands on the shaft; sideways drift), which move with Steps 4–5.
