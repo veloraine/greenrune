@@ -45,11 +45,6 @@ size = Vector3(40, 4, 1)
 [sub_resource type="BoxShape3D" id="BoxShape3D_door"]
 size = Vector3(1.4, 2, 0.6)
 
-[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_target"]
-transparency = 1
-shading_mode = 0
-albedo_color = Color(1, 1, 0.85, 0.45)
-
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_hitbox"]
 transparency = 1
 shading_mode = 0
@@ -121,7 +116,6 @@ script = ExtResource("4_grid")
 untilled_model = ExtResource("21_untilled")
 tilled_model = ExtResource("22_tilled")
 watered_model = ExtResource("23_watered")
-target_material = SubResource("StandardMaterial3D_target")
 hitbox_material = SubResource("StandardMaterial3D_hitbox")
 
 [node name="Well" parent="." unique_id=531432555 instance=ExtResource("16_well")]

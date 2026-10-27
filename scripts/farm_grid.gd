@@ -6,7 +6,6 @@ extends Node3D
 @export var untilled_model: PackedScene
 @export var tilled_model: PackedScene
 @export var watered_model: PackedScene
-@export var target_material: Material
 @export var hitbox_material: Material
 
 const HITBOX_SECONDS: float = 0.3
@@ -14,6 +13,11 @@ const HITBOX_SECONDS: float = 0.3
 # TARGET_HEIGHT; check_field enforces it.
 const TARGET_HEIGHT: float = 0.06
 const HITBOX_HEIGHT: float = 0.07
+# Between the target shadow and the debug hitbox, so neither hides it.
+const OUTLINE_HEIGHT: float = 0.065
+## The target marker's size at scale 1: a four-sided cone, tip down.
+const MARKER_RADIUS: float = 0.22
+const MARKER_LENGTH: float = 0.4
 ## How much of a tile's width a ripe crop fills. Earlier stages keep their size relative to it.
 const CROP_WIDTH: float = 0.8
 ## How much of its cell a soil tile model covers, leaving a thin gap between tiles. The block
@@ -35,6 +39,10 @@ var _hitboxes: Array[MeshInstance3D] = []
 var _hitbox_left: float = 0.0
 var _no_cells: Array[Vector2i] = []
 var _quad: BoxMesh
+var _shadow_material: StandardMaterial3D
+var _marker: MeshInstance3D
+# Four strips framing the full charge area: top, bottom, left, right.
+var _outline: Array[MeshInstance3D] = []
 # The player's tile and facing that cells_hit orders a charge's cells by.
 var _order_from: Vector2i
 var _order_facing: Vector2i
@@ -48,6 +56,7 @@ func _ready() -> void:
 	}
 	_quad = BoxMesh.new()
 	_quad.size = Vector3(tile_size * TILE_FILL, 0.01, tile_size * TILE_FILL)
+	_add_target_marker()
 	var def: FieldDef = Game.field.def
 	for x in def.size.x:
 		for y in def.size.y:
@@ -105,8 +114,37 @@ func block_of(cell: Vector2i) -> Vector2i:
 	return Vector2i(floori(cell.x / block), floori(cell.y / block))
 
 
-func show_target(cells: Array[Vector2i]) -> void:
-	_place(_targets, cells, target_material, TARGET_HEIGHT)
+## Lays the target shadow on cells and floats the marker over their middle, sized for the charge level.
+func show_target(cells: Array[Vector2i], level: int) -> void:
+	_place(_targets, cells, _shadow_material, TARGET_HEIGHT)
+	_marker.visible = not cells.is_empty()
+	if cells.is_empty():
+		return
+	var scales: Array[float] = Game.tool_feel.marker_scales
+	var size: float = scales[mini(level, scales.size() - 1)]
+	var middle: Vector2 = _area(cells).get_center()
+	_marker.scale = Vector3.ONE * size
+	_marker.position = Vector3(middle.x, Game.tool_feel.marker_height + MARKER_LENGTH * size / 2.0, middle.y)
+
+
+## Frames the area cells cover, inset to the tiles' edges like the block outlines. No cells hides it.
+func show_outline(cells: Array[Vector2i]) -> void:
+	for strip in _outline:
+		strip.visible = not cells.is_empty()
+	if cells.is_empty():
+		return
+	var area: Rect2 = _area(cells).grow(-tile_size * (1.0 - TILE_FILL) / 2.0)
+	var w: float = Game.tool_feel.outline_width
+	var middle: Vector2 = area.get_center()
+	_place_strip(_outline[0], Vector2(middle.x, area.position.y + w / 2.0), Vector2(area.size.x, w))
+	_place_strip(_outline[1], Vector2(middle.x, area.end.y - w / 2.0), Vector2(area.size.x, w))
+	_place_strip(_outline[2], Vector2(area.position.x + w / 2.0, middle.y), Vector2(w, area.size.y - 2.0 * w))
+	_place_strip(_outline[3], Vector2(area.end.x - w / 2.0, middle.y), Vector2(w, area.size.y - 2.0 * w))
+
+
+func _place_strip(strip: MeshInstance3D, middle: Vector2, size: Vector2) -> void:
+	strip.position = Vector3(middle.x, OUTLINE_HEIGHT, middle.y)
+	strip.scale = Vector3(size.x, 1.0, size.y)
 
 
 func flash_hitbox(cells: Array[Vector2i]) -> void:
@@ -125,6 +163,58 @@ func _place(pool: Array[MeshInstance3D], cells: Array[Vector2i], material: Mater
 		pool[i].visible = i < cells.size()
 		if pool[i].visible:
 			pool[i].position = _cell_center(cells[i]) + Vector3(0, height, 0)
+
+
+func _add_target_marker() -> void:
+	var feel: ToolFeelDef = Game.tool_feel
+	_shadow_material = _flat_material(feel.shadow_color)
+	var cone := CylinderMesh.new()
+	cone.top_radius = MARKER_RADIUS
+	cone.bottom_radius = 0.0
+	cone.height = MARKER_LENGTH
+	cone.radial_segments = 4
+	cone.rings = 0
+	_marker = MeshInstance3D.new()
+	_marker.mesh = cone
+	var marker_material: StandardMaterial3D = _flat_material(feel.marker_color)
+	# Drawn over everything, so the player's head can't hide the plot in front when facing away from the camera.
+	marker_material.transparency = BaseMaterial3D.TRANSPARENCY_ALPHA
+	marker_material.no_depth_test = true
+	marker_material.render_priority = 1
+	_marker.material_override = marker_material
+	_marker.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
+	_marker.visible = false
+	add_child(_marker)
+	var strip := BoxMesh.new()
+	strip.size = Vector3(1.0, 0.01, 1.0)
+	var outline_material: StandardMaterial3D = _flat_material(feel.outline_color)
+	for i in 4:
+		var side := MeshInstance3D.new()
+		side.mesh = strip
+		side.material_override = outline_material
+		side.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
+		side.visible = false
+		add_child(side)
+		_outline.append(side)
+
+
+func _flat_material(color: Color) -> StandardMaterial3D:
+	var material := StandardMaterial3D.new()
+	material.shading_mode = BaseMaterial3D.SHADING_MODE_UNSHADED
+	if color.a < 1.0:
+		material.transparency = BaseMaterial3D.TRANSPARENCY_ALPHA
+	material.albedo_color = color
+	return material
+
+
+## The rectangle, in metres on the field, that cells span.
+func _area(cells: Array[Vector2i]) -> Rect2:
+	var low: Vector2i = cells[0]
+	var high: Vector2i = cells[0]
+	for cell in cells:
+		low = low.min(cell)
+		high = high.max(cell)
+	return Rect2(Vector2(low) * tile_size, Vector2(high - low + Vector2i.ONE) * tile_size)
 
 
 # One mesh of flat strips tracing each block's edge, inset to the tiles' edges so neighbouring blocks

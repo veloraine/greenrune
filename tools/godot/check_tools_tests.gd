@@ -14,7 +14,7 @@ func _init(p_tree: SceneTree) -> void:
 
 
 func run() -> int:
-	for test: Callable in [test_tiers, test_bronze_models, test_cheap_never_charges, test_old_save_tools, test_charge_block, test_charge_off_field, test_charged_sow, test_water_per_plot, test_short_can]:
+	for test: Callable in [test_tiers, test_bronze_models, test_cheap_never_charges, test_old_save_tools, test_charge_block, test_charge_off_field, test_charged_sow, test_water_per_plot, test_short_can, test_target_marker, test_charge_cues]:
 		if (await test.call()) != true:
 			failed += 1
 			printerr("FAIL: %s did not finish" % test.get_method())
@@ -319,3 +319,138 @@ func test_short_can() -> bool:
 		check(_sorted(watered) == _sorted(want), "a can with %d water from %s facing %s watered %s, want %s" % [want.size(), case[0], case[1], _sorted(watered), _sorted(want)])
 	farm.get_node("ToolFeedback/Sound").stop()
 	return true
+
+
+## The visible target shadows' cells, read back from their positions.
+func _shadow_cells(grid: FarmGrid) -> Array[Vector2i]:
+	var cells: Array[Vector2i] = []
+	for quad in grid._targets:
+		if quad.visible:
+			check(is_equal_approx(quad.position.y, FarmGrid.TARGET_HEIGHT), "a target shadow sits at y %.3f, want %.3f" % [quad.position.y, FarmGrid.TARGET_HEIGHT])
+			cells.append(Vector2i(floori(quad.position.x / grid.tile_size), floori(quad.position.z / grid.tile_size)))
+	return _sorted(cells)
+
+
+## The rectangle the visible outline strips cover, or an empty one if none shows.
+func _outline_rect(grid: FarmGrid) -> Rect2:
+	var rect := Rect2()
+	for strip in grid._outline:
+		if strip.visible:
+			var part := Rect2(Vector2(strip.position.x - strip.scale.x / 2.0, strip.position.z - strip.scale.z / 2.0), Vector2(strip.scale.x, strip.scale.z))
+			rect = part if rect.size == Vector2.ZERO else rect.merge(part)
+	return rect
+
+
+## The marker's tip height, in field space.
+func _marker_tip(grid: FarmGrid) -> float:
+	return grid._marker.position.y - FarmGrid.MARKER_LENGTH * grid._marker.scale.y / 2.0
+
+
+## A tap's marker and shadow sit on the plot in front over untilled, tilled and watered soil and over each
+## debris, the marker's tip above the debris, and a tap shows no charge outline.
+func test_target_marker() -> bool:
+	var farm: Node = await _farm()
+	var grid: FarmGrid = farm.get_node("Field")
+	var player: Player = farm.get_node("Player")
+	var cell := Vector2i(4, 3)
+	var middle: Vector3 = grid._cell_center(cell)
+	Game.inventory.replace_slots([ItemStack.new(Game.items[&"cheap_hoe"], 1, 1)])
+	Game.inventory.selected = 0
+	_stand(player, grid, Vector2i(4, 4), Vector2i(0, -1))
+	# What the target sits over, and the height the marker's tip must clear.
+	var looks: Dictionary[String, float] = {"untilled": FarmGrid.TARGET_HEIGHT, "tilled": FarmGrid.TARGET_HEIGHT, "watered": FarmGrid.TARGET_HEIGHT}
+	for id: StringName in Game.debris:
+		var model: Node3D = Game.debris[id].model.instantiate()
+		looks[id] = FarmGrid.SOIL_TOP + grid._mesh_bounds(model, Transform3D.IDENTITY).end.y
+		model.free()
+	for look: String in looks:
+		var debris: Dictionary[Vector2i, DebrisDef] = {}
+		if Game.debris.has(StringName(look)):
+			debris[cell] = Game.debris[StringName(look)]
+			Game.field.replace_plots({})
+		elif look == "untilled":
+			Game.field.replace_plots({})
+		elif look == "tilled":
+			_set_plots([cell], [])
+		else:
+			_set_plots([], [cell])
+		Game.field.replace_debris(debris)
+		farm._process(0.0)
+		check(_shadow_cells(grid) == [cell], "over %s the target shadow covers %s, want %s" % [look, _shadow_cells(grid), [cell]])
+		check(grid._marker.visible and is_equal_approx(grid._marker.position.x, middle.x) and is_equal_approx(grid._marker.position.z, middle.z), "over %s the marker is at %s (visible %s), want over %s" % [look, grid._marker.position, grid._marker.visible, middle])
+		check(_marker_tip(grid) > looks[look], "over %s the marker's tip is at y %.2f, want above %.2f" % [look, _marker_tip(grid), looks[look]])
+		check(_outline_rect(grid).size == Vector2.ZERO, "a tap over %s shows a charge outline" % look)
+	Game.field.replace_debris({})
+	Game.inventory.replace_slots([])
+	return true
+
+
+## While a bronze charge is held, the outline frames exactly the cells the full charge hits. At the tap level the
+## marker covers one plot; on reaching level 1 the marker grows over the whole block, the tool glows and the
+## level's tone plays once. A charge whose block is all off the field shows no outline.
+func test_charge_cues() -> bool:
+	var farm: Node = await _farm()
+	var grid: FarmGrid = farm.get_node("Field")
+	var player: Player = farm.get_node("Player")
+	var cue: AudioStreamPlayer = farm.get_node("ToolFeedback/Cue")
+	var hoe: ToolDef = Game.items[&"bronze_hoe"]
+	var feel: ToolFeelDef = Game.tool_feel
+	var inset: float = grid.tile_size * (1.0 - FarmGrid.TILE_FILL) / 2.0
+	var reached: Array[int] = []
+	var on_reached: Callable = func(level: int) -> void: reached.append(level)
+	player.charge_level_reached.connect(on_reached)
+	Game.inventory.replace_slots([ItemStack.new(hoe, 1, 1)])
+	Game.inventory.selected = 0
+	check(feel.marker_scales.size() > 1 and feel.marker_scales[1] > feel.marker_scales[0], "marker_scales %s don't grow at level 1" % [feel.marker_scales])
+	var want: Array[Vector2i] = []
+	var tap: Array[Vector2i] = []
+	for cell: Vector2i in [Vector2i(4, 4), Vector2i(0, 0), Vector2i(8, 11), Vector2i(3, 5)]:
+		for facing in FACINGS:
+			reached.clear()
+			cue.stream = null
+			_stand(player, grid, cell, facing)
+			Input.action_press(&"use_tool")
+			await _physics_step()
+			check(player.is_charging(), "pressing use with bronze_hoe from %s didn't charge" % cell)
+			farm._process(0.0)
+			grid.cells_hit(player.global_position, player.global_position, hoe.charges[-1].size, facing, want)
+			var low: Vector2i = want[0]
+			var high: Vector2i = want[0]
+			for hit in want:
+				low = low.min(hit)
+				high = high.max(hit)
+			var frame := Rect2(Vector2(low) * grid.tile_size + Vector2.ONE * inset, Vector2(high - low + Vector2i.ONE) * grid.tile_size - Vector2.ONE * inset * 2.0)
+			check(_outline_rect(grid).is_equal_approx(frame), "a bronze charge from %s facing %s is outlined at %s, want %s" % [cell, facing, _outline_rect(grid), frame])
+			grid.cells_hit(player.global_position, player.tool_point(hoe), Vector2i.ONE, facing, tap)
+			check(_shadow_cells(grid) == tap, "at the tap level from %s facing %s the shadow covers %s, want %s" % [cell, facing, _shadow_cells(grid), tap])
+			check(tap.is_empty() or is_equal_approx(grid._marker.scale.x, feel.marker_scales[0]), "the marker is %.2f at the tap, want %.2f" % [grid._marker.scale.x, feel.marker_scales[0]])
+			for mesh in player._hand_meshes:
+				check(mesh.material_overlay == null, "the tool glows at the tap level")
+			player._charge_time = hoe.charges[1].hold_seconds - 0.001
+			await _physics_step()
+			farm._process(0.0)
+			check(reached == [1], "charging from %s facing %s reached levels %s, want [1]" % [cell, facing, reached])
+			check(_shadow_cells(grid) == _sorted(want), "at level 1 the shadow covers %s, want %s" % [_shadow_cells(grid), _sorted(want)])
+			check(is_equal_approx(grid._marker.scale.x, feel.marker_scales[1]), "the marker is %.2f at level 1, want %.2f" % [grid._marker.scale.x, feel.marker_scales[1]])
+			check(_outline_rect(grid).is_equal_approx(frame), "the level 1 outline moved to %s, want %s" % [_outline_rect(grid), frame])
+			check(not player._hand_meshes.is_empty(), "the bronze hoe has no meshes to glow")
+			for mesh in player._hand_meshes:
+				check(mesh.material_overlay != null, "the tool doesn't glow at level 1")
+			check(cue.stream == feel.charge_sound and is_equal_approx(cue.pitch_scale, feel.charge_pitches[0]), "reaching level 1 played %s at pitch %.2f" % [cue.stream, cue.pitch_scale])
+			Input.action_release(&"use_tool")
+			player.cancel_tool()
+			await tree.physics_frame
+	# The tap plot is on the field, but the player's block isn't.
+	_stand(player, grid, Vector2i(-1, 4), Vector2i(1, 0))
+	Input.action_press(&"use_tool")
+	await _physics_step()
+	farm._process(0.0)
+	check(player.is_charging() and _shadow_cells(grid) == [Vector2i(0, 4)], "charging from off the field targets %s, want the tap plot" % [_shadow_cells(grid)])
+	check(_outline_rect(grid).size == Vector2.ZERO, "a charge whose block is off the field shows an outline at %s" % _outline_rect(grid))
+	Input.action_release(&"use_tool")
+	player.cancel_tool()
+	player.charge_level_reached.disconnect(on_reached)
+	cue.stop()
+	Game.inventory.replace_slots([])
+	return true
+

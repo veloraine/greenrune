@@ -5,6 +5,8 @@ extends CharacterBody3D
 signal tool_used(stack: ItemStack, charge_level: int)
 ## Emitted when Space is released with seeds. charge_level is 1 for a charged sow, else 0.
 signal sow_released(stack: ItemStack, charge_level: int)
+## Emitted while charging, on reaching each charge level after the tap.
+signal charge_level_reached(level: int)
 
 enum State { MOVE, CHARGE, SWING }
 
@@ -29,9 +31,17 @@ var _swing_end_time: float = 0.0
 var _buffered: bool = false
 var _hand_tool: Node3D
 var _hand_tool_def: ToolDef
+var _hand_meshes: Array[MeshInstance3D] = []
+var _glow := StandardMaterial3D.new()
 
 @onready var _anim: AnimationPlayer = $Model/AnimationPlayer
 @onready var _hand: Node3D = $Model/Rig/Skeleton3D/handslot_r
+
+
+func _ready() -> void:
+	_glow.shading_mode = BaseMaterial3D.SHADING_MODE_UNSHADED
+	_glow.transparency = BaseMaterial3D.TRANSPARENCY_ALPHA
+	_glow.blend_mode = BaseMaterial3D.BLEND_MODE_ADD
 
 
 func _physics_process(delta: float) -> void:
@@ -61,6 +71,10 @@ func held_stack() -> ItemStack:
 
 func is_swinging() -> bool:
 	return _state == State.SWING
+
+
+func is_charging() -> bool:
+	return _state == State.CHARGE
 
 
 ## True when not charging or swinging.
@@ -139,6 +153,7 @@ func _start_charge() -> bool:
 	rotation.y = atan2(-f.x, -f.y)
 	if stack.item is ToolDef:
 		_equip(stack.item)
+		_set_glow(0)
 		# A tool with only a tap swings at once, so holding the button never charges it.
 		if stack.item.charges.size() == 1:
 			_start_swing(0)
@@ -149,7 +164,12 @@ func _start_charge() -> bool:
 
 
 func _charge(delta: float) -> void:
+	var before: int = charge_level()
 	_charge_time += delta
+	var reached: int = charge_level()
+	if reached > before:
+		_set_glow(reached)
+		charge_level_reached.emit(reached)
 	if Input.is_action_pressed("use_tool"):
 		return
 	if not _stack.item is ToolDef:
@@ -195,8 +215,19 @@ func _equip(tool: ToolDef) -> void:
 		if _hand_tool:
 			_hand_tool.queue_free()
 		_hand_tool = tool.hand_model.instantiate() if tool.hand_model else null
+		_hand_meshes.clear()
 		if _hand_tool:
 			_hand.add_child(_hand_tool)
+			_hand_meshes.assign(_hand_tool.find_children("*", "MeshInstance3D"))
 		_hand_tool_def = tool
 	if _hand_tool:
 		_hand_tool.visible = true
+
+
+## Tints the held tool with the charge level's glow; alpha 0 clears it.
+func _set_glow(level: int) -> void:
+	var colors: Array[Color] = Game.tool_feel.glow_colors
+	_glow.albedo_color = colors[mini(level, colors.size() - 1)]
+	var overlay: Material = _glow if _glow.albedo_color.a > 0.0 else null
+	for mesh in _hand_meshes:
+		mesh.material_overlay = overlay

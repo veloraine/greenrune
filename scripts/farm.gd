@@ -5,6 +5,7 @@ const WATER_LAYER: int = 1 << 4
 
 # Reused every frame for the target highlight, so nothing is allocated per frame.
 var _cells: Array[Vector2i] = []
+var _outline_cells: Array[Vector2i] = []
 var _water_query := PhysicsPointQueryParameters3D.new()
 
 @onready var _player: Player = $Player
@@ -20,6 +21,7 @@ var _water_query := PhysicsPointQueryParameters3D.new()
 func _ready() -> void:
 	_player.tool_used.connect(_on_tool_used)
 	_player.sow_released.connect(_sow)
+	_player.charge_level_reached.connect(_feedback.charge_cue)
 	_sleep_prompt.confirmed.connect(_sleep)
 	$HouseDoor.body_entered.connect(_go_through_door.bind($HouseInterior/Entrance))
 	$HouseInterior/Door.body_entered.connect(_go_through_door.bind($HouseEntrance))
@@ -32,15 +34,25 @@ func _process(_delta: float) -> void:
 	# One source for what is held, so a hotbar change mid-charge can't hide the area about to be hit.
 	var stack: ItemStack = _player.held_stack()
 	var tool: ToolDef = stack.item as ToolDef if stack else null
+	var level: int = _player.charge_level()
+	# The full charge's area, outlined while a charge is held.
+	var full: Vector2i = Vector2i.ONE
 	if _player.is_swinging():
 		_cells.clear()
 	elif tool:
-		_field.cells_hit(_player.global_position, _player.tool_point(tool), tool.charges[_player.charge_level()].size, _player.facing(), _cells)
+		_field.cells_hit(_player.global_position, _player.tool_point(tool), tool.charges[level].size, _player.facing(), _cells)
+		full = tool.charges[-1].size
 	elif stack and Game.crops.has(stack.item.id):
-		_field.cells_hit(_player.global_position, _front(), _sow_size(_player.charge_level()), _player.facing(), _cells)
+		_field.cells_hit(_player.global_position, _front(), _sow_size(level), _player.facing(), _cells)
+		full = Game.sowing.charge_size
 	else:
 		_cells.clear()
-	_field.show_target(_cells)
+	_field.show_target(_cells, level)
+	if _player.is_charging() and full != Vector2i.ONE:
+		_field.cells_hit(_player.global_position, _front(), full, _player.facing(), _outline_cells)
+	else:
+		_outline_cells.clear()
+	_field.show_outline(_outline_cells)
 
 
 func _unhandled_input(event: InputEvent) -> void:
