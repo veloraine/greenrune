@@ -5,4 +5,4 @@
 [resource]
 script = ExtResource("1_sowing")
 charge_hold_seconds = 0.6
-charge_size = 2
+charge_size = Vector2i(3, 3)

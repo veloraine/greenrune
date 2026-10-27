@@ -1,0 +1,15 @@
+extends SceneTree
+
+## Phase 1.2 tool checks: cheap and bronze tools, charged areas snapped to blocks along the facing,
+## charged sowing, water per plot, and old saves' tool ids.
+## Run: Godot --headless --path . --script res://tools/godot/check_tools.gd
+
+
+func _initialize() -> void:
+	await process_frame
+	# A signal that never fires would otherwise hang the run.
+	create_timer(60.0).timeout.connect(quit.bind(1))
+	var tests: GDScript = load("res://tools/godot/check_tools_tests.gd")
+	var failed: int = 1 if tests == null or not tests.can_instantiate() else await tests.new(self).run()
+	print("check_tools: %s" % ("FAIL" if failed > 0 else "PASS"))
+	quit(1 if failed > 0 else 0)

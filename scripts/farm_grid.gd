@@ -35,6 +35,9 @@ var _hitboxes: Array[MeshInstance3D] = []
 var _hitbox_left: float = 0.0
 var _no_cells: Array[Vector2i] = []
 var _quad: BoxMesh
+# The player's tile and facing that cells_hit orders a charge's cells by.
+var _order_from: Vector2i
+var _order_facing: Vector2i
 
 
 func _ready() -> void:
@@ -70,23 +73,36 @@ func _process(delta: float) -> void:
 		_place(_hitboxes, _no_cells, hitbox_material, HITBOX_HEIGHT)
 
 
-## Fills out with the field cells a tool hits: the size × size block around the player, like
-## Rune Factory 4, or for size 1 the tile at point in front of them. Cells off the field are left out.
-func cells_hit(player: Vector3, point: Vector3, size: int, out: Array[Vector2i]) -> void:
+## Fills out with the field cells a tool hits. A size of (1, 1) hits the tile at point in front of the
+## player. A larger size hits whole blocks, like Farnia: the block holding the player's tile, then
+## size.y / block size blocks in a line along facing. Cells off the field are left out. A charge lists its
+## cells nearest the player's tile first, so a can short of water waters those.
+func cells_hit(player: Vector3, point: Vector3, size: Vector2i, facing: Vector2i, out: Array[Vector2i]) -> void:
 	out.clear()
-	var center: Vector3 = to_local(point if size == 1 else player) / tile_size
-	var offset: float = (size - 1) / 2.0
-	var origin := Vector2i(floori(center.x - offset), floori(center.z - offset))
-	for y in size:
-		for x in size:
-			var cell: Vector2i = origin + Vector2i(x, y)
-			if _tiles.has(cell):
-				out.append(cell)
+	if size == Vector2i.ONE:
+		var cell: Vector2i = _cell_at(point)
+		if _tiles.has(cell):
+			out.append(cell)
+		return
+	var block: int = Game.field.def.block_size
+	_order_from = _cell_at(player)
+	_order_facing = facing
+	var start: Vector2i = block_of(_order_from) * block
+	for i in size.y / block:
+		var corner: Vector2i = start + facing * block * i
+		for y in block:
+			for x in block:
+				var cell: Vector2i = corner + Vector2i(x, y)
+				if _tiles.has(cell):
+					out.append(cell)
+	out.sort_custom(_hit_first)
 
 
-## The block holding cell, counted in blocks from the field's corner.
+## The block holding cell, counted in blocks from the field's corner. Rounds down, so a cell
+## just off the field's top or left edge is in a block off the field too.
 func block_of(cell: Vector2i) -> Vector2i:
-	return cell / Game.field.def.block_size
+	var block: float = Game.field.def.block_size
+	return Vector2i(floori(cell.x / block), floori(cell.y / block))
 
 
 func show_target(cells: Array[Vector2i]) -> void:
@@ -143,6 +159,25 @@ func _add_block_outlines(def: FieldDef) -> void:
 func _add_strip(surface: SurfaceTool, from: Vector2, to: Vector2) -> void:
 	for corner: Vector2 in [from, Vector2(to.x, from.y), to, from, to, Vector2(from.x, to.y)]:
 		surface.add_vertex(Vector3(corner.x, 0.0, corner.y))
+
+
+func _cell_at(point: Vector3) -> Vector2i:
+	var local: Vector3 = to_local(point) / tile_size
+	return Vector2i(floori(local.x), floori(local.z))
+
+
+## Nearest the player's tile first, then row by row along the facing, left to right as the player sees it.
+func _hit_first(a: Vector2i, b: Vector2i) -> bool:
+	var da: Vector2i = a - _order_from
+	var db: Vector2i = b - _order_from
+	if da.length_squared() != db.length_squared():
+		return da.length_squared() < db.length_squared()
+	var f: Vector2i = _order_facing
+	var depth_a: int = da.x * f.x + da.y * f.y
+	var depth_b: int = db.x * f.x + db.y * f.y
+	if depth_a != depth_b:
+		return depth_a < depth_b
+	return da.x * -f.y + da.y * f.x < db.x * -f.y + db.y * f.x
 
 
 func _cell_center(cell: Vector2i) -> Vector3:

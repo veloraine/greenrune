@@ -35,9 +35,9 @@ func _process(_delta: float) -> void:
 	if _player.is_swinging():
 		_cells.clear()
 	elif tool:
-		_field.cells_hit(_player.global_position, _player.tool_point(tool), tool.charges[_player.charge_level()].size, _cells)
+		_field.cells_hit(_player.global_position, _player.tool_point(tool), tool.charges[_player.charge_level()].size, _player.facing(), _cells)
 	elif stack and Game.crops.has(stack.item.id):
-		_field.cells_hit(_player.global_position, _front(), _sow_size(_player.charge_level()), _cells)
+		_field.cells_hit(_player.global_position, _front(), _sow_size(_player.charge_level()), _player.facing(), _cells)
 	else:
 		_cells.clear()
 	_field.show_target(_cells)
@@ -58,7 +58,7 @@ func _unhandled_input(event: InputEvent) -> void:
 func _on_tool_used(stack: ItemStack, charge_level: int) -> void:
 	var tool: ToolDef = stack.item
 	var point: Vector3 = _player.tool_point(tool)
-	_field.cells_hit(_player.global_position, point, tool.charges[charge_level].size, _cells)
+	_field.cells_hit(_player.global_position, point, tool.charges[charge_level].size, _player.facing(), _cells)
 	# Debug → Visible Collision Shapes turns this on.
 	if get_tree().debug_collisions_hint:
 		_field.flash_hitbox(_cells)
@@ -112,15 +112,15 @@ func _sleep() -> void:
 	Game.day_tick()
 
 
-## Tiles per side sown: the tile in front for a tap, the charged area for a charged sow.
-func _sow_size(charge_level: int) -> int:
-	return Game.sowing.charge_size if charge_level > 0 else 1
+## The area sown: the tile in front for a tap, the charged area for a charged sow.
+func _sow_size(charge_level: int) -> Vector2i:
+	return Game.sowing.charge_size if charge_level > 0 else Vector2i.ONE
 
 
 ## Sows one seed on each tilled, empty tile in the area, until the stack runs out. Free of RP, like RF4.
 func _sow(stack: ItemStack, charge_level: int) -> void:
 	var crop: CropDef = Game.crops[stack.item.id]
-	_field.cells_hit(_player.global_position, _front(), _sow_size(charge_level), _cells)
+	_field.cells_hit(_player.global_position, _front(), _sow_size(charge_level), _player.facing(), _cells)
 	var sown: bool = false
 	for cell in _cells:
 		if stack.count == 0:
@@ -139,7 +139,7 @@ func _sow(stack: ItemStack, charge_level: int) -> void:
 
 ## Picks the ripe crop in front into the bag, at the crop's level. It stays unless all of it fits.
 func _harvest() -> void:
-	_field.cells_hit(_player.global_position, _front(), 1, _cells)
+	_field.cells_hit(_player.global_position, _front(), Vector2i.ONE, _player.facing(), _cells)
 	if _cells.is_empty():
 		return
 	var crop: Field.Crop = Game.field.crop(_cells[0])

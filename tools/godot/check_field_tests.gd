@@ -169,7 +169,7 @@ func test_tool_skips_debris() -> bool:
 		player.rotation.y = PI
 		player.global_position = grid.to_global(Vector3(cell.x + 0.5, 0.0, cell.y + 0.5 - tool.reach / grid.tile_size))
 		var hit: Array[Vector2i] = []
-		grid.cells_hit(player.global_position, player.tool_point(tool), tool.charges[0].size, hit)
+		grid.cells_hit(player.global_position, player.tool_point(tool), tool.charges[0].size, player.facing(), hit)
 		check(hit == [cell], "a tap aimed at %s hits %s" % [cell, hit])
 		farm._on_tool_used(stack, 0)
 		var on_debris: bool = cell == debris_cell
