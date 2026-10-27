@@ -21,9 +21,9 @@ SWATCHES = {
     "untilled_side": (122, 97, 63),
     "tilled": (112, 72, 42),
     "tilled_furrow": (82, 52, 30),
-    "watered": (66, 42, 27),
-    "watered_furrow": (48, 31, 21),
-    "watered_sheen": (120, 118, 128),
+    "watered": (54, 34, 22),
+    "watered_furrow": (40, 25, 17),
+    "watered_sheen": (96, 98, 112),
 }
 
 

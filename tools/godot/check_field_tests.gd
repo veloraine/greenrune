@@ -20,7 +20,7 @@ func _init(p_tree: SceneTree) -> void:
 
 
 func run() -> int:
-	for test: Callable in [test_field_def, test_block_of, test_old_save, test_debris_scatter, test_debris_save, test_save_without_debris, test_debris_off_field, test_debris_under_plot, test_debris_overfull, test_tool_skips_debris]:
+	for test: Callable in [test_field_def, test_block_of, test_old_save, test_debris_scatter, test_debris_save, test_save_without_debris, test_debris_off_field, test_debris_under_plot, test_debris_overfull, test_tool_skips_debris, test_soil_tiles]:
 		if (await test.call()) != true:
 			failed += 1
 			printerr("FAIL: %s did not finish" % test.get_method())
@@ -236,4 +236,35 @@ func test_debris_overfull() -> bool:
 	var free: int = def.size.x * def.size.y - def.debris_free.get_area()
 	check(field.all_debris().size() == free, "%d debris placed, want every free cell (%d)" % [field.all_debris().size(), free])
 	check(log.messages.filter(func(m: String) -> bool: return m.contains("only %d cells are free" % free)).size() == 1, "want one error about free cells; got %s" % [log.messages])
+	return true
+
+
+## Each soil state shows its own model, and each model covers the tile footprint the block outlines
+## are inset by, stands on y = 0 and keeps the triangle budget.
+func test_soil_tiles() -> bool:
+	tree.change_scene_to_file("res://scenes/farm.tscn")
+	await tree.scene_changed
+	var grid: FarmGrid = tree.current_scene.get_node("Field")
+	var cell := Vector2i(1, 1)
+	Game.field.replace_debris({})
+	Game.field.replace_plots({})
+	var shown: Array[Mesh] = []
+	for effect: Variant in [null, ToolDef.Effect.TILL, ToolDef.Effect.WATER]:
+		if effect != null:
+			Game.field.apply(effect, cell)
+		var mesh: Mesh = grid._tiles[cell].mesh
+		var soil: String = Field.Soil.find_key(Game.field.soil(cell))
+		check(mesh != null and not shown.has(mesh), "%s soil shows %s, which is missing or another state's" % [soil, mesh])
+		if mesh == null:
+			continue
+		shown.append(mesh)
+		var box: AABB = mesh.get_aabb()
+		var fill: float = FarmGrid.TILE_FILL * grid.tile_size
+		var footprint := Vector2(box.size.x, box.size.z)
+		check(footprint.is_equal_approx(Vector2(fill, fill)) and is_zero_approx(box.get_center().x) and is_zero_approx(box.get_center().z), "%s tile spans %s, want %s centred" % [soil, box, Vector2(fill, fill)])
+		check(is_zero_approx(box.position.y), "%s tile's base is at y %.3f, want 0" % [soil, box.position.y])
+		var triangles: int = 0
+		for surface in mesh.get_surface_count():
+			triangles += (mesh.surface_get_arrays(surface)[Mesh.ARRAY_INDEX] as PackedInt32Array).size() / 3
+		check(triangles < 500, "%s tile has %d triangles, want under 500" % [soil, triangles])
 	return true

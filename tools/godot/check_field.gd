@@ -1,7 +1,7 @@
 extends SceneTree
 
 ## Phase 1.1 field checks: the field resource, cell → block, a 12×12 save loading onto the 9×12 field,
-## the starting debris and its save, and tools skipping debris.
+## the starting debris and its save, tools skipping debris, and the soil tile models.
 ## Run: Godot --headless --path . --script res://tools/godot/check_field.gd
 
 

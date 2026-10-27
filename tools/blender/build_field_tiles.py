@@ -72,10 +72,46 @@ def test_tile(material):
     return b.object("test_tile", material)
 
 
+# Matches FarmGrid.TILE_FILL: a soil tile covers 0.95 of its 1 m cell, leaving a thin gap.
+HALF = 0.475
+SLAB = 0.02
+
+
+def untilled(material):
+    b = Builder()
+    b.box(-HALF, HALF, -HALF, HALF, 0.0, SLAB, "untilled", "untilled_side")
+    return b.object("soil_untilled", material)
+
+
+def furrowed(name, ridge, furrow, sheen, material):
+    """Two ridges running across the tile, with the crop's furrow between them. Blender's -Y is the
+    side facing the camera. sheen, if given, paints puddles in the furrows."""
+    b = Builder()
+    b.box(-HALF, HALF, -HALF, HALF, 0.0, SLAB, furrow, furrow)
+    for y in (-0.2, 0.2):
+        x0, x1, z1 = -0.38, 0.38, 0.05
+        lo0, lo1, hi0, hi1 = y - 0.11, y + 0.11, y - 0.04, y + 0.04
+        b.face([(x0, hi0, z1), (x1, hi0, z1), (x1, hi1, z1), (x0, hi1, z1)], ridge)
+        b.face([(x0, lo0, SLAB), (x1, lo0, SLAB), (x1, hi0, z1), (x0, hi0, z1)], ridge)
+        b.face([(x1, lo1, SLAB), (x0, lo1, SLAB), (x0, hi1, z1), (x1, hi1, z1)], ridge)
+        b.face([(x0, lo1, SLAB), (x0, lo0, SLAB), (x0, hi0, z1), (x0, hi1, z1)], furrow)
+        b.face([(x1, lo0, SLAB), (x1, lo1, SLAB), (x1, hi1, z1), (x1, hi0, z1)], furrow)
+    if sheen:
+        z = SLAB + 0.002
+        for x0, x1, y0, y1 in ((-0.34, -0.08, -0.06, 0.04), (0.1, 0.3, -0.03, 0.06), (-0.2, 0.12, 0.34, 0.4)):
+            b.face([(x0, y0, z), (x1, y0, z), (x1, y1, z), (x0, y1, z)], sheen)
+    return b.object(name, material)
+
+
 def main():
     bpy.ops.wm.read_factory_settings(use_empty=True)
     material = palette_material()
-    objects = [test_tile(material)]
+    objects = [
+        test_tile(material),
+        untilled(material),
+        furrowed("soil_tilled", "tilled", "tilled_furrow", None, material),
+        furrowed("soil_watered", "watered", "watered_furrow", "watered_sheen", material),
+    ]
     os.makedirs(os.path.dirname(BLEND_PATH), exist_ok=True)
     bpy.ops.wm.save_as_mainfile(filepath=BLEND_PATH)
     export_glb.main([OUT_DIR] + [o.name for o in objects])

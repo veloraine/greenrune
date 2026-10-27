@@ -37,11 +37,8 @@ def export_object(obj, out_dir):
         export_yup=True,
         export_apply=True,
         export_materials="VIEWPORT",
-        export_texcoords=True,
-        export_normals=True,
         export_draco_mesh_compression_enable=False,
         export_meshopt_compression_enable=False,
-        export_use_gltfpack=False,
         export_animations=False,
     )
     print("exported", path)

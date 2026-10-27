@@ -2,17 +2,24 @@ class_name FarmGrid
 extends Node3D
 
 @export var tile_size: float = 1.0
-@export var untilled_material: Material
-@export var tilled_material: Material
-@export var watered_material: Material
+## One tile model per soil state, each with its origin at the centre of its base.
+@export var untilled_model: PackedScene
+@export var tilled_model: PackedScene
+@export var watered_model: PackedScene
 @export var target_material: Material
 @export var hitbox_material: Material
 
 const HITBOX_SECONDS: float = 0.3
+# Above the tilled ridges, so the highlights cover them.
+const TARGET_HEIGHT: float = 0.06
+const HITBOX_HEIGHT: float = 0.07
 ## How much of a tile's width a ripe crop fills. Earlier stages keep their size relative to it.
 const CROP_WIDTH: float = 0.8
-## How much of its cell a soil tile covers, leaving a thin gap between tiles.
+## How much of its cell a soil tile model covers, leaving a thin gap between tiles. The block
+## outlines are inset by it, so a re-exported model must keep this footprint.
 const TILE_FILL: float = 0.95
+## The height of the untilled tile's top and of the furrow floor, where crops and debris stand.
+const SOIL_TOP: float = 0.02
 
 var _tiles: Dictionary[Vector2i, MeshInstance3D] = {}
 # One slot per tile on its top face, holding the model of the stage that grows there.
@@ -20,7 +27,7 @@ var _crops: Dictionary[Vector2i, Node3D] = {}
 var _shown: Dictionary[Vector2i, PackedScene] = {}
 var _bounds: Dictionary[PackedScene, AABB] = {}
 var _debris: Dictionary[Vector2i, Node3D] = {}
-var _soil_materials: Dictionary[Field.Soil, Material] = {}
+var _soil_meshes: Dictionary[Field.Soil, Mesh] = {}
 # Reused quads for the target highlight and the debug hitbox, so nothing is allocated per frame.
 var _targets: Array[MeshInstance3D] = []
 var _hitboxes: Array[MeshInstance3D] = []
@@ -30,13 +37,11 @@ var _quad: BoxMesh
 
 
 func _ready() -> void:
-	_soil_materials = {
-		Field.Soil.UNTILLED: untilled_material,
-		Field.Soil.TILLED: tilled_material,
-		Field.Soil.WATERED: watered_material,
+	_soil_meshes = {
+		Field.Soil.UNTILLED: _mesh_of(untilled_model),
+		Field.Soil.TILLED: _mesh_of(tilled_model),
+		Field.Soil.WATERED: _mesh_of(watered_model),
 	}
-	var tile_mesh := BoxMesh.new()
-	tile_mesh.size = Vector3(tile_size * TILE_FILL, 0.02, tile_size * TILE_FILL)
 	_quad = BoxMesh.new()
 	_quad.size = Vector3(tile_size * TILE_FILL, 0.01, tile_size * TILE_FILL)
 	var def: FieldDef = Game.field.def
@@ -44,12 +49,11 @@ func _ready() -> void:
 		for y in def.size.y:
 			var cell := Vector2i(x, y)
 			var tile := MeshInstance3D.new()
-			tile.mesh = tile_mesh
 			tile.position = _cell_center(cell)
 			add_child(tile)
 			_tiles[cell] = tile
 			var slot := Node3D.new()
-			slot.position = _cell_center(cell) + Vector3(0, 0.01, 0)
+			slot.position = _cell_center(cell) + Vector3(0, SOIL_TOP, 0)
 			add_child(slot)
 			_crops[cell] = slot
 			_on_soil_changed(cell)
@@ -62,7 +66,7 @@ func _process(delta: float) -> void:
 		return
 	_hitbox_left -= delta
 	if _hitbox_left <= 0.0:
-		_place(_hitboxes, _no_cells, hitbox_material, 0.04)
+		_place(_hitboxes, _no_cells, hitbox_material, HITBOX_HEIGHT)
 
 
 ## Fills out with the field cells a tool hits: the size × size block around the player, like
@@ -85,11 +89,11 @@ func block_of(cell: Vector2i) -> Vector2i:
 
 
 func show_target(cells: Array[Vector2i]) -> void:
-	_place(_targets, cells, target_material, 0.03)
+	_place(_targets, cells, target_material, TARGET_HEIGHT)
 
 
 func flash_hitbox(cells: Array[Vector2i]) -> void:
-	_place(_hitboxes, cells, hitbox_material, 0.04)
+	_place(_hitboxes, cells, hitbox_material, HITBOX_HEIGHT)
 	_hitbox_left = HITBOX_SECONDS
 
 
@@ -141,13 +145,13 @@ func _add_strip(surface: SurfaceTool, from: Vector2, to: Vector2) -> void:
 
 
 func _cell_center(cell: Vector2i) -> Vector3:
-	return Vector3((cell.x + 0.5) * tile_size, 0.01, (cell.y + 0.5) * tile_size)
+	return Vector3((cell.x + 0.5) * tile_size, 0.0, (cell.y + 0.5) * tile_size)
 
 
 func _on_soil_changed(cell: Vector2i) -> void:
 	if not _tiles.has(cell):
 		return
-	_tiles[cell].material_override = _soil_materials[Game.field.soil(cell)]
+	_tiles[cell].mesh = _soil_meshes[Game.field.soil(cell)]
 	_show_debris(cell)
 	var crop: Field.Crop = Game.field.crop(cell)
 	var model: PackedScene = crop.def.stage_models[crop.stage()] if crop else null
@@ -175,11 +179,18 @@ func _show_debris(cell: Vector2i) -> void:
 		_debris.erase(cell)
 	if debris:
 		var model: Node3D = debris.model.instantiate()
-		model.position = _cell_center(cell) + Vector3(0, 0.01, 0)
+		model.position = _cell_center(cell) + Vector3(0, SOIL_TOP, 0)
 		# A quarter turn per cell, so neighbours of one type don't look stamped.
 		model.rotation.y += posmod(hash(cell), 4) * PI / 2
 		add_child(model)
 		_debris[cell] = model
+
+
+func _mesh_of(scene: PackedScene) -> Mesh:
+	var model: Node = scene.instantiate()
+	var mesh: Mesh = (model.find_children("*", "MeshInstance3D")[0] as MeshInstance3D).mesh
+	model.free()
+	return mesh
 
 
 func _bounds_of(scene: PackedScene) -> AABB:
