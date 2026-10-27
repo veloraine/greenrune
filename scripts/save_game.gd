@@ -21,6 +21,10 @@ static func write(tree: SceneTree) -> Error:
 			"watered": plots[cell].watered,
 			"crop": {"seed": crop.def.seed_item.id, "level": crop.level, "days": crop.days} if crop else null,
 		})
+	var debris: Array = []
+	var debris_cells: Dictionary[Vector2i, DebrisDef] = Game.field.all_debris()
+	for cell in debris_cells:
+		debris.append({"cell": [cell.x, cell.y], "id": debris_cells[cell].id})
 	var xp: Dictionary = {}
 	for id in Game.skills:
 		xp[id] = Game.stats.xp(id)
@@ -42,6 +46,7 @@ static func write(tree: SceneTree) -> Error:
 		"inventory": _stacks_to_json(Game.inventory),
 		"bin": _stacks_to_json(Game.bin),
 		"field": field,
+		"debris": debris,
 	}
 	# Write a temp file and swap it in, so a crash mid-write can't destroy the last good save.
 	var temp_path: String = path + ".tmp"
@@ -94,6 +99,15 @@ static func read(tree: SceneTree) -> Error:
 	if off_field > 0:
 		push_warning("Save has %d plots outside the field; dropping them" % off_field)
 	Game.field.replace_plots(plots)
+	var debris: Dictionary[Vector2i, DebrisDef] = {}
+	for entry: Dictionary in data.debris:
+		var cell := Vector2i(int(entry.cell[0]), int(entry.cell[1]))
+		var def: DebrisDef = Game.debris.get(StringName(entry.id))
+		if def == null:
+			push_warning("Save has unknown debris '%s'; dropping it" % entry.id)
+		elif Game.field.has_cell(cell):
+			debris[cell] = def
+	Game.field.replace_debris(debris)
 	var xp: Dictionary[StringName, float] = {}
 	for id: String in data.xp:
 		if Game.skills.has(StringName(id)):
@@ -128,6 +142,8 @@ static func _defaults() -> Dictionary:
 		"ailments": [],
 		"bin": [],
 		"field": [],
+		# A save from before debris loads with a clear field.
+		"debris": [],
 		"area": "farm",
 	}
 
@@ -164,6 +180,15 @@ static func _is_valid(data: Dictionary) -> bool:
 			return false
 		var crop: Variant = entry.get("crop")
 		if crop != null and not (crop is Dictionary and crop.get("seed") is String and _is_number(crop.get("level")) and _is_number(crop.get("days"))):
+			return false
+	var debris: Variant = data.get("debris")
+	if not debris is Array:
+		return false
+	for entry: Variant in debris:
+		if not (entry is Dictionary and entry.get("id") is String):
+			return false
+		var cell: Variant = entry.get("cell")
+		if not (cell is Array and cell.size() == 2 and cell.all(_is_number)):
 			return false
 	return true
 

@@ -1,6 +1,10 @@
 [gd_resource type="Resource" script_class="FieldDef" format=3]
 
 [ext_resource type="Script" path="res://scripts/field_def.gd" id="1_field"]
+[ext_resource type="Script" path="res://scripts/debris_def.gd" id="5_debris"]
+[ext_resource type="Resource" path="res://data/debris/weed.tres" id="2_weed"]
+[ext_resource type="Resource" path="res://data/debris/stone.tres" id="3_stone"]
+[ext_resource type="Resource" path="res://data/debris/branch.tres" id="4_branch"]
 
 [resource]
 script = ExtResource("1_field")
@@ -8,3 +12,10 @@ size = Vector2i(9, 12)
 block_size = 3
 outline_color = Color(1, 1, 1, 0.25)
 outline_width = 0.06
+starting_debris = Dictionary[ExtResource("5_debris"), int]({
+ExtResource("2_weed"): 14,
+ExtResource("3_stone"): 8,
+ExtResource("4_branch"): 8
+})
+debris_seed = 1
+debris_free = Rect2i(3, 0, 3, 3)

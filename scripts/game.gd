@@ -12,11 +12,13 @@ signal woke_from_faint
 const ITEMS_DIR: String = "res://data/items/"
 const SKILLS_DIR: String = "res://data/skills/"
 const CROPS_DIR: String = "res://data/crops/"
+const DEBRIS_DIR: String = "res://data/debris/"
 
 var items: Dictionary[StringName, ItemDef] = {}
 var skills: Dictionary[StringName, SkillDef] = {}
 ## Keyed by the seed item's id.
 var crops: Dictionary[StringName, CropDef] = {}
+var debris: Dictionary[StringName, DebrisDef] = {}
 var vitals: VitalsDef = load("res://data/vitals.tres")
 var clock: ClockDef = load("res://data/clock.tres")
 var shipping: ShippingDef = load("res://data/shipping.tres")
@@ -55,6 +57,11 @@ func _ready() -> void:
 				push_error("Crop %s needs one model per stage (%d); skipping it" % [file, crop.stage_days.size() + 1])
 				continue
 			crops[crop.seed_item.id] = crop
+	for file in ResourceLoader.list_directory(DEBRIS_DIR):
+		if file.ends_with(".tres"):
+			var debris_def: DebrisDef = load(DEBRIS_DIR + file)
+			debris[debris_def.id] = debris_def
+	field.scatter_debris()
 	stats = Stats.new(vitals, skills, ailments)
 	stats.fainted.connect(_on_fainted)
 

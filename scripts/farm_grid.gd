@@ -19,6 +19,7 @@ var _tiles: Dictionary[Vector2i, MeshInstance3D] = {}
 var _crops: Dictionary[Vector2i, Node3D] = {}
 var _shown: Dictionary[Vector2i, PackedScene] = {}
 var _bounds: Dictionary[PackedScene, AABB] = {}
+var _debris: Dictionary[Vector2i, Node3D] = {}
 var _soil_materials: Dictionary[Field.Soil, Material] = {}
 # Reused quads for the target highlight and the debug hitbox, so nothing is allocated per frame.
 var _targets: Array[MeshInstance3D] = []
@@ -147,6 +148,7 @@ func _on_soil_changed(cell: Vector2i) -> void:
 	if not _tiles.has(cell):
 		return
 	_tiles[cell].material_override = _soil_materials[Game.field.soil(cell)]
+	_show_debris(cell)
 	var crop: Field.Crop = Game.field.crop(cell)
 	var model: PackedScene = crop.def.stage_models[crop.stage()] if crop else null
 	if _shown.get(cell) == model:
@@ -161,6 +163,21 @@ func _on_soil_changed(cell: Vector2i) -> void:
 		var instance: Node3D = model.instantiate()
 		instance.position.y -= _bounds_of(model).position.y
 		slot.add_child(instance)
+
+
+func _show_debris(cell: Vector2i) -> void:
+	var debris: DebrisDef = Game.field.debris(cell)
+	var shown: Node3D = _debris.get(cell)
+	if shown and debris and shown.scene_file_path == debris.model.resource_path:
+		return
+	if shown:
+		shown.free()
+		_debris.erase(cell)
+	if debris:
+		var model: Node3D = debris.model.instantiate()
+		model.position = _cell_center(cell) + Vector3(0, 0.01, 0)
+		add_child(model)
+		_debris[cell] = model
 
 
 func _bounds_of(scene: PackedScene) -> AABB:

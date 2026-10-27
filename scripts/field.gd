@@ -38,6 +38,7 @@ class Plot:
 
 var def: FieldDef
 var _plots: Dictionary[Vector2i, Plot] = {}
+var _debris: Dictionary[Vector2i, DebrisDef] = {}
 
 
 func _init(p_def: FieldDef) -> void:
@@ -77,8 +78,47 @@ func replace_plots(new_plots: Dictionary[Vector2i, Plot]) -> void:
 			changed.emit(cell)
 
 
-## Returns whether the cell changed.
+## null when the cell is clear.
+func debris(cell: Vector2i) -> DebrisDef:
+	return _debris.get(cell)
+
+
+## Every cell holding debris.
+func all_debris() -> Dictionary[Vector2i, DebrisDef]:
+	return _debris
+
+
+## Replaces all debris at once, as a load does, and emits changed for each cell that had or has some.
+func replace_debris(new_debris: Dictionary[Vector2i, DebrisDef]) -> void:
+	var old: Dictionary[Vector2i, DebrisDef] = _debris
+	_debris = new_debris
+	for cell in old:
+		changed.emit(cell)
+	for cell in new_debris:
+		if not old.has(cell):
+			changed.emit(cell)
+
+
+## A new game's debris: def.starting_debris scattered outside def.debris_free, on the same cells every time.
+func scatter_debris() -> void:
+	var rng := RandomNumberGenerator.new()
+	rng.seed = def.debris_seed
+	var free_cells: Array[Vector2i] = []
+	for x in def.size.x:
+		for y in def.size.y:
+			if not def.debris_free.has_point(Vector2i(x, y)):
+				free_cells.append(Vector2i(x, y))
+	var placed: Dictionary[Vector2i, DebrisDef] = {}
+	for debris_def in def.starting_debris:
+		for i in def.starting_debris[debris_def]:
+			placed[free_cells.pop_at(rng.randi_range(0, free_cells.size() - 1))] = debris_def
+	replace_debris(placed)
+
+
+## Returns whether the cell changed. Debris blocks every tool until it is cleared.
 func apply(effect: ToolDef.Effect, cell: Vector2i) -> bool:
+	if _debris.has(cell):
+		return false
 	var plot: Plot = _plots.get(cell)
 	match effect:
 		ToolDef.Effect.TILL:
