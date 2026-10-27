@@ -14,7 +14,7 @@ func _init(p_tree: SceneTree) -> void:
 
 
 func run() -> int:
-	for test: Callable in [test_tiers, test_bronze_models, test_cheap_never_charges, test_old_save_tools, test_charge_block, test_charge_off_field, test_charged_sow]:
+	for test: Callable in [test_tiers, test_bronze_models, test_cheap_never_charges, test_old_save_tools, test_charge_block, test_charge_off_field, test_charged_sow, test_water_per_plot, test_short_can]:
 		if (await test.call()) != true:
 			failed += 1
 			printerr("FAIL: %s did not finish" % test.get_method())
@@ -230,4 +230,72 @@ func test_bronze_models() -> bool:
 	var first: ItemStack = Game.inventory.slots[0]
 	check(first != null and first.item == Game.items[&"bronze_hoe"], "console 'add bronze_hoe' added %s" % (first.item.id if first else null))
 	Game.inventory.replace_slots([])
+	return true
+
+
+## Tills these cells, wetting the wet ones, and leaves the rest untilled.
+func _set_plots(tilled: Array[Vector2i], wet: Array[Vector2i]) -> void:
+	var plots: Dictionary[Vector2i, Field.Plot] = {}
+	for cell in tilled + wet:
+		plots[cell] = Field.Plot.new()
+		plots[cell].watered = wet.has(cell)
+	Game.field.replace_plots(plots)
+
+
+## A bronze can charge spends 1 water per plot it waters; wet and untilled plots cost nothing, and a
+## swing that waters nothing costs neither water nor RP.
+func test_water_per_plot() -> bool:
+	var farm: Node = await _farm()
+	var grid: FarmGrid = farm.get_node("Field")
+	var player: Player = farm.get_node("Player")
+	var can := ItemStack.new(Game.items[&"bronze_watering_can"], 1, 1)
+	var block: Array[Vector2i] = _block_cells(Vector2i(1, 1))
+	_stand(player, grid, Vector2i(4, 4), Vector2i(0, -1))
+	# 4 dry, 3 wet, 2 untilled.
+	_set_plots(block.slice(0, 4), block.slice(4, 7))
+	Game.stats.rp = Game.stats.max_rp()
+	farm._on_tool_used(can, 1)
+	check(can.water == 36 - 4, "watering 4 dry plots of a mixed block left %d water, want %d" % [can.water, 36 - 4])
+	for cell in block.slice(0, 7):
+		check(Game.field.soil(cell) == Field.Soil.WATERED, "tilled %s isn't watered" % cell)
+	for cell in block.slice(7):
+		check(Game.field.soil(cell) == Field.Soil.UNTILLED, "untilled %s changed" % cell)
+	var rp: int = Game.stats.rp
+	farm._on_tool_used(can, 1)
+	check(can.water == 32 and Game.stats.rp == rp, "a swing that waters nothing took water %d → %d, RP %d → %d" % [32, can.water, rp, Game.stats.rp])
+	_set_plots([Vector2i(4, 3)], [])
+	farm._on_tool_used(can, 0)
+	check(can.water == 31, "a tap on a dry plot left %d water, want 31" % can.water)
+	farm.get_node("ToolFeedback/Sound").stop()
+	return true
+
+
+## A can holding less water than the block has dry plots waters exactly that many, nearest the player's
+## tile first, then row by row along the facing, left to right as the player sees it.
+func test_short_can() -> bool:
+	var farm: Node = await _farm()
+	var grid: FarmGrid = farm.get_node("Field")
+	var player: Player = farm.get_node("Player")
+	var cases: Array = [
+		[Vector2i(4, 4), Vector2i(0, -1), [Vector2i(4, 4), Vector2i(4, 5), Vector2i(3, 4), Vector2i(5, 4)]],
+		[Vector2i(4, 4), Vector2i(0, -1), [Vector2i(4, 4), Vector2i(4, 5), Vector2i(3, 4)]],
+		[Vector2i(4, 4), Vector2i(-1, 0), [Vector2i(4, 4), Vector2i(5, 4), Vector2i(4, 5)]],
+		[Vector2i(3, 3), Vector2i(1, 0), [Vector2i(3, 3), Vector2i(3, 4), Vector2i(4, 3)]],
+		[Vector2i(5, 5), Vector2i(0, 1), [Vector2i(5, 5), Vector2i(5, 4), Vector2i(4, 5), Vector2i(4, 4), Vector2i(5, 3)]],
+	]
+	for case: Array in cases:
+		var want: Array[Vector2i] = []
+		want.assign(case[2])
+		var can := ItemStack.new(Game.items[&"bronze_watering_can"], 1, 1)
+		can.water = want.size()
+		_set_plots(_block_cells(Vector2i(1, 1)), [])
+		_stand(player, grid, case[0], case[1])
+		farm._on_tool_used(can, 1)
+		var watered: Array[Vector2i] = []
+		for cell in Game.field.plots():
+			if Game.field.plots()[cell].watered:
+				watered.append(cell)
+		check(can.water == 0, "a can with %d water ended with %d" % [want.size(), can.water])
+		check(_sorted(watered) == _sorted(want), "a can with %d water from %s facing %s watered %s, want %s" % [want.size(), case[0], case[1], _sorted(watered), _sorted(want)])
+	farm.get_node("ToolFeedback/Sound").stop()
 	return true

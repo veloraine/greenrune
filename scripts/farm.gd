@@ -71,7 +71,10 @@ func _on_tool_used(stack: ItemStack, charge_level: int) -> void:
 		if stack.water == 0:
 			return
 	var field_changed: bool = false
+	# _cells comes nearest the player first, so a can short of water waters those.
 	for cell in _cells:
+		if tool.capacity > 0 and stack.water == 0:
+			break
 		var crop: Field.Crop = Game.field.crop(cell)
 		# Like Rune Factory 4, a reaped ripe crop gives no harvest but one seed, sometimes a level higher.
 		var seed_level: int = 0
@@ -82,6 +85,9 @@ func _on_tool_used(stack: ItemStack, charge_level: int) -> void:
 				continue
 		if Game.field.apply(tool.effect, cell):
 			field_changed = true
+			# The can spends water per plot watered, not per swing.
+			if tool.capacity > 0:
+				stack.water -= 1
 			if seed_level > 0:
 				Game.inventory.add(crop.def.seed_item, seed_level, 1)
 	if field_changed:
@@ -98,7 +104,6 @@ func _pay(stack: ItemStack, charge_level: int) -> void:
 	Game.stats.add_xp(tool.skill, Game.skills[tool.skill].xp_per_use + tool.charges[charge_level].xp_bonus)
 	Game.stats.spend(cost)
 	if tool.capacity > 0:
-		stack.water -= 1
 		Game.inventory.changed.emit()
 
 
