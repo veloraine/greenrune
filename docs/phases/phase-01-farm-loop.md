@@ -145,7 +145,7 @@ Steps 1–6 built every Phase 1 system. They stay here as the record of what exi
 **Checklist:**
 - [x] Field size and block size live in `data/`, not in `farm_grid.gd` or `farm.tscn`
 - [x] A test model exported with the preset sits centred on its tile, cel-shaded through the shared palette texture, with no import warnings
-- [ ] Block outlines are visible at the gameplay camera distance and hidden under a planted crop's leaves
+- [x] Block outlines are visible at the gameplay camera distance and hidden under a planted crop's leaves
 - [x] A new game places the starting debris, and debris positions survive save → load
 - [x] A 12×12 save from before this change loads with no plot outside the 9×12 field and a warning in the output
 - [x] A swing on a debris plot changes nothing and costs no RP

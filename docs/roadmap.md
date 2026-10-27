@@ -22,7 +22,7 @@ Status: **done**, **current**, **next**, **later**.
 | Phase | Goal | Complete when (condensed) | Status |
 |---|---|---|---|
 | [0 Learn](../PHASE_0_CHECKLIST.md) | Skills for Phase 1 | Baseline toon scene and feel test | **done** |
-| [1 Farm loop](phases/phase-01-farm-loop.md) | Smallest polished RF-style day | 5 days across a save/reload; RP runs out 15:00–18:00; a skill and a reaped seed level up; all data in `data/` | **current** (Steps 1–6 **done**) |
+| [1 Farm loop](phases/phase-01-farm-loop.md) | Smallest polished RF-style day | 5 days across a save/reload; RP runs out 15:00–18:00; a skill and a reaped seed level up; all data in `data/` | **current** (Steps 1–6 **done**; 1.1 **done**) |
 | [2 Town & NPCs](phases/phase-02-town-npcs.md) | Named town one door from the farm | One NPC at max friendship in ~14 days; 3–5 NPCs keep routines; 4+ requests, one gives the sickle; everyone on the 2.0 body; save v3 | **later** |
 | [3 Seasons, cooking, orders](phases/phase-03-seasons-cooking-orders.md) | A full year where crop levels matter | Full year played; seasons look and grow differently; cooking and the festival reward crop level; 3+ Orders; save v4 | **later** |
 | [M1 Cozy slice](phases/m1-cozy-slice.md) | First shipped game | On itch.io; 3 new testers finish day 1 unaided; continue/stop written down | **later** |
@@ -37,8 +37,8 @@ Status: **done**, **current**, **next**, **later**.
 
 Sub-phases of Phases 1–3, each with its done bar (the full list is under "complete when" in the phase file):
 
-- [1.1 The field](phases/phase-01-farm-loop.md#phase-11--the-field) **current**: a 9×12 field in outlined 3×3 blocks, starting debris, soil states readable at 12:00 and 22:00, the whole field on screen.
-- [1.2 Tool feel](phases/phase-01-farm-loop.md#phase-12--tool-feel) **next**: cheap tools tap only; a bronze charge covers the player's 3×3 block with feedback on one hit; a straight two-handed hoe swing; water spent per plot.
+- [1.1 The field](phases/phase-01-farm-loop.md#phase-11--the-field) **done**: a 9×12 field in outlined 3×3 blocks, starting debris, soil states readable at 12:00 and 22:00, the whole field on screen.
+- [1.2 Tool feel](phases/phase-01-farm-loop.md#phase-12--tool-feel) **current**: cheap tools tap only; a bronze charge covers the player's 3×3 block with feedback on one hit; water spent per plot. The two-handed hoe swing (Steps 4–5) waits for the user's base body.
 - [1.3 Hands and carrying](phases/phase-01-farm-loop.md#phase-13--hands-and-carrying) **later**: debris and crops lift, throw and store by hand; a thrown crop lands in the bin; weeds regrow on untended ground.
 - [1.4 Crops](phases/phase-01-farm-loop.md#phase-14--crops) **later**: every stage reads at a glance; ripe crops look ripe; a warned crop left dry withers; rune orbs refill RP and level a skill.
 - [1.5 The day's frame](phases/phase-01-farm-loop.md#phase-15--the-days-frame) **later**: a new game opens on the lesson with the cheap kit; the HUD shows date, time, gold, HP and RP; RP runs out 15:00–18:00.
@@ -111,35 +111,24 @@ What changes in the current code, in build order. Each item names the sub-phase 
 
 ## Current todo
 
-[Phase 1.1 — The field](phases/phase-01-farm-loop.md#phase-11--the-field). Migration items 1–6.
+[Phase 1.2 — Tool feel](phases/phase-01-farm-loop.md#phase-12--tool-feel). Migration items 7–12 and 14–16. Item 13 (the two-handed hoe swing) waits for the user's base body: decided 2026-10-27, so the swing isn't built twice; the hoe keeps today's straight `1H_Melee_Attack_Chop` until then.
 
-**Done when** (Phase 1.1 is complete when):
-- The field is 9×12 plots (108) in twelve 3×3 blocks, 3 across and 4 deep, and each block shows a faint outline.
-- A new game shows weeds, stones and branches scattered on the field.
-- Untilled, tilled and watered soil are told apart in a 12:00 screenshot and a 22:00 screenshot.
-- The whole field fits on screen from its centre without moving the camera.
+**Done when** (Phase 1.2 is complete when, minus the swing outcome):
+- A cheap hoe, can or sickle taps the one plot in front and never charges.
+- A bronze hoe held to charge marks the 3×3 block holding the player's tile before release, then the soil change, a sound, dust and the RP drop land on the same hit. A bronze can and a charged sow cover the same block; a tap with seeds sows one plot.
+- The can's water gauge shows on the HUD while the can is selected, drops one step per plot watered, refills with a sound, and tapping the can while walking waters each plot passed over.
 
 **Steps:**
-- [x] 1. Blender setup (Claude: base): an export preset or Blender Python script (`.glb`, +Y Up, Apply Modifiers, Materials = Viewport (Placeholder writes no material for Use External to map), no Draco or Meshopt, backface culling, 1 unit = 1 m, transforms applied, origin at the base centre); the shared palette texture and its cel `ShaderMaterial`; round-trip one 1×1 m test tile into the farm with Use External; add `*.blend1` to `.gitignore`.
-- [x] 2. Set the field to 9×12 and move field size and block size (3) into `data/`.
-- [x] 2a. Make `Field` read the field-size resource, and make `SaveGame.read()` skip out-of-bounds cells with a warning, so an old 12×12 save loads without plots off the field.
-- [x] 3. Add blocks to `FarmGrid` (cell → block index) and a faint outline per block.
-- [x] 4. Field ground and soil meshes (Claude: base; user: polish): ground, border, and one tile mesh each for untilled, tilled and watered soil, on the palette texture.
-- [x] 5. Make the soil states read from the gameplay camera at 12:00 and 22:00 under the current lighting: tilled darker and furrowed, watered darker still with a sheen.
-- [x] 6. Add `DebrisDef` and a starting set of weeds, stones and branches in a new game; Quaternius models first, else Blender (Claude: base; user: polish).
-- [x] 7. Make tools skip debris plots: no change, no RP.
-- [x] 8. Tune the outdoor camera in `data/camera.tres` from side-by-side screenshots of the 9×12 field. The user's edit is committed (8200d2a); tune from it.
-- [x] 9. Re-check the props around the field: water source in a corner, bin by the house door, nothing blocking the camera.
+- [ ] 1. Tool data shape: `ToolCharge.size` and `SowingDef.charge_size` → `Vector2i` (width × depth along the facing); charged areas start at the 3×3 block holding the player's tile and run along the facing; off-field plots skipped.
+- [ ] 2. Split hoe, can and sickle into cheap (tap only) and bronze (tap + 3×3) items; map old save ids (`hoe` → `cheap_hoe`, etc., keeping the can's water). Update or retire `sandbox/prototypes/chibi_hoe/` first (it loads `data/items/hoe.tres`).
+- [ ] 3. Bronze items as tinted cheap models, testable with `add bronze_hoe`.
+- [ ] 4–5. *Deferred to the base body:* two-handed hoe, straight overhead swing.
+- [ ] 6. Water per plot: 1 water per plot watered; a short can waters only what it has, in a fixed order.
+- [ ] 7. Target marker on the tap plot and an outline of the charge area while held.
+- [ ] 8. Per-level charge cues: marker grows, tool glows, rising tone; early release uses the last level reached.
+- [ ] 9. HUD water gauge and refill sound.
+- [ ] 10. Water as you walk.
+- [ ] 11. RP feedback: popup or bar flash on spend; a dull "no effect" sound for a swing that changes nothing.
+- [ ] 12. Tune swing speed, impact time, hit-stop and shake per `ToolDef`.
 
-**Checklist:**
-- [x] Field size and block size live in `data/`, not in `farm_grid.gd` or `farm.tscn`
-- [x] A test model exported with the preset sits centred on its tile, cel-shaded through the shared palette texture, with no import warnings
-- [ ] Block outlines are visible at the gameplay camera distance and hidden under a planted crop's leaves
-- [x] A new game places the starting debris, and debris positions survive save → load
-- [x] A 12×12 save from before this change loads with no plot outside the 9×12 field and a warning in the output
-- [x] A swing on a debris plot changes nothing and costs no RP
-- [x] Watered and dry tilled soil differ by at least 25% in brightness at 12:00 and at 22:00 *(default)*, measured from screenshots
-- [x] From the field centre the whole field is on screen with no camera move
-- [x] Each soil and debris model is under 500 triangles *(default)*
-- [x] 60 fps on the farm with every plot tilled and planted (Godot's FPS monitor)
-- [ ] The user has seen every "Phase 1.1 is complete when" outcome in the running game
+**Checklist:** as in the [phase file](phases/phase-01-farm-loop.md#phase-12--tool-feel), except the two swing items (both hands on the shaft; sideways drift), which move with Steps 4–5.
