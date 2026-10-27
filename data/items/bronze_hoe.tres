@@ -1,4 +1,4 @@
-[gd_resource type="Resource" script_class="ToolDef" format=3 uid="uid://d1awp4qjgaylf"]
+[gd_resource type="Resource" script_class="ToolDef" format=3]
 
 [ext_resource type="Script" uid="uid://ns0lkui2s7vn" path="res://scripts/tool_def.gd" id="1_tool"]
 [ext_resource type="Script" uid="uid://djmulgstgn2ti" path="res://scripts/tool_charge.gd" id="2_charge"]
@@ -13,21 +13,14 @@ rp_cost = 5
 [sub_resource type="Resource" id="ToolCharge_1"]
 script = ExtResource("2_charge")
 hold_seconds = 0.6
-rp_cost = 15
-xp_bonus = 2.0
+rp_cost = 21
+xp_bonus = 3.0
 size = Vector2i(3, 3)
-
-[sub_resource type="Resource" id="ToolCharge_2"]
-script = ExtResource("2_charge")
-hold_seconds = 1.2
-rp_cost = 30
-xp_bonus = 5.0
-size = Vector2i(3, 6)
 
 [resource]
 script = ExtResource("1_tool")
 skill = &"tilling"
-charges = Array[ExtResource("2_charge")]([SubResource("ToolCharge_0"), SubResource("ToolCharge_1"), SubResource("ToolCharge_2")])
+charges = Array[ExtResource("2_charge")]([SubResource("ToolCharge_0"), SubResource("ToolCharge_1")])
 hand_model = ExtResource("3_model")
 swing_animation = &"1H_Melee_Attack_Chop"
 swing_speed = 1.6
@@ -37,7 +30,7 @@ impact_sound = ExtResource("4_sound")
 dust_color = Color(0.93, 0.85, 0.7, 1)
 hit_stop = 0.05
 shake = 0.05
-id = &"hoe"
-display_name = "Hoe"
+id = &"bronze_hoe"
+display_name = "Bronze Hoe"
 icon = ExtResource("icon")
 max_stack = 1

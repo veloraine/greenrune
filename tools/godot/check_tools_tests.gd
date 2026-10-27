@@ -14,7 +14,7 @@ func _init(p_tree: SceneTree) -> void:
 
 
 func run() -> int:
-	for test: Callable in [test_charge_block, test_charge_off_field, test_charged_sow]:
+	for test: Callable in [test_tiers, test_cheap_never_charges, test_old_save_tools, test_charge_block, test_charge_off_field, test_charged_sow]:
 		if (await test.call()) != true:
 			failed += 1
 			printerr("FAIL: %s did not finish" % test.get_method())
@@ -127,5 +127,83 @@ func test_charged_sow() -> bool:
 		if charge_level == 1:
 			want = _block_cells(Vector2i(1, 1))
 		check(_sorted(sown) == _sorted(want), "sow at charge %d sowed %s, want %s" % [charge_level, _sorted(sown), _sorted(want)])
+	Game.inventory.replace_slots([])
+	return true
+
+
+## Each tool has a cheap tier that only taps and a bronze tier that taps or charges to the 3×3 block,
+## each with an icon. The pre-tier ids are gone.
+func test_tiers() -> bool:
+	for tool: String in ["hoe", "watering_can", "sickle"]:
+		check(not Game.items.has(StringName(tool)), "item '%s' still exists" % tool)
+		var cheap: ToolDef = Game.items.get(StringName("cheap_" + tool))
+		var bronze: ToolDef = Game.items.get(StringName("bronze_" + tool))
+		check(cheap != null and bronze != null, "cheap_%s or bronze_%s is missing" % [tool, tool])
+		if cheap == null or bronze == null:
+			continue
+		check(cheap.charges.size() == 1 and cheap.charges[0].size == Vector2i.ONE, "cheap_%s has %d charges, want only the tap" % [tool, cheap.charges.size()])
+		check(bronze.charges.size() == 2 and bronze.charges[0].size == Vector2i.ONE and bronze.charges[1].size == Vector2i(3, 3), "bronze_%s charges aren't a tap and a 3×3" % tool)
+		check(cheap.icon != null and bronze.icon != null, "cheap_%s or bronze_%s has no icon" % [tool, tool])
+		check(cheap.effect == bronze.effect and cheap.skill == bronze.skill, "bronze_%s doesn't do what cheap_%s does" % [tool, tool])
+	check(Game.items[&"cheap_watering_can"].capacity == 15, "cheap can holds %d, want 15" % Game.items[&"cheap_watering_can"].capacity)
+	check(Game.items[&"bronze_watering_can"].capacity == 36, "bronze can holds %d, want 36" % Game.items[&"bronze_watering_can"].capacity)
+	return true
+
+
+## Holding the use button with a cheap tool, however long, never reaches a charge level; with a bronze
+## tool the same hold reaches the 3×3. Drives the player's real input path.
+func test_cheap_never_charges() -> bool:
+	var farm: Node = await _farm()
+	var player: Player = farm.get_node("Player")
+	for id: StringName in [&"cheap_hoe", &"cheap_watering_can", &"cheap_sickle", &"bronze_hoe"]:
+		Game.inventory.replace_slots([ItemStack.new(Game.items[id], 1, 1)])
+		Game.inventory.selected = 0
+		Input.action_press(&"use_tool")
+		for i in 5:
+			await tree.physics_frame
+			if not player.is_idle():
+				break
+		check(not player.is_idle(), "pressing use with %s didn't start the tool" % id)
+		var max_level: int = 0
+		# Ten seconds of holding, in physics frames.
+		for i in 600:
+			player._charge_time += 1.0 / 60.0
+			max_level = maxi(max_level, player.charge_level())
+		await tree.physics_frame
+		max_level = maxi(max_level, player.charge_level())
+		var want: int = 1 if id == &"bronze_hoe" else 0
+		check(max_level == want, "holding %s reached charge level %d, want %d" % [id, max_level, want])
+		Input.action_release(&"use_tool")
+		player.cancel_tool()
+		await tree.physics_frame
+	Game.inventory.replace_slots([])
+	return true
+
+
+## A save from before the tiers loads its hoe, can and sickle as the cheap tools, keeping the can's water.
+func test_old_save_tools() -> bool:
+	SaveGame.path = "user://check_tools_save.json"
+	await _farm()
+	var data: Dictionary = {
+		"version": 2, "day": 1, "minute": 400.0, "gold": 0, "area": "farm",
+		"player_position": [0.0, 0.0, -12.0], "rp": 50, "hp": 50,
+		"inventory": [
+			{"id": "hoe", "level": 1, "count": 1, "water": 0},
+			{"id": "watering_can", "level": 2, "count": 1, "water": 7},
+			{"id": "sickle", "level": 1, "count": 1, "water": 0},
+		],
+		"bin": [], "field": [],
+	}
+	var file: FileAccess = FileAccess.open(SaveGame.path, FileAccess.WRITE)
+	file.store_string(JSON.stringify(data))
+	file.close()
+	var result: Error = SaveGame.read(tree)
+	DirAccess.remove_absolute(SaveGame.path)
+	check(result == OK, "SaveGame.read returned %s" % error_string(result))
+	var slots: Array[ItemStack] = Game.inventory.slots
+	var ids: Array = slots.slice(0, 3).map(func(stack: ItemStack) -> Variant: return stack.item.id if stack else null)
+	check(ids == [&"cheap_hoe", &"cheap_watering_can", &"cheap_sickle"], "old tools loaded as %s" % [ids])
+	if slots[1]:
+		check(slots[1].water == 7 and slots[1].level == 2, "old can loaded with water %d at Lv%d, want 7 at Lv2" % [slots[1].water, slots[1].level])
 	Game.inventory.replace_slots([])
 	return true

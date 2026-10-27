@@ -3,6 +3,12 @@ extends RefCounted
 
 ## Bump when the format changes, and teach read() to upgrade older versions.
 const VERSION: int = 2
+## Item ids an older save may hold, and the item each became. The tools split into tiers in Phase 1.2.
+const RENAMED_ITEMS: Dictionary[String, String] = {
+	"hoe": "cheap_hoe",
+	"watering_can": "cheap_watering_can",
+	"sickle": "cheap_sickle",
+}
 ## A check points this at its own file, so it never touches the player's save.
 static var path: String = "user://save.json"
 
@@ -212,7 +218,7 @@ static func _load_stacks(inventory: Inventory, entries: Array) -> void:
 	var slots: Array[ItemStack] = []
 	var overflow: Array[ItemStack] = []
 	for entry: Variant in entries:
-		var item: ItemDef = Game.items.get(StringName(entry.id)) if entry else null
+		var item: ItemDef = Game.items.get(StringName(RENAMED_ITEMS.get(entry.id, entry.id))) if entry else null
 		if entry and item == null:
 			push_warning("Save has unknown item '%s'; dropping it" % entry.id)
 		var count: int = maxi(int(entry.count), 1) if item else 0

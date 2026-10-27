@@ -14,23 +14,16 @@ rp_cost = 4
 [sub_resource type="Resource" id="ToolCharge_1"]
 script = ExtResource("2_charge")
 hold_seconds = 0.6
-rp_cost = 8
-xp_bonus = 1.0
+rp_cost = 11
+xp_bonus = 1.5
 size = Vector2i(3, 3)
-
-[sub_resource type="Resource" id="ToolCharge_2"]
-script = ExtResource("2_charge")
-hold_seconds = 1.2
-rp_cost = 16
-xp_bonus = 2.0
-size = Vector2i(3, 6)
 
 [resource]
 script = ExtResource("1_tool")
 effect = 1
 skill = &"watering"
-charges = Array[ExtResource("2_charge")]([SubResource("ToolCharge_0"), SubResource("ToolCharge_1"), SubResource("ToolCharge_2")])
-capacity = 15
+charges = Array[ExtResource("2_charge")]([SubResource("ToolCharge_0"), SubResource("ToolCharge_1")])
+capacity = 36
 hand_model = ExtResource("3_model")
 swing_animation = &"Use_Item"
 swing_speed = 2.0
@@ -38,7 +31,7 @@ impact_time = 0.8
 reach = 1.0
 impact_sound = ExtResource("4_sound")
 dust_color = Color(0.55, 0.78, 1, 1)
-id = &"watering_can"
-display_name = "Watering Can"
+id = &"bronze_watering_can"
+display_name = "Bronze Watering Can"
 icon = ExtResource("icon")
 max_stack = 1

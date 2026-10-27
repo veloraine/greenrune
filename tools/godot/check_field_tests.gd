@@ -155,7 +155,7 @@ func test_tool_skips_debris() -> bool:
 	var farm: Node = tree.current_scene
 	var grid: FarmGrid = farm.get_node("Field")
 	var player: Player = farm.get_node("Player")
-	var stack := ItemStack.new(Game.items[&"hoe"], 1, 1)
+	var stack := ItemStack.new(Game.items[&"cheap_hoe"], 1, 1)
 	var tool: ToolDef = stack.item
 	var debris_cell := Vector2i(4, 6)
 	var clear_cell := Vector2i(4, 8)
@@ -297,7 +297,7 @@ func test_farm_props() -> bool:
 	var well: Node3D = farm.get_node("Well")
 	var corner: Vector3 = grid.to_global(Vector3(extent.x, 0.0, 0.0))
 	check(well.global_position.distance_to(corner) < 2.0, "the well is %.1f m from the field's north-east corner, want under 2" % well.global_position.distance_to(corner))
-	var can := ItemStack.new(Game.items[&"watering_can"], 1, 1)
+	var can := ItemStack.new(Game.items[&"cheap_watering_can"], 1, 1)
 	can.water = 0
 	# Facing -z, just south of the well.
 	player.rotation.y = 0.0

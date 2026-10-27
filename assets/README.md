@@ -135,7 +135,7 @@ All of these are placeholders, to be replaced with our own art. Each PNG is one 
 - Source: [The Sprite Stuff](https://opengameart.org/node/29290) by FacadeGaikan
 - License: CC0
 - Files: `icons/hoe.png` (the pack's `Hoe.png`), `icons/watering_can.png` (the pack's `watercan.png`)
-- The sickle has no icon yet, so the hotbar shows its name.
+- `icons/sickle.png` is ours, derived from `hoe.png`: the same handle with a curved blade in the hoe's greys.
 
 ## Asset cohesion rule
 
