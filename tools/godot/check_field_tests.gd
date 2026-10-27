@@ -239,8 +239,9 @@ func test_debris_overfull() -> bool:
 	return true
 
 
-## Each soil state shows its own model, and each model covers the tile footprint the block outlines
-## are inset by, stands on y = 0 and keeps the triangle budget.
+## Each soil state shows its own model on the shared palette material. Each model covers the tile
+## footprint the block outlines are inset by, stands on y = 0, stays under the target highlight and
+## keeps the triangle budget; untilled's top is where crops and debris stand.
 func test_soil_tiles() -> bool:
 	tree.change_scene_to_file("res://scenes/farm.tscn")
 	await tree.scene_changed
@@ -249,6 +250,7 @@ func test_soil_tiles() -> bool:
 	Game.field.replace_debris({})
 	Game.field.replace_plots({})
 	var shown: Array[Mesh] = []
+	var palette: Material = load("res://assets/environment/greenrune/palette_cel.tres")
 	for effect: Variant in [null, ToolDef.Effect.TILL, ToolDef.Effect.WATER]:
 		if effect != null:
 			Game.field.apply(effect, cell)
@@ -263,8 +265,15 @@ func test_soil_tiles() -> bool:
 		var footprint := Vector2(box.size.x, box.size.z)
 		check(footprint.is_equal_approx(Vector2(fill, fill)) and is_zero_approx(box.get_center().x) and is_zero_approx(box.get_center().z), "%s tile spans %s, want %s centred" % [soil, box, Vector2(fill, fill)])
 		check(is_zero_approx(box.position.y), "%s tile's base is at y %.3f, want 0" % [soil, box.position.y])
+		check(box.end.y < FarmGrid.TARGET_HEIGHT - 0.005, "%s tile's top is at y %.3f, want under the target highlight at %.3f" % [soil, box.end.y, FarmGrid.TARGET_HEIGHT])
+		if Game.field.soil(cell) == Field.Soil.UNTILLED:
+			check(is_equal_approx(box.end.y, FarmGrid.SOIL_TOP), "untilled tile's top is at y %.3f, want SOIL_TOP %.3f" % [box.end.y, FarmGrid.SOIL_TOP])
+		check(mesh.surface_get_material(0) == palette, "%s tile's material is %s, want palette_cel.tres" % [soil, mesh.surface_get_material(0)])
 		var triangles: int = 0
 		for surface in mesh.get_surface_count():
-			triangles += (mesh.surface_get_arrays(surface)[Mesh.ARRAY_INDEX] as PackedInt32Array).size() / 3
+			var arrays: Array = mesh.surface_get_arrays(surface)
+			# A mesh without an index array lists three vertices per triangle.
+			var points: Variant = arrays[Mesh.ARRAY_INDEX] if arrays[Mesh.ARRAY_INDEX] != null else arrays[Mesh.ARRAY_VERTEX]
+			triangles += points.size() / 3
 		check(triangles < 500, "%s tile has %d triangles, want under 500" % [soil, triangles])
 	return true

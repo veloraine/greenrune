@@ -5,8 +5,8 @@ extends SceneTree
 ##   Godot --path . --script res://tools/godot/measure_soil.gd -- <out.png> <hour>
 ## Brightness is Rec. 709 luma of the screenshot's sRGB pixels, averaged over the middle half of each
 ## sample tile, so the block outlines at the tile edges stay out of it.
-## The farm's scripts name the Game autoload, so this file leaves Field and FarmGrid untyped: naming
-## them here would compile those scripts before the autoload exists.
+## FarmGrid names the Game autoload, so this file leaves it untyped: naming it here would compile
+## farm_grid.gd before the autoload exists.
 
 const UNTILLED: Array[Vector2i] = [Vector2i(0, 3), Vector2i(1, 3), Vector2i(2, 3), Vector2i(0, 4), Vector2i(1, 4), Vector2i(2, 4)]
 const TILLED: Array[Vector2i] = [Vector2i(3, 3), Vector2i(4, 3), Vector2i(5, 3), Vector2i(3, 4), Vector2i(4, 4), Vector2i(5, 4)]
@@ -21,7 +21,7 @@ func _initialize() -> void:
 	change_scene_to_file("res://scenes/farm.tscn")
 	await scene_changed
 	var game: Node = root.get_node("Game")
-	var field: RefCounted = game.field
+	var field: Field = game.field
 	var grid: Node3D = current_scene.get_node("Field")
 	get_first_node_in_group(&"player").global_position = grid.to_global(Vector3(4.5, 0.0, 10.5))
 	# Debris and a crop on each state in row 7, to see that they sit on the new tiles.
@@ -29,6 +29,9 @@ func _initialize() -> void:
 	for id: StringName in [&"weed", &"stone", &"branch"]:
 		debris[Vector2i(debris.size(), 7)] = game.debris[id]
 	field.replace_debris(debris)
+	# A loaded save's plots would otherwise land in the samples.
+	var no_plots: Dictionary[Vector2i, Field.Plot] = {}
+	field.replace_plots(no_plots)
 	var crop: CropDef = game.crops.values()[0]
 	for x in range(3, 9):
 		for y in [3, 4, 7]:

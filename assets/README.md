@@ -81,6 +81,7 @@ assets/
 - `palette.png`: the shared palette, a 128x128 atlas of flat colour squares written by `tools/blender/palette.py`. Every model we build in Blender UVs its faces onto these squares.
 - `palette_cel.tres`: the one cel `ShaderMaterial` for the palette. Each `.glb.import` maps the `palette` material to it with Use External.
 - Built by `tools/blender/build_field_tiles.py`, exported by `tools/blender/export_glb.py` (see each script's header for the command)
+- Keep the Blender material named `palette`: Use External maps by that name. A new model's `.glb.import` needs the same `palette` → `palette_cel.tres` Use External mapping.
 
 ## Shaders
 

@@ -32,6 +32,8 @@ exports/
 *.pck
 *.zip
 
-
 # Blender save-version backups
 *.blend1
+
+# Python bytecode from the Blender scripts
+__pycache__/

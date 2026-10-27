@@ -132,7 +132,7 @@ Steps 1–6 built every Phase 1 system. They stay here as the record of what exi
 - The whole field fits on screen from its centre without moving the camera.
 
 **Steps:**
-1. **Blender setup** (Blender — Claude: base). Turn the [research's Blender pipeline](../rf4-farnia-research.md#blender-pipeline) into a saved export preset or a Blender Python export script: glTF Binary `.glb` (CLAUDE.md's format), +Y Up, Apply Modifiers, Materials = Placeholder, no Draco or Meshopt, backface culling on, 1 unit = 1 m, transforms applied, origin at the base centre. Round-trip one 1×1 m test tile into the farm and map its material to the cel `ShaderMaterial` with Advanced Import Settings → Use External, as the Quaternius FBX files already do. Make the shared palette texture: one small atlas of colour squares that every Blender model UVs onto, mapped to one cel `ShaderMaterial`. Decided: palette atlas, not vertex colour; it matches the KayKit atlas and keeps one material for many models ([research › Vertex colour or palette texture](../rf4-farnia-research.md#vertex-colour-or-palette-texture)). Add `*.blend1` to `.gitignore`.
+1. **Blender setup** (Blender — Claude: base). Turn the [research's Blender pipeline](../rf4-farnia-research.md#blender-pipeline) into a saved export preset or a Blender Python export script: glTF Binary `.glb` (CLAUDE.md's format), +Y Up, Apply Modifiers, Materials = Viewport (Placeholder writes no material, so Use External has nothing to map), no Draco or Meshopt, backface culling on, 1 unit = 1 m, transforms applied, origin at the base centre. Round-trip one 1×1 m test tile into the farm and map its material to the cel `ShaderMaterial` with Advanced Import Settings → Use External, as the Quaternius FBX files already do. Make the shared palette texture: one small atlas of colour squares that every Blender model UVs onto, mapped to one cel `ShaderMaterial`. Decided: palette atlas, not vertex colour; it matches the KayKit atlas and keeps one material for many models ([research › Vertex colour or palette texture](../rf4-farnia-research.md#vertex-colour-or-palette-texture)). Add `*.blend1` to `.gitignore`.
 2. Set the field to 9×12 plots and move field size and block size (3) into `data/`; today the size is `FarmGrid.size = Vector2i(12, 12)` in `scenes/farm.tscn`. 9×12 holds twelve whole 3×3 blocks. `Field` reads the same resource, and `SaveGame.read()` skips out-of-bounds cells with a warning: today it has no bounds check, so an old 12×12 save would load plots off the field.
 3. Add blocks to `FarmGrid` (cell → block index) and draw a faint outline per block.
 4. **Field ground and soil meshes** (Blender — Claude: base): block out the field ground, its border and one tile-sized mesh each for untilled, tilled and watered soil, origin on the tile grid, UVs on the shared palette texture, exported with the step 1 preset. (Blender — user: polish): furrows, edges and colour.
@@ -144,12 +144,12 @@ Steps 1–6 built every Phase 1 system. They stay here as the record of what exi
 
 **Checklist:**
 - [ ] Field size and block size live in `data/`, not in `farm_grid.gd` or `farm.tscn`
-- [ ] A test model exported with the preset sits centred on its tile, cel-shaded through the shared palette texture, with no import warnings
+- [x] A test model exported with the preset sits centred on its tile, cel-shaded through the shared palette texture, with no import warnings
 - [ ] Block outlines are visible at the gameplay camera distance and hidden under a planted crop's leaves
 - [ ] A new game places the starting debris, and debris positions survive save → load
 - [ ] A 12×12 save from before this change loads with no plot outside the 9×12 field and a warning in the output
 - [ ] A swing on a debris plot changes nothing and costs no RP
-- [ ] Watered and dry tilled soil differ by at least 25% in brightness at 12:00 and at 22:00 *(default)*, measured from screenshots
+- [x] Watered and dry tilled soil differ by at least 25% in brightness at 12:00 and at 22:00 *(default)*, measured from screenshots
 - [ ] From the field centre the whole field is on screen with no camera move
 - [ ] Each soil and debris model is under 500 triangles *(default)*
 - [ ] 60 fps on the farm with every plot tilled and planted (Godot's FPS monitor)

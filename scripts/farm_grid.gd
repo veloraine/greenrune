@@ -10,7 +10,8 @@ extends Node3D
 @export var hitbox_material: Material
 
 const HITBOX_SECONDS: float = 0.3
-# Above the tilled ridges, so the highlights cover them.
+# Above the tilled ridges (0.05 m), so the highlights cover them. A re-exported tile must stay under
+# TARGET_HEIGHT; check_field enforces it.
 const TARGET_HEIGHT: float = 0.06
 const HITBOX_HEIGHT: float = 0.07
 ## How much of a tile's width a ripe crop fills. Earlier stages keep their size relative to it.
