@@ -143,15 +143,15 @@ Steps 1–6 built every Phase 1 system. They stay here as the record of what exi
 9. Re-check the props around the field: water source in a corner like RF4's north-east well, bin at the edge, nothing blocking the camera. Small farm props come from the packs first; a missing one is (Blender — Claude: base) then (Blender — user: polish).
 
 **Checklist:**
-- [ ] Field size and block size live in `data/`, not in `farm_grid.gd` or `farm.tscn`
+- [x] Field size and block size live in `data/`, not in `farm_grid.gd` or `farm.tscn`
 - [x] A test model exported with the preset sits centred on its tile, cel-shaded through the shared palette texture, with no import warnings
 - [ ] Block outlines are visible at the gameplay camera distance and hidden under a planted crop's leaves
-- [ ] A new game places the starting debris, and debris positions survive save → load
-- [ ] A 12×12 save from before this change loads with no plot outside the 9×12 field and a warning in the output
-- [ ] A swing on a debris plot changes nothing and costs no RP
+- [x] A new game places the starting debris, and debris positions survive save → load
+- [x] A 12×12 save from before this change loads with no plot outside the 9×12 field and a warning in the output
+- [x] A swing on a debris plot changes nothing and costs no RP
 - [x] Watered and dry tilled soil differ by at least 25% in brightness at 12:00 and at 22:00 *(default)*, measured from screenshots
 - [x] From the field centre the whole field is on screen with no camera move
-- [ ] Each soil and debris model is under 500 triangles *(default)*
+- [x] Each soil and debris model is under 500 triangles *(default)*
 - [x] 60 fps on the farm with every plot tilled and planted (Godot's FPS monitor)
 
 **Out of scope for this phase:** tool feel and charge areas (1.2), clearing debris by hand and debris regrowth (1.3), withered soil (1.4), soil stats and giant crops ([NOT_IN_SCOPE.md](../../NOT_IN_SCOPE.md)). Stumps and rocks stay off the field: RF4 clears them only with the axe and hammer, which its tutorial requests hand out as farm tools ([research › Clearing debris](../rf4-farnia-research.md#clearing-debris)). Greenrune keeps the axe and hammer in [Phase 4 Step 5](phase-04-combat-core.md), so the Phase 1 field has none.

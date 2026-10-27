@@ -132,14 +132,14 @@ What changes in the current code, in build order. Each item names the sub-phase 
 - [x] 9. Re-check the props around the field: water source in a corner, bin at the edge, nothing blocking the camera.
 
 **Checklist:**
-- [ ] Field size and block size live in `data/`, not in `farm_grid.gd` or `farm.tscn`
+- [x] Field size and block size live in `data/`, not in `farm_grid.gd` or `farm.tscn`
 - [x] A test model exported with the preset sits centred on its tile, cel-shaded through the shared palette texture, with no import warnings
 - [ ] Block outlines are visible at the gameplay camera distance and hidden under a planted crop's leaves
-- [ ] A new game places the starting debris, and debris positions survive save → load
-- [ ] A 12×12 save from before this change loads with no plot outside the 9×12 field and a warning in the output
-- [ ] A swing on a debris plot changes nothing and costs no RP
+- [x] A new game places the starting debris, and debris positions survive save → load
+- [x] A 12×12 save from before this change loads with no plot outside the 9×12 field and a warning in the output
+- [x] A swing on a debris plot changes nothing and costs no RP
 - [x] Watered and dry tilled soil differ by at least 25% in brightness at 12:00 and at 22:00 *(default)*, measured from screenshots
 - [x] From the field centre the whole field is on screen with no camera move
-- [ ] Each soil and debris model is under 500 triangles *(default)*
+- [x] Each soil and debris model is under 500 triangles *(default)*
 - [x] 60 fps on the farm with every plot tilled and planted (Godot's FPS monitor)
 - [ ] The user has seen every "Phase 1.1 is complete when" outcome in the running game
