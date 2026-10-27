@@ -599,7 +599,8 @@ func _front_cell(player: Player, grid: FarmGrid, tool: ToolDef) -> Array[Vector2
 
 
 ## Walking along a row of dry plots while tapping a can waters each plot passed, one water each, and the player
-## keeps moving through every tap. A tap on a watered plot spends no water or RP. A hoe tap still stands still.
+## keeps moving through every tap. A tap on a watered plot spends no water or RP. A hoe tap and a charged can
+## swing still stand still.
 func test_walk_water() -> bool:
 	var farm: Node = await _farm()
 	var grid: FarmGrid = farm.get_node("Field")
@@ -684,6 +685,26 @@ func test_walk_water() -> bool:
 		await tree.physics_frame
 	Input.action_release(&"move_right")
 	check(still, "a hoe tap with move held moved the player")
+	# A charged bronze can swing with move held stands still too.
+	Game.inventory.replace_slots([ItemStack.new(Game.items[&"bronze_watering_can"], 1, 1)])
+	_stand(player, grid, Vector2i(4, 4), Vector2i(1, 0))
+	await tree.physics_frame
+	Input.action_press(&"move_right")
+	Input.action_press(&"use_tool")
+	await _physics_step()
+	player._charge_time = 10.0
+	Input.action_release(&"use_tool")
+	await _physics_step()
+	check(player.is_swinging() and player._swing_level == 1, "releasing a held bronze can didn't swing at level 1")
+	at = player.global_position
+	still = true
+	for i in 120:
+		if not player.is_swinging():
+			break
+		still = still and player.global_position.is_equal_approx(at)
+		await tree.physics_frame
+	Input.action_release(&"move_right")
+	check(still, "a charged bronze can swing with move held moved the player")
 	for sound in ["Impact", "NoEffect"]:
 		farm.get_node("ToolFeedback/" + sound).stop()
 	Game.inventory.replace_slots([])
@@ -746,7 +767,7 @@ func test_swing_timing() -> bool:
 
 
 ## A hit that changes a plot freezes the game only for a tool with hit_stop, and shakes the camera only for one
-## with shake: the hoe holds 50 ms, the sickle a shorter one, and the can never freezes or shakes. Each such hit
+## with shake: the hoe freezes for its 50 ms, the sickle for a shorter one, and the can never freezes or shakes. Each such hit
 ## plays its tool's sound and bursts dust, after any hit-stop.
 func test_hit_stop() -> bool:
 	var farm: Node = await _farm()
@@ -778,15 +799,20 @@ func test_hit_stop() -> bool:
 		dust.emitting = false
 		impact.stop()
 		Game.stats.rp = Game.stats.max_rp()
+		# The freeze's timer counts the delta of the frame it starts in, so a long frame (the scene load) shortens it.
+		await tree.process_frame
+		await tree.process_frame
+		var hit_at: float = Time.get_ticks_usec() / 1e6
 		farm._on_tool_used(ItemStack.new(tool, 1, 1), 0)
 		check(Game.field.soil(cell) != Field.Soil.UNTILLED and (tool.effect != ToolDef.Effect.REAP or Game.field.crop(cell) == null), "%s's hit changed nothing" % id)
 		check((Engine.time_scale == 0.0) == (tool.hit_stop > 0.0), "after a %s hit time_scale is %.1f, want hit-stop only with hit_stop %.3f" % [id, Engine.time_scale, tool.hit_stop])
 		check((rig._shake_left > 0.0) == (tool.shake > 0.0), "after a %s hit the camera shake is %.3f, want shake only with shake %.3f" % [id, rig._shake_left, tool.shake])
-		for i in 120:
-			if Engine.time_scale == 1.0:
-				break
+		while Engine.time_scale != 1.0 and Time.get_ticks_usec() / 1e6 - hit_at < 1.0:
 			await tree.process_frame
+		var frozen: float = Time.get_ticks_usec() / 1e6 - hit_at
 		check(Engine.time_scale == 1.0, "%s's hit-stop never ended" % id)
+		# The timer ticks on process frames, so it can end up to a frame early or late.
+		check(tool.hit_stop == 0.0 or (frozen >= tool.hit_stop - 0.02 and frozen < tool.hit_stop + 0.03), "a %s hit froze for %.3f s, want %.3f" % [id, frozen, tool.hit_stop])
 		check(impact.playing and impact.stream == tool.impact_sound and dust.emitting, "a %s hit played its sound %s and burst dust %s, want both" % [id, impact.playing, dust.emitting])
 	farm.get_node("ToolFeedback/Impact").stop()
 	return true
