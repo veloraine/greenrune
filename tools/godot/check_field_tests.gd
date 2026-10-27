@@ -7,12 +7,12 @@ var failed: int = 0
 var tree: SceneTree
 
 
+## Records warnings and errors.
 class WarningLog extends Logger:
 	var messages: Array[String] = []
 
-	func _log_error(_function: String, _file: String, _line: int, code: String, rationale: String, _editor_notify: bool, error_type: int, _script_backtraces: Array[ScriptBacktrace]) -> void:
-		if error_type == ERROR_TYPE_WARNING:
-			messages.append(code + " " + rationale)
+	func _log_error(_function: String, _file: String, _line: int, code: String, rationale: String, _editor_notify: bool, _error_type: int, _script_backtraces: Array[ScriptBacktrace]) -> void:
+		messages.append(code + " " + rationale)
 
 
 func _init(p_tree: SceneTree) -> void:
@@ -20,7 +20,7 @@ func _init(p_tree: SceneTree) -> void:
 
 
 func run() -> int:
-	for test: Callable in [test_field_def, test_block_of, test_old_save, test_debris_scatter, test_debris_save, test_save_without_debris, test_tool_skips_debris]:
+	for test: Callable in [test_field_def, test_block_of, test_old_save, test_debris_scatter, test_debris_save, test_save_without_debris, test_debris_off_field, test_debris_under_plot, test_debris_overfull, test_tool_skips_debris]:
 		if (await test.call()) != true:
 			failed += 1
 			printerr("FAIL: %s did not finish" % test.get_method())
@@ -113,6 +113,8 @@ func test_debris_save() -> bool:
 	SaveGame.path = "user://check_field_save.json"
 	tree.change_scene_to_file("res://scenes/farm.tscn")
 	await tree.scene_changed
+	# An earlier test leaves every cell tilled, and tilled cells load no debris.
+	Game.field.replace_plots({})
 	Game.field.scatter_debris()
 	var before: Dictionary[Vector2i, DebrisDef] = Game.field.all_debris().duplicate()
 	var written: Error = SaveGame.write(tree)
@@ -175,4 +177,63 @@ func test_tool_skips_debris() -> bool:
 		check((Game.stats.rp == rp) == on_debris, "a hoe tap on %s took RP %d → %d" % [cell, rp, Game.stats.rp])
 		check((Game.stats.xp(tool.skill) == xp) == on_debris, "a hoe tap on %s took XP %.1f → %.1f" % [cell, xp, Game.stats.xp(tool.skill)])
 	check(Game.field.debris(debris_cell) == Game.debris[&"stone"], "the debris at %s is gone" % debris_cell)
+	return true
+
+
+## Loads a synthetic v2 save holding these plots and debris on the farm, and returns read()'s result.
+func _load_save(field: Array, debris: Array, log: WarningLog) -> Error:
+	SaveGame.path = "user://check_field_save.json"
+	tree.change_scene_to_file("res://scenes/farm.tscn")
+	await tree.scene_changed
+	var data: Dictionary = {
+		"version": 2, "day": 1, "minute": 400.0, "gold": 0, "area": "farm",
+		"player_position": [0.0, 0.0, -12.0], "rp": 50, "hp": 50,
+		"inventory": [], "bin": [], "field": field, "debris": debris,
+	}
+	var file: FileAccess = FileAccess.open(SaveGame.path, FileAccess.WRITE)
+	file.store_string(JSON.stringify(data))
+	file.close()
+	OS.add_logger(log)
+	var result: Error = SaveGame.read(tree)
+	OS.remove_logger(log)
+	DirAccess.remove_absolute(SaveGame.path)
+	return result
+
+
+func test_debris_off_field() -> bool:
+	var log := WarningLog.new()
+	var result: Error = await _load_save([], [
+		{"cell": [0, 0], "id": "stone"}, {"cell": [9, 0], "id": "stone"}, {"cell": [10, 11], "id": "weed"},
+	], log)
+	check(result == OK, "SaveGame.read returned %s" % error_string(result))
+	check(Game.field.all_debris().keys() == [Vector2i(0, 0)], "debris loaded on %s, want only (0, 0)" % [Game.field.all_debris().keys()])
+	check(log.messages.any(func(m: String) -> bool: return m.contains("2 debris outside the field")), "no warning about 2 debris outside the field; got %s" % [log.messages])
+	return true
+
+
+## A hand-edited save with a crop and debris on one cell keeps the crop.
+func test_debris_under_plot() -> bool:
+	var result: Error = await _load_save(
+		[{"cell": [2, 2], "watered": false, "crop": {"seed": "turnip_seed", "level": 1, "days": 0}}],
+		[{"cell": [2, 2], "id": "weed"}, {"cell": [3, 3], "id": "weed"}],
+		WarningLog.new())
+	check(result == OK, "SaveGame.read returned %s" % error_string(result))
+	check(Game.field.debris(Vector2i(2, 2)) == null, "debris loaded on the planted plot (2, 2)")
+	check(Game.field.crop(Vector2i(2, 2)) != null, "the crop on (2, 2) is gone")
+	check(Game.field.debris(Vector2i(3, 3)) != null, "the debris on clear (3, 3) is gone")
+	return true
+
+
+## More starting debris than free cells fills every free cell and reports one error instead of crashing.
+func test_debris_overfull() -> bool:
+	var def: FieldDef = load("res://data/field.tres").duplicate()
+	def.starting_debris = {load("res://data/debris/weed.tres"): 200}
+	var field := Field.new(def)
+	var log := WarningLog.new()
+	OS.add_logger(log)
+	field.scatter_debris()
+	OS.remove_logger(log)
+	var free: int = def.size.x * def.size.y - def.debris_free.get_area()
+	check(field.all_debris().size() == free, "%d debris placed, want every free cell (%d)" % [field.all_debris().size(), free])
+	check(log.messages.filter(func(m: String) -> bool: return m.contains("only %d cells are free" % free)).size() == 1, "want one error about free cells; got %s" % [log.messages])
 	return true

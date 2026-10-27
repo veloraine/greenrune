@@ -100,13 +100,19 @@ static func read(tree: SceneTree) -> Error:
 		push_warning("Save has %d plots outside the field; dropping them" % off_field)
 	Game.field.replace_plots(plots)
 	var debris: Dictionary[Vector2i, DebrisDef] = {}
+	var off_field_debris: int = 0
 	for entry: Dictionary in data.debris:
 		var cell := Vector2i(int(entry.cell[0]), int(entry.cell[1]))
 		var def: DebrisDef = Game.debris.get(StringName(entry.id))
 		if def == null:
 			push_warning("Save has unknown debris '%s'; dropping it" % entry.id)
-		elif Game.field.has_cell(cell):
+		elif not Game.field.has_cell(cell):
+			off_field_debris += 1
+		# Tilled ground never holds debris, so a hand-edited save can't bury a crop.
+		elif not plots.has(cell):
 			debris[cell] = def
+	if off_field_debris > 0:
+		push_warning("Save has %d debris outside the field; dropping them" % off_field_debris)
 	Game.field.replace_debris(debris)
 	var xp: Dictionary[StringName, float] = {}
 	for id: String in data.xp:

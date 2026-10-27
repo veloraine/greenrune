@@ -109,9 +109,15 @@ func scatter_debris() -> void:
 			if not def.debris_free.has_point(Vector2i(x, y)):
 				free_cells.append(Vector2i(x, y))
 	var placed: Dictionary[Vector2i, DebrisDef] = {}
+	var wanted: int = 0
 	for debris_def in def.starting_debris:
+		wanted += def.starting_debris[debris_def]
 		for i in def.starting_debris[debris_def]:
+			if free_cells.is_empty():
+				break
 			placed[free_cells.pop_at(rng.randi_range(0, free_cells.size() - 1))] = debris_def
+	if placed.size() < wanted:
+		push_error("starting_debris wants %d pieces but only %d cells are free" % [wanted, placed.size()])
 	replace_debris(placed)
 
 

@@ -176,6 +176,8 @@ func _show_debris(cell: Vector2i) -> void:
 	if debris:
 		var model: Node3D = debris.model.instantiate()
 		model.position = _cell_center(cell) + Vector3(0, 0.01, 0)
+		# A quarter turn per cell, so neighbours of one type don't look stamped.
+		model.rotation.y += posmod(hash(cell), 4) * PI / 2
 		add_child(model)
 		_debris[cell] = model
 
