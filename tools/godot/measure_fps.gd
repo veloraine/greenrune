@@ -21,14 +21,22 @@ func _initialize() -> void:
 	get_first_node_in_group(&"player").global_position = grid.to_global(Vector3(field.def.size.x / 2.0, 0.0, field.def.size.y / 2.0))
 	field.replace_debris({})
 	var crop: CropDef = game.crops.values()[0]
+	var sown: int = 0
 	for x in field.def.size.x:
 		for y in field.def.size.y:
 			var cell := Vector2i(x, y)
 			field.apply(ToolDef.Effect.TILL, cell)
 			field.apply(ToolDef.Effect.WATER, cell)
-			field.sow(cell, crop, 1)
+			if not field.sow(cell, crop, 1):
+				continue
+			sown += 1
 			field.crop(cell).days = 99.0
 			field.changed.emit(cell)
+	var plots: int = field.def.size.x * field.def.size.y
+	print("sown %d of %d plots" % [sown, plots])
+	if sown != plots:
+		quit(1)
+		return
 	for vsync: DisplayServer.VSyncMode in [DisplayServer.VSYNC_ENABLED, DisplayServer.VSYNC_DISABLED]:
 		DisplayServer.window_set_vsync_mode(vsync)
 		await _sample(game, "vsync on " if vsync == DisplayServer.VSYNC_ENABLED else "vsync off")
@@ -39,16 +47,24 @@ func _sample(game: Node, label: String) -> void:
 	var elapsed: float = 0.0
 	var frames: int = 0
 	var worst: float = 0.0
+	var over_budget: int = 0
+	# Raw ticks, because the process delta is smoothed and hides single slow frames.
+	var last: int = Time.get_ticks_usec()
 	while elapsed < WARMUP_SECONDS + SAMPLE_SECONDS:
 		game.minute = 12 * 60.0
 		await process_frame
-		var delta: float = root.get_process_delta_time()
-		elapsed += delta
-		if elapsed > WARMUP_SECONDS:
+		var now: int = Time.get_ticks_usec()
+		var delta: float = (now - last) / 1000000.0
+		last = now
+		# A frame counts only if it started after the warm-up, so a stall during it can't spill into the sample.
+		if elapsed >= WARMUP_SECONDS:
 			frames += 1
 			worst = maxf(worst, delta)
-	print("%s: %.1f fps average over %d frames, worst frame %.1f ms, monitor %d fps, %d draw calls, %d primitives" % [
-		label, frames / SAMPLE_SECONDS, frames, worst * 1000.0,
+			if delta > 1.0 / 60.0:
+				over_budget += 1
+		elapsed += delta
+	print("%s: %.1f fps average over %d frames, worst frame %.1f ms, %d frames over 16.7 ms, monitor %d fps, %d draw calls, %d primitives" % [
+		label, frames / SAMPLE_SECONDS, frames, worst * 1000.0, over_budget,
 		Performance.get_monitor(Performance.TIME_FPS),
 		Performance.get_monitor(Performance.RENDER_TOTAL_DRAW_CALLS_IN_FRAME),
 		Performance.get_monitor(Performance.RENDER_TOTAL_PRIMITIVES_IN_FRAME),

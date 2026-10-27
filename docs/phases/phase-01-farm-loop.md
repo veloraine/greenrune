@@ -36,7 +36,7 @@ Steps 1–6 built every Phase 1 system. They stay here as the record of what exi
 
 - [x] Folder layout: `scenes/`, `scripts/`, `data/items/`, `data/crops/`, `data/skills/`, `ui/`
 - [x] Input map: move, use tool, next/prev hotbar slot, interact, menu (WASD, Space/left click, E/Q or mouse wheel, F, Tab/Esc)
-- [x] Farm scene from KayKit/Quaternius: house with bed, ~12×12 field, shipping bin, fences, trees (`scenes/farm.tscn`; the bed is in the house interior from Step 5)
+- [x] Farm scene from KayKit/Quaternius: house with bed, ~12×12 field, shipping bin, trees (`scenes/farm.tscn`; the fences were removed in Phase 1.1 Step 9; the bed is in the house interior from Step 5)
 - [x] Player: `CharacterBody3D` + KayKit model + ~~Mixamo~~ KayKit built-in idle/run
 - [x] Camera: `SpringArm3D` + `Camera3D` at the fixed RF4 angle, follows the player (`scenes/camera_rig.tscn`)
 - [x] Main scene runs with F5
@@ -231,6 +231,7 @@ Steps 1–6 built every Phase 1 system. They stay here as the record of what exi
 5. Make the shipping bin accept thrown items.
 6. Give each `DebrisDef` its drop when cleared (none for weeds) *(default per debris type)*.
 7. Add debris regrowth on untilled, empty plots in the `DayTick`; the rate lives in data *(default; RF4's rate was not found)*.
+8. Interact prefers the bin over harvesting row 0 near the bin (columns 1–3, incl. starter cell (3,0)); harvest a ripe crop in front first, else the bin — add a check_field case.
 
 **Checklist:**
 - [ ] Lift, throw and store each play a sound and a short animation
