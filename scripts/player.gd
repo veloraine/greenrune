@@ -49,6 +49,8 @@ func _ready() -> void:
 	_glow.transparency = BaseMaterial3D.TRANSPARENCY_ALPHA
 	_glow.blend_mode = BaseMaterial3D.BLEND_MODE_ADD
 	var walk: Animation = _anim.get_animation(&"Walking_A").duplicate()
+	# The imported clip plays once; unlooped, the legs stop for a frame at the end of every step cycle.
+	walk.loop_mode = Animation.LOOP_LINEAR
 	for track in range(walk.get_track_count() - 1, -1, -1):
 		if not LEG_BONES.has(String(walk.track_get_path(track).get_concatenated_subnames())):
 			walk.remove_track(track)

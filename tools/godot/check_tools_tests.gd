@@ -87,13 +87,16 @@ func test_charge_off_field() -> bool:
 	var grid: FarmGrid = farm.get_node("Field")
 	var player: Player = farm.get_node("Player")
 	var hit: Array[Vector2i] = []
+	# The last block, in the field's south-east corner, whatever the field's size.
+	var last: Vector2i = Game.field.def.size / Game.field.def.block_size - Vector2i.ONE
+	var corner: Vector2i = Game.field.def.size - Vector2i(2, 2)
 	var cases: Array = [
 		[Vector2i(1, 1), Vector2i(-1, 0), [Vector2i(0, 0)]],
 		[Vector2i(1, 1), Vector2i(0, -1), [Vector2i(0, 0)]],
 		[Vector2i(1, 1), Vector2i(1, 0), [Vector2i(0, 0), Vector2i(1, 0)]],
-		[Vector2i(7, 10), Vector2i(0, 1), [Vector2i(2, 3)]],
-		[Vector2i(7, 10), Vector2i(1, 0), [Vector2i(2, 3)]],
-		[Vector2i(7, 10), Vector2i(0, -1), [Vector2i(2, 3), Vector2i(2, 2)]],
+		[corner, Vector2i(0, 1), [last]],
+		[corner, Vector2i(1, 0), [last]],
+		[corner, Vector2i(0, -1), [last, last - Vector2i(0, 1)]],
 	]
 	for case: Array in cases:
 		var want: Array[Vector2i] = []
@@ -721,7 +724,7 @@ func test_walk_locked_facing() -> bool:
 	var player: Player = farm.get_node("Player")
 	var speed: float = Game.tool_feel.walk_speed
 	var outline: Array[Vector2i] = []
-	check(is_equal_approx(speed, 1.0), "the tool walk speed is %.2f, want 1.0" % speed)
+	check(speed > 0.0, "the tool walk speed is %.2f, want above 0" % speed)
 	for id: StringName in [&"bronze_hoe", &"bronze_watering_can"]:
 		var tool: ToolDef = Game.items[id]
 		var walks: bool = tool.effect == ToolDef.Effect.WATER
@@ -738,13 +741,19 @@ func test_walk_locked_facing() -> bool:
 		Input.action_press(&"move_right")
 		await tree.physics_frame
 		var at: Vector3 = player.global_position
-		for i in 60:
+		# Into block (2, 1) and a full metre on, so the leg walk runs through more than one cycle at any speed.
+		var frames: int = 0
+		var legs: bool = true
+		while frames < 600 and grid.to_local(player.global_position).x < 7.0:
 			await tree.physics_frame
+			frames += 1
+			legs = legs and player._legs.is_playing() and player._legs.current_animation == &"walk"
 		farm._process(0.0)
+		var walked: float = (player.global_position.x - at.x) * Engine.physics_ticks_per_second / maxi(frames, 1)
 		check(player.is_charging(), "holding %s with move held stopped charging" % id)
-		check(absf(player.global_position.x - at.x - speed) < 0.1, "charging %s walked %.2f m in a second, want %.2f" % [id, player.global_position.x - at.x, speed])
+		check(absf(walked - speed) < 0.1, "charging %s walked at %.2f m/s, want %.2f" % [id, walked, speed])
 		check(is_equal_approx(player.rotation.y, facing), "charging %s with move held turned the player %.2f rad" % [id, player.rotation.y - facing])
-		check(player._legs.is_playing() and player._legs.current_animation == &"walk", "charging %s while moving doesn't play the leg walk" % id)
+		check(legs, "charging %s while moving didn't play the leg walk on every frame" % id)
 		grid.cells_hit(player.global_position, player.global_position, tool.charges[-1].size, player.facing(), outline)
 		check(_outline_rect(grid).is_equal_approx(grid._area(outline).grow(-grid.tile_size * (1.0 - FarmGrid.TILE_FILL) / 2.0)) and grid.block_of(outline[0]) == Vector2i(2, 1), "the %s charge outline at %s doesn't follow the player into block (2, 1)" % [id, _outline_rect(grid)])
 		Input.action_release(&"move_right")
