@@ -216,7 +216,7 @@ Smallest possible playable loop. **One 3D farm scene, no town yet.** Steps 1–6
 
 - **Player character:** KayKit Adventurer chibi model + its built-in walk/idle animations.
 - **Camera:** fixed semi-top-down (~45° angle, follows player), similar to RF4. Implement as a `Camera3D` attached to a `SpringArm3D`.
-- **Farm scene:** terrain (small flat MeshInstance or HeightMap), Quaternius/KayKit barn + fences + trees as props. The field is 9×12 plots in twelve 3×3 blocks, and starts covered in weeds, stones and branches that the hands clear. RF4's first field is 6×12 in 2×2 sections; Greenrune uses Farnia's 3×3.
+- **Farm scene:** terrain (small flat MeshInstance or HeightMap), Quaternius/KayKit barn + fences + trees as props. The field is whole 3×3 blocks, sized in `data/field.tres` (18×12 now, 9×12 at Phase 1.1), and starts covered in weeds, stones and branches that the hands clear. RF4's first field is 6×12 in 2×2 sections; Greenrune uses Farnia's 3×3.
 - **Tools:** hoe (till — modifies a tile state), watering can, sickle, seeds, harvest. Tile state is a 2D grid managed in code, but visuals are 3D.
 - **Charge by tool tier, Farnia's 3×3 gated like RF4:** cheap (starter) tools tap one plot and don't charge; a bronze tool charges to the 3×3 block holding the player's tile; silver and higher add blocks in a line along the facing direction *(default)*. Every charged area is centred on the player and snapped to blocks; the tap hits the plot in front.
 - **Hands:** a carry state lifts, throws and stores debris and harvested crops, as RF4 does.

@@ -126,7 +126,7 @@ Steps 1–6 built every Phase 1 system. They stay here as the record of what exi
 **Goal:** the farm field looks and reads like an RF4 field before any tool touches it.
 
 **Phase 1.1 is complete when:**
-- The field is 9×12 plots (108) in twelve 3×3 blocks, 3 across and 4 deep, and each block shows a faint outline.
+- The field is 9×12 plots (108) in twelve 3×3 blocks, 3 across and 4 deep, and each block shows a faint outline. *The size lives in `data/field.tres`; the user has since set it to 18×12 (24 blocks, 6 across and 4 deep).*
 - A new game shows weeds, stones and branches scattered on the field.
 - Untilled, tilled and watered soil are told apart in a 12:00 screenshot and a 22:00 screenshot.
 - The whole field fits on screen from its centre without moving the camera.

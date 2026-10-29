@@ -37,7 +37,7 @@ Status: **done**, **current**, **next**, **later**.
 
 Sub-phases of Phases 1–3, each with its done bar (the full list is under "complete when" in the phase file):
 
-- [1.1 The field](phases/phase-01-farm-loop.md#phase-11--the-field) **done**: a 9×12 field in outlined 3×3 blocks, starting debris, soil states readable at 12:00 and 22:00, the whole field on screen.
+- [1.1 The field](phases/phase-01-farm-loop.md#phase-11--the-field) **done**: a field of outlined 3×3 blocks (size in `data/field.tres`; 9×12 at 1.1, now 18×12 by the user's choice), starting debris, soil states readable at 12:00 and 22:00, the whole field on screen.
 - [1.2 Tool feel](phases/phase-01-farm-loop.md#phase-12--tool-feel) **current**: cheap tools tap only; a bronze charge covers the player's 3×3 block with feedback on one hit; water spent per plot. The two-handed hoe swing (Steps 4–5) waits for the user's base body.
 - [1.3 Hands and carrying](phases/phase-01-farm-loop.md#phase-13--hands-and-carrying) **later**: debris and crops lift, throw and store by hand; a thrown crop lands in the bin; weeds regrow on untended ground.
 - [1.4 Crops](phases/phase-01-farm-loop.md#phase-14--crops) **later**: every stage reads at a glance; ripe crops look ripe; a warned crop left dry withers; rune orbs refill RP and level a skill.
