@@ -1,9 +1,9 @@
-[gd_resource type="Resource" script_class="ToolFeelDef" format=3]
+[gd_resource type="Resource" script_class="ToolFeelDef" format=3 uid="uid://db76u4fcvpsmj"]
 
-[ext_resource type="Script" path="res://scripts/tool_feel_def.gd" id="1_feel"]
-[ext_resource type="AudioStream" path="res://assets/audio/kenney-rpg-audio/knifeSlice2.ogg" id="2_charge"]
-[ext_resource type="AudioStream" path="res://assets/audio/rubberduck-water/splash_15.ogg" id="3_refill"]
-[ext_resource type="AudioStream" path="res://assets/audio/kenney-impact/impactSoft_heavy_004.ogg" id="4_dull"]
+[ext_resource type="Script" uid="uid://be3n8qe7hqpdx" path="res://scripts/tool_feel_def.gd" id="1_feel"]
+[ext_resource type="AudioStream" uid="uid://cyw8ul5iq6xy5" path="res://assets/audio/kenney-rpg-audio/knifeSlice2.ogg" id="2_charge"]
+[ext_resource type="AudioStream" uid="uid://mado7feeyj4v" path="res://assets/audio/rubberduck-water/splash_15.ogg" id="3_refill"]
+[ext_resource type="AudioStream" uid="uid://dp8wb20i3j6s8" path="res://assets/audio/kenney-impact/impactSoft_heavy_004.ogg" id="4_dull"]
 
 [resource]
 script = ExtResource("1_feel")
@@ -13,7 +13,7 @@ marker_height = 0.75
 marker_scales = Array[float]([1.0, 1.8, 2.4])
 outline_color = Color(1, 0.2, 0.15, 0.9)
 outline_width = 0.08
-walk_speed = 1.0
+walk_speed = 2.0
 glow_colors = Array[Color]([Color(1, 0.6, 0.2, 0), Color(1, 0.6, 0.2, 0.45), Color(1, 0.85, 0.4, 0.6)])
 charge_sound = ExtResource("2_charge")
 charge_pitches = Array[float]([1.2, 1.5])

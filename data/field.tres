@@ -1,16 +1,16 @@
-[gd_resource type="Resource" script_class="FieldDef" format=3]
+[gd_resource type="Resource" script_class="FieldDef" format=3 uid="uid://o6bl51qbxsve"]
 
-[ext_resource type="Script" path="res://scripts/field_def.gd" id="1_field"]
-[ext_resource type="Script" path="res://scripts/debris_def.gd" id="5_debris"]
+[ext_resource type="Script" uid="uid://4r8pmesx2mom" path="res://scripts/field_def.gd" id="1_field"]
 [ext_resource type="Resource" path="res://data/debris/weed.tres" id="2_weed"]
 [ext_resource type="Resource" path="res://data/debris/stone.tres" id="3_stone"]
 [ext_resource type="Resource" path="res://data/debris/branch.tres" id="4_branch"]
+[ext_resource type="Script" uid="uid://440vi2uulfwf" path="res://scripts/debris_def.gd" id="5_debris"]
 
 [resource]
 script = ExtResource("1_field")
-size = Vector2i(9, 12)
+size = Vector2i(18, 12)
 block_size = 3
-outline_color = Color(1, 1, 1, 0.25)
+outline_color = Color(0.48408455, 0.28546053, 0.024260161, 0.32941177)
 outline_width = 0.06
 starting_debris = Dictionary[ExtResource("5_debris"), int]({
 ExtResource("2_weed"): 14,
