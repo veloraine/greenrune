@@ -33,10 +33,12 @@ func check(cond: bool, msg: String) -> void:
 		printerr("FAIL: " + msg)
 
 
+## The field's size is data; it must be whole 3×3 blocks.
 func test_field_def() -> bool:
 	var def: FieldDef = load("res://data/field.tres")
-	check(def.size == Vector2i(9, 12), "field size is %s, want (9, 12)" % def.size)
 	check(def.block_size == 3, "block size is %d, want 3" % def.block_size)
+	check(def.size.x > 0 and def.size.y > 0 and def.size.x % def.block_size == 0 and def.size.y % def.block_size == 0, "field size %s isn't whole %d×%d blocks" % [def.size, def.block_size, def.block_size])
+	check(Rect2i(Vector2i.ZERO, def.size).encloses(def.debris_free), "debris_free %s runs off the %s field" % [def.debris_free, def.size])
 	return true
 
 
@@ -56,16 +58,19 @@ func test_block_of() -> bool:
 	return true
 
 
-## Writes a synthetic v2 save tilling all 12×12 cells and loads it through SaveGame.read() on the farm.
+## Writes a synthetic v2 save tilling the field and three cells past its east and south edges, and loads it
+## through SaveGame.read() on the farm. Only the field's plots load, with one warning for the rest.
 ## It uses its own save file, so the player's save is never touched.
 func test_old_save() -> bool:
 	SaveGame.path = "user://check_field_save.json"
 	tree.change_scene_to_file("res://scenes/farm.tscn")
 	await tree.scene_changed
+	var size: Vector2i = Game.field.def.size
 	var field: Array = []
-	for x in 12:
-		for y in 12:
+	for x in size.x + 3:
+		for y in size.y + 3:
 			field.append({"cell": [x, y], "watered": false, "crop": null})
+	var outside: int = field.size() - size.x * size.y
 	var data: Dictionary = {
 		"version": 2, "day": 1, "minute": 400.0, "gold": 0, "area": "farm",
 		"player_position": [0.0, 0.0, -12.0], "rp": 50, "hp": 50,
@@ -84,10 +89,10 @@ func test_old_save() -> bool:
 
 	check(result == OK, "SaveGame.read returned %s" % error_string(result))
 	var plots: Dictionary[Vector2i, Field.Plot] = Game.field.plots()
-	check(plots.size() == 108, "%d plots loaded, want 108" % plots.size())
+	check(plots.size() == size.x * size.y, "%d plots loaded, want %d" % [plots.size(), size.x * size.y])
 	for cell in plots:
-		check(Rect2i(0, 0, 9, 12).has_point(cell), "plot %s is off the 9×12 field" % cell)
-	check(log.messages.any(func(m: String) -> bool: return m.contains("36 plots outside the field")), "no warning about 36 plots outside the field; got %s" % [log.messages])
+		check(Rect2i(Vector2i.ZERO, size).has_point(cell), "plot %s is off the %s field" % [cell, size])
+	check(log.messages.any(func(m: String) -> bool: return m.contains("%d plots outside the field" % outside)), "no warning about %d plots outside the field; got %s" % [outside, log.messages])
 	return true
 
 
@@ -202,8 +207,9 @@ func _load_save(field: Array, debris: Array, log: WarningLog) -> Error:
 
 func test_debris_off_field() -> bool:
 	var log := WarningLog.new()
+	var size: Vector2i = load("res://data/field.tres").size
 	var result: Error = await _load_save([], [
-		{"cell": [0, 0], "id": "stone"}, {"cell": [9, 0], "id": "stone"}, {"cell": [10, 11], "id": "weed"},
+		{"cell": [0, 0], "id": "stone"}, {"cell": [size.x, 0], "id": "stone"}, {"cell": [size.x + 1, size.y - 1], "id": "weed"},
 	], log)
 	check(result == OK, "SaveGame.read returned %s" % error_string(result))
 	check(Game.field.all_debris().keys() == [Vector2i(0, 0)], "debris loaded on %s, want only (0, 0)" % [Game.field.all_debris().keys()])
@@ -227,13 +233,13 @@ func test_debris_under_plot() -> bool:
 ## More starting debris than free cells fills every free cell and reports one error instead of crashing.
 func test_debris_overfull() -> bool:
 	var def: FieldDef = load("res://data/field.tres").duplicate()
-	def.starting_debris = {load("res://data/debris/weed.tres"): 200}
+	var free: int = def.size.x * def.size.y - def.debris_free.get_area()
+	def.starting_debris = {load("res://data/debris/weed.tres"): free + 10}
 	var field := Field.new(def)
 	var log := WarningLog.new()
 	OS.add_logger(log)
 	field.scatter_debris()
 	OS.remove_logger(log)
-	var free: int = def.size.x * def.size.y - def.debris_free.get_area()
 	check(field.all_debris().size() == free, "%d debris placed, want every free cell (%d)" % [field.all_debris().size(), free])
 	check(log.messages.filter(func(m: String) -> bool: return m.contains("only %d cells are free" % free)).size() == 1, "want one error about free cells; got %s" % [log.messages])
 	return true
@@ -279,8 +285,9 @@ func test_soil_tiles() -> bool:
 	return true
 
 
-## The well refills the can from beside the field's north-east corner, without any field point counting
-## as water, and the bin stands by the house door, out of reach from the field.
+## The well refills the can without any field point counting as water; the well, bin and house door stand off
+## the field, the bin by the door and out of reach from the field; the bounds walls enclose the field; and the
+## starting debris fits the free cells.
 func test_farm_props() -> bool:
 	tree.change_scene_to_file("res://scenes/farm.tscn")
 	await tree.scene_changed
@@ -295,8 +302,21 @@ func test_farm_props() -> bool:
 			var point: Vector3 = grid.to_global(Vector3(x * 0.25, 0.0, z * 0.25))
 			check(not farm._is_water(point), "field point %s is water" % point)
 	var well: Node3D = farm.get_node("Well")
-	var corner: Vector3 = grid.to_global(Vector3(extent.x, 0.0, 0.0))
-	check(well.global_position.distance_to(corner) < 2.0, "the well is %.1f m from the field's north-east corner, want under 2" % well.global_position.distance_to(corner))
+	var on_field := Rect2(Vector2.ZERO, extent).grow(0.5)
+	for path: String in ["Well", "ShippingBin", "HouseEntrance", "HouseDoor/CollisionShape3D"]:
+		var local: Vector3 = grid.to_local(farm.get_node(path).global_position)
+		check(not on_field.has_point(Vector2(local.x, local.z)), "%s at %s stands on the field" % [path, local])
+	# Each wall's inner face, half its 1 m thickness in from its centre, lies outside the field.
+	for wall: CollisionShape3D in farm.get_node("Bounds").get_children():
+		var centre := Vector3(wall.global_position.x, 0.0, wall.global_position.z)
+		var inner: Vector3 = grid.to_local(centre - centre.normalized() * 0.5)
+		var outside: bool = inner.x <= 0.0 or inner.x >= extent.x or inner.z <= 0.0 or inner.z >= extent.y
+		check(outside, "the %s wall's inner face at %s cuts into the field" % [wall.name, inner])
+	var counts: int = 0
+	for debris: DebrisDef in Game.field.def.starting_debris:
+		counts += Game.field.def.starting_debris[debris]
+	var free: int = Game.field.def.size.x * Game.field.def.size.y - Game.field.def.debris_free.get_area()
+	check(counts <= free, "%d starting debris don't fit the %d free cells" % [counts, free])
 	var can := ItemStack.new(Game.items[&"cheap_watering_can"], 1, 1)
 	can.water = 0
 	# Facing -z, just south of the well.

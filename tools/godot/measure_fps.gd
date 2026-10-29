@@ -1,7 +1,7 @@
 extends SceneTree
 
-## Tills, waters and plants all 108 plots with ripe crops at 12:00, puts the player at the field centre,
-## and prints the frame rate and frame times over a few seconds, with vsync on and then off.
+## Tills, waters and plants every plot of the field (its size is in data/field.tres) with ripe crops at 12:00,
+## puts the player at the field centre, and prints the frame rate and frame times over a few seconds, with vsync on and then off.
 ## Needs a window, so run it without --headless:
 ##   Godot --path . --script res://tools/godot/measure_fps.gd
 ## It never saves, so the player's save is untouched.
